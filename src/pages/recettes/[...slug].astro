@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
+import { jsonLdRecette, jsonLdFilAriane } from '../../lib/seo';
 import Base from '../../layouts/Base.astro';
 import AtelierRecette from '../../components/AtelierRecette.astro';
 import SectionPreparation from '../../components/SectionPreparation.astro';
@@ -42,6 +43,28 @@ interface Cadran {
   vedette?: boolean;
 }
 
+// Image de partage au format attendu par les messageries et les réseaux.
+const imagePartage = await getImage({
+  src: d.image,
+  width: 1200,
+  height: 630,
+  fit: 'cover',
+  format: 'jpeg',
+});
+
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const donneesRecette = jsonLdRecette({
+  recette,
+  url,
+  image: new URL(imagePartage.src, Astro.site).href,
+  auteur: 'Geoffrey Crofte',
+});
+const donneesFilAriane = jsonLdFilAriane(
+  new URL('/', Astro.site).href,
+  d.titre,
+  url
+);
+
 const cadrans: Cadran[] = [
   // La température n'existe que pour les cuissons qui en ont une.
   ...(d.temperature !== undefined
@@ -61,7 +84,25 @@ const cadrans: Cadran[] = [
 ];
 ---
 
-<Base titre={d.titre} description={d.description}>
+<Base
+  titre={d.titre}
+  description={d.description}
+  imagePartage={imagePartage.src}
+  imagePartageAlt={d.imageAlt}
+>
+  <Fragment slot="tete">
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(donneesRecette)}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(donneesFilAriane)}
+    />
+  </Fragment>
+
   <article class="fiche">
     <header class="ouverture">
       <div class="ouverture__texte">

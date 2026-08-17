@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# L'interface d'édition n'a rien à faire dans un index.
+Disallow: /admin/
+# Page de repli affichée hors ligne, sans intérêt en résultat de recherche.
+Disallow: /hors-ligne/
+
+Sitemap: https://recettes.crofte.fr/sitemap.xml

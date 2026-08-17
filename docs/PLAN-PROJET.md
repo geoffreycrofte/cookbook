@@ -1,7 +1,7 @@
 # Recettes du Lux — plan de projet
 
 **Domaine cible** : recettes.crofte.fr
-**Statut** : phases 0 à 5 et 8 terminées, phases 6 et 7 à faire
+**Statut** : phases 0 à 6 et 8 terminées, phase 7 (IA) à faire
 **Dernière mise à jour** : 17 août 2026
 
 > Les sections 2 à 5 décrivent le plan initial. Les écarts assumés en cours de route sont consignés en section 8, qui fait foi.
@@ -149,10 +149,12 @@ GitHub Pages  ← GitHub Actions (build Astro)  ← dépôt GitHub (source de v�
                                                       │ écrit des .md
                                               Sveltia CMS (/admin)
                                                       │
-                                              Cloudflare Worker (auth GitHub)
-                                                      │
-                                              Cloudflare Worker (IA, phase 7)
-                                                      └─→ API Claude
+                                              jeton personnel GitHub
+                                              (aucun service à déployer)
+
+Phase 7, à venir :
+  navigateur → Cloudflare Worker → API Claude
+               (clé côté serveur)
 ```
 
 | Besoin | Solution | Note |
@@ -198,23 +200,23 @@ Une passe de maquettage précédera le développement de cette phase.
 
 ## 6. Phases
 
-### Phase 0 — Fondations et mise en ligne
+### Phase 0 — Fondations et mise en ligne (terminée)
 Initialisation du dépôt, installation d'Astro, workflow GitHub Actions, fichier CNAME, enregistrement DNS chez OVH, page d'accueil provisoire.
 **Résultat** : recettes.crofte.fr affiche une page en HTTPS. Le risque DNS est levé avant tout le reste.
 
-### Phase 1 — Modèle de contenu
+### Phase 1 — Modèle de contenu (terminée)
 Collection Astro, schéma Zod, trois recettes réelles avec photos, page liste et page détail sans style élaboré, pipeline d'images.
 **Résultat** : je peux ajouter une recette en créant un dossier, et elle apparaît en ligne.
 
-### Phase 2 — Direction visuelle
+### Phase 2 — Direction visuelle (terminée)
 Système de design (variables CSS, échelle typographique, composants), mise en forme de la liste et de la fiche, mode sombre, responsive.
 **Résultat** : le site ressemble à quelque chose que j'ai envie d'ouvrir.
 
-### Phase 3 — Recherche, filtres et flemme
+### Phase 3 — Recherche, filtres et flemme (terminée)
 Génération de l'index JSON au build, recherche Fuse.js, filtres par catégorie, tag et régime avec titres visibles, bouton « J'ai la flemme ».
 **Résultat** : je retrouve une recette par ingrédient, et j'obtiens une suggestion au hasard.
 
-### Phase 4 — PWA et confort cuisine
+### Phase 4 — PWA et confort cuisine (terminée)
 Manifest, icônes, service worker et stratégies de cache, page hors ligne, écran toujours allumé, ingrédients et étapes cochables, ajustement des portions.
 **Résultat** : le site s'installe sur mon téléphone et reste utilisable sans réseau.
 
@@ -222,11 +224,11 @@ Manifest, icônes, service worker et stratégies de cache, page hors ligne, écr
 Configuration Sveltia, page `/admin`, mise en correspondance de tous les champs. Le worker d'authentification Cloudflare initialement prévu s'est révélé inutile.
 **Résultat** : j'ajoute une recette depuis mon téléphone, photo comprise, sans toucher au markdown.
 
-### Phase 6 — SEO, accessibilité et performance
+### Phase 6 — SEO, accessibilité et performance (terminée)
 JSON-LD `Recipe`, sitemap, RSS, métadonnées de partage, audit RAWeb AA, audit Lighthouse, fichier `llms.txt` pour la visibilité dans les moteurs génératifs.
 **Résultat** : le site est trouvable, conforme et rapide.
 
-### Phase 7 — Fonction IA (v2)
+### Phase 7 — Fonction IA (à faire)
 Cloudflare Worker exposant un endpoint protégé, appel à l'API Claude, contexte construit depuis l'index des recettes, interface de suggestion (« que faire avec ce qu'il me reste », « une variante de cette recette »).
 **Résultat** : le site propose des idées fondées sur mon propre contenu.
 
@@ -380,6 +382,49 @@ L'auto-hébergement du bundle a été écarté : 1,9 Mo ajoutés à l'historique
 
 L'écriture réelle depuis l'interface demande un jeton GitHub, que je n'ai pas. La création d'une recette de bout en bout, le téléversement d'une photo et le commit résultant restent donc à éprouver. Les tests correspondants sont en section 11.
 
+**Phase 6 — SEO, accessibilité et performance** (terminée)
+
+**Référencement**
+
+- **JSON-LD `Recipe`** sur chaque fiche : durées en ISO 8601, rendement, catégorie, ingrédients agrégés de toutes les parties, régimes traduits en URL schema.org, méthode de cuisson. Une recette en plusieurs parties est balisée en `HowToSection`, ce que Google comprend, plutôt qu'en liste plate. Les régimes sans équivalent normalisé (sans porc, sans fruits à coque) sont volontairement omis : mieux vaut un balisage incomplet qu'inventé.
+- **JSON-LD `BreadcrumbList`**, pour que le chemin s'affiche plutôt que l'URL brute.
+- **Image de partage.** Elle manquait complètement : un lien partagé n'affichait aucune vignette. Chaque page génère désormais une image 1200 × 630 depuis la photo de la recette, avec `og:image:alt`, `og:site_name` et une carte Twitter large.
+- **`sitemap.xml`, `rss.xml`, `robots.txt` et `llms.txt`**, écrits à la main. `@astrojs/sitemap` et `@astrojs/rss` ne déclarent aucune compatibilité avec Astro 7 ; quarante lignes maîtrisées valent mieux qu'une dépendance dont on ignore si elle suivra. `robots.txt` exclut `/admin/` et `/hors-ligne/` de l'indexation.
+
+**Accessibilité (RAWeb 1.1, niveau AA)**
+
+Un manque réel a été trouvé et corrigé : **le critère 12.1 exige deux systèmes de navigation**, or le site n'avait que son moteur de recherche, présent uniquement sur la page d'accueil. Depuis une fiche recette, aucun moyen de naviguer autrement qu'en revenant en arrière.
+
+Correctif : une page **`/plan-du-site/`** classant les recettes par catégorie, fonctionnant sans JavaScript, plus une navigation de pied de page présente sur toutes les pages. Le critère est satisfait par la combinaison moteur de recherche et plan du site.
+
+Mesures relevées sur le site construit, pas sur le code :
+
+| Contrôle | Résultat |
+|---|---|
+| `lang`, titre de page, identifiants uniques | conforme sur les quatre gabarits |
+| Images sans alternative | 0 |
+| Champs de formulaire sans nom accessible | 0 sur 19 |
+| Groupes de champs sans légende visible | 0 (Catégories, Étiquettes, Régimes, Cuisson) |
+| Liens et boutons sans nom accessible | 0 |
+| Ordre des titres, sauts de niveau | aucun saut |
+| `tabindex` positif | 0 |
+| Focus visible | 12 éléments testés, 0 sans indicateur |
+| Reflow à 320 px (10.11) | aucun débordement sur les quatre pages |
+| Espacement du texte forcé (10.12) | aucun débordement |
+| Contrastes (3.2, 3.3) | 22 paires, toutes AA, dans les deux thèmes |
+| Cibles tactiles sous 24 px | 0 |
+| Lisibilité sans CSS (10.2, 10.3) | contenu complet, ordre des rubriques correct |
+| Régions de statut | présentes sur le compteur de résultats |
+
+**Performance**
+
+- 8 requêtes, 253 ko au total sur une fiche recette, aucun script bloquant.
+- Les polices pesaient 150 de ces 253 ko et n'étaient découvertes qu'après l'analyse du CSS, soit un aller-retour de trop avant le premier texte. Elles sont désormais préchargées, sous-ensemble latin uniquement, et démarrent à 71 ms au lieu d'attendre le CSS.
+
+**Ce qui reste à votre main**
+
+Ces contrôles sont automatisables ; d'autres ne le sont pas. La pertinence des alternatives textuelles, la cohérence de l'ordre de tabulation à l'usage et le rendu réel au lecteur d'écran demandent un passage humain. De même, l'outil de test des résultats enrichis de Google et une mesure Lighthouse sur le site en ligne ne peuvent être lancés qu'une fois le domaine actif.
+
 ### Journal des incidents
 
 **17 août 2026 — page d'accueil vide en développement**
@@ -399,14 +444,19 @@ Correctif : `scripts/verifier-rendu.mjs`, branché sur `npm run build`. Il lit l
 
 ## 9. Travail restant
 
+### Reprendre le travail
+
+1. Lire cette section 9, puis la section 11 pour les tests qui vous reviennent.
+2. `npm install` puis `npm run dev`. **Après tout changement de `src/content.config.ts`, redémarrer le serveur** : son magasin de contenu ne se reconstruit pas à chaud et la page d'accueil se vide sans prévenir.
+3. `npm run build` enchaîne types, construction, élagage et vérification du rendu. `npm run cms:verifier` et `npm run contrastes` se lancent à part.
+4. Les commits restent votre main. Au 17 août 2026 au soir, le dernier est `v1.0 - Engine + CMS` ; le travail de la phase 6 (SEO, plan du site, préchargement des polices) est encore dans l'arbre de travail, non committé.
+
+
 ### Phases à faire
 
 | Phase | Objet | Remarque |
 |---|---|---|
-
-| 6 | SEO, accessibilité et performance | JSON-LD `Recipe`, sitemap, RSS, audit RAWeb AA, Lighthouse, `llms.txt` |
-| 7 | Fonction IA | Worker Cloudflare et API Claude, contexte bâti depuis l'index existant |
-
+| 7 | Fonction IA | Worker Cloudflare et API Claude, contexte bâti depuis l'index de recherche existant. Seule phase nécessitant encore un service tiers |
 
 ### Questions ouvertes
 
@@ -419,6 +469,8 @@ Correctif : `scripts/verifier-rendu.mjs`, branché sur `npm run build`. Il lit l
 - Le site ne contient qu'une recette réelle. La grille, le sommaire chiffré et la pertinence de la recherche ne se jugeront qu'à partir de six ou sept fiches.
 - L'installation sur écran d'accueil et le maintien de l'écran allumé n'ont été vérifiés qu'au navigateur de bureau. Le comportement réel sur téléphone reste à confirmer.
 - La photo de la recette de référence est sous licence Pexels et créditée comme telle. À remplacer par la vôtre.
+- L'écriture depuis le CMS n'a jamais été exercée : elle demande un jeton GitHub. Voir les tests de la phase 5.
+- Le site n'a pas encore été vu en ligne sur le domaine. Les contrôles SEO qui dépendent d'une URL publique (résultats enrichis de Google, aperçu de partage, Lighthouse, indexation) restent à faire.
 
 ---
 
@@ -537,10 +589,18 @@ Ces tests demandent un jeton GitHub et ne peuvent être faits que par vous.
 - [ ] Modifier une recette existante depuis le CMS et vérifier que les champs non touchés ne sont pas réécrits n'importe comment.
 - [ ] Vérifier que `/admin/` n'apparaît pas dans les résultats de recherche une fois le site indexé.
 
-### Après la phase 6
+### Après la phase 6 (SEO et accessibilité)
+
+Ces tests demandent le site en ligne ou un jugement humain, et ne peuvent pas être automatisés.
+
 - [ ] Passer une fiche recette dans l'outil de test des résultats enrichis de Google, sans erreur.
 - [ ] Obtenir un score Lighthouse d'au moins 95 en performance et 100 en accessibilité sur une fiche.
-- [ ] Vérifier l'aperçu de partage du lien dans une messagerie.
+- [ ] Coller un lien de recette dans une messagerie et vérifier que la vignette, le titre et la description s'affichent.
+- [ ] Vérifier que `sitemap.xml`, `rss.xml`, `robots.txt` et `llms.txt` répondent bien en ligne.
+- [ ] S'abonner au flux RSS depuis un lecteur et vérifier qu'une nouvelle recette y apparaît.
+- [ ] Parcourir une fiche complète au lecteur d'écran et juger si les alternatives textuelles décrivent réellement les photos.
+- [ ] Naviguer au clavier seul de l'accueil à une recette puis au plan du site, et vérifier que l'ordre reste logique à l'usage.
+- [ ] Vérifier dans la Search Console, une fois le site indexé, que `/admin/` n'y figure pas.
 
 ### Après la phase 7
 - [ ] Demander une suggestion à partir de trois ingrédients et vérifier qu'elle s'appuie sur des recettes réellement présentes sur le site.

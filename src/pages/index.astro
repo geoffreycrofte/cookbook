@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import CarteRecette from '../components/CarteRecette.astro';
 import RechercheRecettes from '../components/RechercheRecettes.astro';
@@ -22,12 +23,26 @@ const categories = recenserCategories(recettes);
 const tags = recenser(recettes, 'tags');
 const regimes = recenser(recettes, 'regime');
 const slugsFlemme = recettes.filter((r) => r.data.flemme).map((r) => r.id);
+
+// La photo de la recette la plus récente sert d'image de partage pour l'accueil.
+const derniere = recettes[0];
+const imagePartage = derniere
+  ? await getImage({
+      src: derniere.data.image,
+      width: 1200,
+      height: 630,
+      fit: 'cover',
+      format: 'jpeg',
+    })
+  : undefined;
 ---
 
 <Base
   accueil
   titre="Recettes du Lux"
   description="Mes recettes, testées dans ma cuisine : durées, températures et ce qu'il faut surveiller."
+  imagePartage={imagePartage?.src}
+  imagePartageAlt={derniere?.data.imageAlt}
 >
   <section class="ouverture cadre">
     <p class="ouverture__surtitre">Le carnet</p>

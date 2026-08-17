@@ -1,0 +1,139 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { dureeTotale, formaterDuree, libelleCategorie } from '../lib/format';
+
+/**
+ * Plan du site.
+ *
+ * Il répond au critère RAWeb 12.1, qui demande deux systèmes de navigation :
+ * le moteur de recherche de la page d'accueil en est un, ce plan est le second.
+ * Contrairement à la recherche, il fonctionne sans JavaScript et depuis
+ * n'importe quelle page, puisqu'il est atteignable par le pied de page.
+ */
+
+const ORDRE = ['entree', 'plat', 'accompagnement', 'dessert', 'snack'] as const;
+
+const recettes = await getCollection('recettes', ({ data }) => !data.brouillon);
+
+const groupes = ORDRE.map((categorie) => ({
+  categorie,
+  libelle: libelleCategorie(categorie),
+  recettes: recettes
+    .filter((r) => r.data.categorie === categorie)
+    .sort((a, b) => a.data.titre.localeCompare(b.data.titre, 'fr')),
+})).filter((groupe) => groupe.recettes.length > 0);
+---
+
+<Base
+  titre="Plan du site"
+  description="Toutes les pages et toutes les recettes du site, classées par catégorie."
+>
+  <section class="cadre plan">
+    <p class="plan__surtitre">Navigation</p>
+    <h1 class="plan__titre">Plan du site</h1>
+    <p class="plan__chapeau">
+      Toutes les pages, et toutes les recettes classées par catégorie. Cette page fonctionne sans
+      JavaScript.
+    </p>
+
+    <nav class="plan__bloc" aria-labelledby="titre-pages">
+      <h2 class="rubrique" id="titre-pages">Pages</h2>
+      <ul class="plan__liste">
+        <li><a href="/">Accueil et recherche</a></li>
+        <li><a href="/plan-du-site/" aria-current="page">Plan du site</a></li>
+        <li><a href="/rss.xml">Flux RSS des dernières recettes</a></li>
+      </ul>
+    </nav>
+
+    {
+      groupes.map((groupe) => (
+        <nav class="plan__bloc" aria-labelledby={`titre-${groupe.categorie}`}>
+          <h2 class="rubrique" id={`titre-${groupe.categorie}`}>
+            {groupe.libelle} ({groupe.recettes.length})
+          </h2>
+          <ul class="plan__liste">
+            {groupe.recettes.map((recette) => (
+              <li>
+                <a href={`/recettes/${recette.id}/`}>{recette.data.titre}</a>
+                <span class="plan__detail">
+                  {formaterDuree(dureeTotale(recette.data))}
+                  {recette.data.airfryer && <> · airfryer</>}
+                  {recette.data.flemme && <> · recette de la flemme</>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+
+    {recettes.length === 0 && <p>Aucune recette pour le moment.</p>}
+  </section>
+</Base>
+
+<style>
+  .plan {
+    padding-block: clamp(3rem, 8vw, 5rem) 0;
+    max-inline-size: 52rem;
+  }
+
+  .plan__surtitre {
+    margin: 0 0 1.25rem;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--braise-texte);
+  }
+
+  .plan__titre {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 90, 'wght' 600;
+    letter-spacing: -0.03em;
+  }
+
+  .plan__chapeau {
+    max-inline-size: var(--colonne-texte);
+    margin-block: 1.5rem 0;
+    color: var(--encre-doux);
+    font-size: 1.1875rem;
+  }
+
+  .plan__bloc {
+    margin-block-start: 3rem;
+  }
+
+  .plan__liste {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .plan__liste li {
+    padding-block: 0.5rem;
+  }
+
+  .plan__liste li + li {
+    border-block-start: 1px solid var(--regle);
+  }
+
+  /* Cible tactile d'au moins 24 px (RAWeb 13.11, WCAG 2.5.8). */
+  .plan__liste a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 1.75rem;
+  }
+
+  .plan__liste [aria-current='page'] {
+    color: var(--encre);
+    font-variation-settings: 'wght' 700;
+    text-decoration: none;
+  }
+
+  .plan__detail {
+    display: block;
+    color: var(--encre-doux);
+    font-size: 0.8125rem;
+  }
+</style>
