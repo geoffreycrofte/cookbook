@@ -1,0 +1,485 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import AtelierRecette from '../../components/AtelierRecette.astro';
+import SectionPreparation from '../../components/SectionPreparation.astro';
+import { formaterDuree, dureeTotale, libelleCategorie } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const recettes = await getCollection('recettes', ({ data }) => !data.brouillon);
+  return recettes.map((recette) => ({
+    params: { slug: recette.id },
+    props: { recette },
+  }));
+}
+
+interface Props {
+  recette: CollectionEntry<'recettes'>;
+}
+
+const { recette } = Astro.props;
+const d = recette.data;
+const { Content } = await render(recette);
+
+const total = dureeTotale(d);
+const dateMaj = d.miseAJour.toLocaleDateString('fr-FR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const consignes = [
+  d.airfryer ? 'Airfryer' : null,
+  d.prechauffage ? 'Préchauffer l’appareil' : null,
+  d.secouerAMiCuisson ? 'Secouer le panier à mi-cuisson' : null,
+].filter((c): c is string => c !== null);
+
+interface Cadran {
+  libelle: string;
+  valeur: string;
+  unite: string;
+  vedette?: boolean;
+}
+
+const cadrans: Cadran[] = [
+  // La température n'existe que pour les cuissons qui en ont une.
+  ...(d.temperature !== undefined
+    ? [
+        {
+          libelle: 'Température',
+          valeur: String(d.temperature),
+          unite: '°C',
+          vedette: true,
+        },
+      ]
+    : []),
+  { libelle: 'Préparation', valeur: String(d.preparation), unite: 'min' },
+  { libelle: 'Cuisson', valeur: String(d.cuisson), unite: 'min' },
+  { libelle: 'Total', valeur: formaterDuree(total), unite: '' },
+  { libelle: 'Portions', valeur: String(d.portions), unite: '' },
+];
+---
+
+<Base titre={d.titre} description={d.description}>
+  <article class="fiche">
+    <header class="ouverture">
+      <div class="ouverture__texte">
+        <nav class="fil" aria-label="Vous êtes ici">
+          <a href="/">Toutes les recettes</a>
+          <span class="fil__separateur" aria-hidden="true">/</span>
+          <span class="fil__actuel">{libelleCategorie(d.categorie)}</span>
+        </nav>
+
+        <h1 class="ouverture__titre">{d.titre}</h1>
+        <p class="ouverture__chapeau">{d.description}</p>
+
+        {
+          d.flemme && (
+            <p class="fanion">
+              <span aria-hidden="true">◆</span> Recette de la flemme
+            </p>
+          )
+        }
+      </div>
+
+      <figure class="ouverture__visuel">
+        <Image
+          src={d.image}
+          alt={d.imageAlt}
+          widths={[480, 760, 1100, 1500]}
+          sizes="(min-width: 62rem) 44vw, 100vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+        {d.credit && <figcaption>{d.credit}</figcaption>}
+      </figure>
+    </header>
+
+    <section class="bandeau" aria-labelledby="titre-bandeau">
+      <h2 class="sr-uniquement" id="titre-bandeau">Les chiffres de la recette</h2>
+      <dl class="cadre bandeau__liste">
+        {
+          cadrans.map((c) => (
+            <div class:list={['cadran', c.vedette && 'cadran--vedette']}>
+              <dt>{c.libelle}</dt>
+              <dd>
+                {c.valeur}
+                {c.unite && <span class="cadran__unite">{c.unite}</span>}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    {
+      consignes.length > 0 && (
+        <p class="cadre consignes">
+          {consignes.map((consigne) => (
+            <span class="consigne">{consigne}</span>
+          ))}
+        </p>
+      )
+    }
+
+    <div class="cadre">
+      <AtelierRecette slug={recette.id} portions={d.portions} />
+    </div>
+
+    <div class="cadre preparations">
+      {
+        d.sections.map((section, rang) => (
+          <div class:list={['preparation', d.sections.length > 1 && 'preparation--nommee']}>
+            {section.nom && (
+              <header class="preparation__entete">
+                <h2 class="preparation__titre" id={`partie-${rang}`}>
+                  <span class="preparation__rang" aria-hidden="true">
+                    {rang + 1}
+                  </span>
+                  {section.nom}
+                </h2>
+                {section.note && <p class="preparation__note">{section.note}</p>}
+              </header>
+            )}
+
+            <SectionPreparation
+              ingredients={section.ingredients}
+              etapes={section.etapes}
+              rang={rang}
+              total={d.sections.length}
+              idIngredients={`ingredients-${rang}`}
+              idEtapes={`etapes-${rang}`}
+              portions={d.portions}
+              rappelPortions={rang === 0}
+            />
+          </div>
+        ))
+      }
+    </div>
+
+    <section class="cadre notes" aria-labelledby="titre-notes">
+      <h2 class="rubrique" id="titre-notes">Mes notes</h2>
+      <div class="prose">
+        <Content />
+      </div>
+    </section>
+
+    <footer class="cadre colophon">
+      <h2 class="sr-uniquement">Informations sur la recette</h2>
+      <p class="colophon__tags">
+        <span class="colophon__categorie">{libelleCategorie(d.categorie)}</span>
+        {d.tags.map((tag) => <span class="colophon__tag">{tag}</span>)}
+      </p>
+      <p class="colophon__date">
+        Mise à jour le <time datetime={d.miseAJour.toISOString().slice(0, 10)}>{dateMaj}</time>
+      </p>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  /* — Ouverture asymétrique : le texte tenu par la colonne, la photo file au bord — */
+  .ouverture {
+    display: grid;
+    gap: 2.5rem;
+    padding-block-start: 2.5rem;
+  }
+
+  .ouverture__texte {
+    padding-inline: var(--marge);
+  }
+
+  @media (min-width: 62rem) {
+    .ouverture {
+      grid-template-columns:
+        minmax(var(--marge), 1fr)
+        minmax(0, 34rem)
+        minmax(0, 40rem);
+      align-items: center;
+      gap: 0 3.5rem;
+      padding-block-start: 4rem;
+    }
+
+    .ouverture__texte {
+      grid-column: 2;
+      padding-inline: 0;
+    }
+
+    .ouverture__visuel {
+      grid-column: 3;
+    }
+  }
+
+  .fil {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-end: 1.5rem;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .fil__separateur,
+  .fil__actuel {
+    color: var(--encre-doux);
+  }
+
+  /* Cible tactile d'au moins 24 px de haut (WCAG 2.2, critère 2.5.8). */
+  .fil a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 1.5rem;
+  }
+
+  .ouverture__titre {
+    font-size: clamp(2.25rem, 6.5vw, 4.25rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 110, 'wght' 600;
+    letter-spacing: -0.03em;
+  }
+
+  .ouverture__chapeau {
+    max-inline-size: 42ch;
+    margin-block: 1.5rem 0;
+    color: var(--encre-doux);
+    font-size: 1.1875rem;
+    line-height: 1.6;
+  }
+
+  .fanion {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-block: 1.75rem 0;
+    padding: 0.4rem 1rem;
+    background: var(--encre);
+    color: var(--papier);
+    font-size: 0.6875rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .ouverture__visuel {
+    margin: 0;
+  }
+
+  .ouverture__visuel :global(img) {
+    inline-size: 100%;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+  }
+
+  .ouverture__visuel figcaption {
+    padding-block-start: 0.625rem;
+    padding-inline: var(--marge);
+    color: var(--encre-doux);
+    font-size: 0.75rem;
+  }
+
+  @media (min-width: 62rem) {
+    .ouverture__visuel figcaption {
+      padding-inline: 0;
+    }
+  }
+
+  /* — Le bandeau de chiffres : la donnée traitée comme du titrage — */
+  .bandeau {
+    margin-block-start: clamp(3rem, 7vw, 5rem);
+    border-block: 2px solid var(--encre);
+    background: var(--papier-creux);
+  }
+
+  .bandeau__liste {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.75rem clamp(1.5rem, 4vw, 3rem);
+    /* `margin: 0` écraserait le `margin-inline: auto` de .cadre : les styles
+       scopés sont hors couche et l'emportent sur @layer utilitaires. */
+    margin-block: 0;
+    margin-inline: auto;
+    padding-block: 2rem;
+  }
+
+  /* Sur grand écran le bandeau se centre, plutôt que de s'étaler
+     sur toute la largeur avec des colonnes vides à droite. */
+  @media (min-width: 48rem) {
+    .bandeau__liste {
+      justify-content: center;
+      gap: 1.75rem clamp(2.5rem, 6vw, 5rem);
+    }
+
+    .cadran {
+      text-align: center;
+    }
+  }
+
+  .cadran dt {
+    font-size: 0.6875rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--encre-doux);
+  }
+
+  .cadran dd {
+    margin: 0.25rem 0 0;
+    font-family: var(--police-titre);
+    font-variation-settings: 'SOFT' 30, 'opsz' 60, 'wght' 500;
+    font-size: clamp(2rem, 4.5vw, 2.875rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .cadran--vedette dd {
+    color: var(--braise-texte);
+  }
+
+  .cadran__unite {
+    margin-inline-start: 0.12em;
+    font-family: var(--police-corps);
+    font-size: 0.875rem;
+    font-variation-settings: 'wght' 600;
+    letter-spacing: 0.06em;
+    color: var(--encre-doux);
+  }
+
+  .consignes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block: 1.5rem 0;
+  }
+
+  .consigne {
+    padding: 0.35rem 0.875rem;
+    border: 1px solid var(--olive);
+    border-radius: 999px;
+    color: var(--olive);
+    font-size: 0.8125rem;
+    font-variation-settings: 'wght' 600;
+  }
+
+  /* — Préparations : une section pour une recette simple, plusieurs pour
+       une recette en parties — */
+  .preparations {
+    margin-block-start: clamp(3rem, 7vw, 4.5rem);
+  }
+
+  .preparation--nommee + .preparation--nommee {
+    margin-block-start: clamp(3.5rem, 8vw, 5rem);
+    padding-block-start: clamp(2.5rem, 6vw, 3.5rem);
+    border-block-start: 2px solid var(--encre);
+  }
+
+  .preparation__entete {
+    margin-block-end: 2rem;
+  }
+
+  .preparation__titre {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: clamp(1.625rem, 3.5vw, 2.25rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 48, 'wght' 600;
+    letter-spacing: -0.02em;
+  }
+
+  /* Le rang de la partie, repris du traitement des numéros d'étape. */
+  .preparation__rang {
+    flex: 0 0 auto;
+    font-size: 0.75em;
+    color: var(--braise-texte);
+  }
+
+  @supports (-webkit-text-stroke: 1px currentColor) {
+    .preparation__rang {
+      color: transparent;
+      -webkit-text-stroke: 1.25px var(--braise);
+    }
+  }
+
+  .preparation__note {
+    margin: 0.625rem 0 0;
+    color: var(--olive);
+    font-size: 0.9375rem;
+    font-variation-settings: 'wght' 600;
+  }
+
+  /* — Notes — */
+  .notes {
+    margin-block-start: clamp(3.5rem, 8vw, 5.5rem);
+  }
+
+  /* Colonne de lecture centrée sous le filet de rubrique. */
+  .prose {
+    max-inline-size: var(--colonne-texte);
+    margin-inline: auto;
+  }
+
+  .prose :global(h2) {
+    margin-block: 2.25rem 0.75rem;
+    font-size: 1.375rem;
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 28, 'wght' 600;
+  }
+
+  .prose :global(p) {
+    margin-block: 0 1.125rem;
+  }
+
+  /* — Colophon — */
+  .colophon {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-block-start: clamp(3rem, 7vw, 4.5rem);
+    padding-block-start: 1.5rem;
+  }
+
+  /* Le filet ne doit courir que sur la colonne de texte, pas sur la gouttière. */
+  .colophon {
+    position: relative;
+  }
+
+  .colophon::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: var(--marge);
+    block-size: 1px;
+    background: var(--regle);
+  }
+
+  .colophon__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .colophon__categorie,
+  .colophon__tag {
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--regle);
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--encre-doux);
+  }
+
+  .colophon__categorie {
+    border-color: var(--encre);
+    color: var(--encre);
+  }
+
+  .colophon__date {
+    margin: 0;
+    color: var(--encre-doux);
+    font-size: 0.875rem;
+  }
+</style>

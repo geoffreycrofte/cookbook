@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  titre="Hors ligne"
+  description="Cette page n'est pas disponible sans connexion."
+>
+  <section class="cadre hors-ligne">
+    <p class="hors-ligne__surtitre">Sans réseau</p>
+    <h1 class="hors-ligne__titre">Cette page n’a pas encore été ouverte</h1>
+    <p class="hors-ligne__texte">
+      Les recettes que vous avez déjà consultées restent lisibles hors ligne. Celle-ci n’est pas
+      dans le cache de votre appareil, il faudra donc revenir en ligne une première fois.
+    </p>
+    <p>
+      <a class="hors-ligne__retour" href="/">Revenir à la liste des recettes</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .hors-ligne {
+    padding-block: clamp(4rem, 12vw, 8rem);
+    max-inline-size: 46rem;
+  }
+
+  .hors-ligne__surtitre {
+    margin: 0 0 1.25rem;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--braise-texte);
+  }
+
+  .hors-ligne__titre {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 90, 'wght' 600;
+    letter-spacing: -0.03em;
+  }
+
+  .hors-ligne__texte {
+    margin-block: 1.75rem;
+    color: var(--encre-doux);
+    font-size: 1.1875rem;
+  }
+
+  .hors-ligne__retour {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--braise);
+    color: var(--sur-braise);
+    font-variation-settings: 'wght' 600;
+    text-decoration: none;
+  }
+
+  .hors-ligne__retour:hover {
+    background: var(--encre);
+    color: var(--papier);
+  }
+</style>

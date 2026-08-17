@@ -1,0 +1,35 @@
+{
+  "name": "cookbook",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Recettes du Lux — recettes.crofte.fr",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build && npm run elaguer && npm run verifier",
+    "preview": "astro preview",
+    "verifier": "node scripts/verifier-rendu.mjs",
+    "contrastes": "node scripts/verifier-contrastes.mjs",
+    "icones": "node scripts/generer-icones.mjs",
+    "elaguer": "node scripts/elaguer-originaux.mjs",
+    "cms:maj": "node scripts/maj-cms.mjs",
+    "astro": "astro",
+    "cms:verifier": "node scripts/verifier-cms.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/karla": "^5.3.0",
+    "astro": "^7.2.2",
+    "fuse.js": "^7.5.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "ajv": "^8.20.0",
+    "typescript": "^5.9.2",
+    "yaml": "^2.9.0"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}

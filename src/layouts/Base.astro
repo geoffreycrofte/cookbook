@@ -1,0 +1,181 @@
+---
+import '@fontsource-variable/fraunces/full.css';
+import '@fontsource-variable/karla/index.css';
+import '../styles/global.css';
+
+interface Props {
+  titre: string;
+  description: string;
+  /** true sur la page d'accueil : le titre du site y est déjà le h1. */
+  accueil?: boolean;
+}
+
+const { titre, description, accueil = false } = Astro.props;
+const titreComplet = accueil ? 'Recettes du Lux' : `${titre} — Recettes du Lux`;
+const urlCanonique = new URL(Astro.url.pathname, Astro.site);
+const annee = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titreComplet}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={urlCanonique} />
+
+    <meta property="og:title" content={titreComplet} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={accueil ? 'website' : 'article'} />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:url" content={urlCanonique} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#faf4e8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14100d" media="(prefers-color-scheme: dark)" />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icones/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icones/icone-apple-180.png" />
+    <meta name="apple-mobile-web-app-title" content="Recettes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <slot name="tete" />
+  </head>
+
+  <body>
+    <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+    <div class="braise-haute" aria-hidden="true"></div>
+
+    <header class="entete">
+      <div class="cadre entete__interieur">
+        <a class="marque" href="/">
+          <span class="marque__nom">Recettes</span>
+          <span class="marque__complement">du Lux</span>
+        </a>
+        <p class="entete__note">Testées dans ma cuisine</p>
+      </div>
+    </header>
+
+    <main id="contenu">
+      <slot />
+    </main>
+
+    <footer class="pied">
+      <div class="cadre pied__interieur">
+        <p class="pied__signature">Recettes <em>du Lux</em></p>
+        <p class="pied__mention">
+          Mes recettes, mes ratages et mes réussites. {annee}.
+        </p>
+      </div>
+    </footer>
+    <script>
+      // Le service worker n'existe qu'en production : en développement il
+      // servirait des pages périmées à chaque rechargement.
+      if ('serviceWorker' in navigator && import.meta.env.PROD) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch((erreur) => {
+            console.warn('Service worker non enregistré :', erreur);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .braise-haute {
+    block-size: 4px;
+    background: linear-gradient(
+      90deg,
+      var(--braise) 0%,
+      color-mix(in oklab, var(--braise) 60%, #e8a33f) 55%,
+      var(--braise) 100%
+    );
+  }
+
+  .entete {
+    border-block-end: 1px solid var(--regle);
+  }
+
+  .entete__interieur {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-block: 1.5rem;
+  }
+
+  .marque {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    color: var(--encre);
+    text-decoration: none;
+  }
+
+  .marque__nom {
+    font-family: var(--police-titre);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 32, 'wght' 600;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .marque__complement {
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-variation-settings: 'SOFT' 60, 'WONK' 1, 'opsz' 24, 'wght' 400;
+    font-size: 1.25rem;
+    color: var(--braise-texte);
+  }
+
+  .marque:hover .marque__complement {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .entete__note {
+    margin: 0;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--encre-doux);
+  }
+
+  .pied {
+    margin-block-start: 6rem;
+    border-block-start: 1px solid var(--regle);
+    background: var(--papier-creux);
+  }
+
+  .pied__interieur {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-block: 2.5rem;
+  }
+
+  .pied__signature {
+    margin: 0;
+    font-family: var(--police-titre);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 28, 'wght' 500;
+    font-size: 1.25rem;
+  }
+
+  .pied__signature em {
+    color: var(--braise-texte);
+  }
+
+  .pied__mention {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--encre-doux);
+  }
+</style>

@@ -1,0 +1,231 @@
+/*
+  Papier & braise
+  ---------------
+  Un magazine de cuisine imprimé sur papier crème, où la température et la
+  durée sont traitées comme des chiffres de titrage. Aucun JavaScript.
+
+  Contrastes vérifiés en clair et en sombre pour un niveau AA.
+*/
+
+@layer reglages, base, composants, utilitaires;
+
+@layer reglages {
+  :root {
+    color-scheme: light dark;
+
+    /* Papier */
+    --papier: #faf4e8;
+    --papier-creux: #f2e8d6;
+    --papier-carte: #fffcf6;
+
+    /* Encre */
+    --encre: #211812;
+    --encre-doux: #6b5647;
+    --regle: #ddcdb2;
+
+    /* Braise : l'accent. Deux valeurs, une pour les aplats, une pour le texte,
+       afin de garder 4,5:1 partout sans ternir les grands aplats. */
+    --braise: #c3401f;
+    --braise-texte: #a93317;
+    --sur-braise: #fff8f2;
+
+    /* Olive : les données de cuisson, secondaires mais lisibles. */
+    --olive: #4e5a34;
+
+    --police-titre: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+    --police-corps: 'Karla Variable', system-ui, sans-serif;
+
+    /* Gouttière et largeurs de colonne, communes à toutes les pages. */
+    --marge: clamp(1.25rem, 5vw, 4rem);
+    --colonne: 74rem;
+    --colonne-texte: 38rem;
+
+    --ombre-papier: 0 1px 2px rgb(33 24 18 / 0.06), 0 8px 24px -12px rgb(33 24 18 / 0.18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --papier: #14100d;
+      --papier-creux: #1c1713;
+      --papier-carte: #1e1813;
+
+      --encre: #f5ede1;
+      --encre-doux: #b6a392;
+      --regle: #3a2e25;
+
+      --braise: #e0603a;
+      --braise-texte: #f0906b;
+      --sur-braise: #1a0d07;
+
+      --olive: #a7b881;
+
+      --ombre-papier: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
+    }
+  }
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Le lien d'évitement et les ancres ne collent pas au bord haut. */
+    scroll-padding-block-start: 2rem;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--papier);
+    color: var(--encre);
+    font-family: var(--police-corps);
+    font-size: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+    line-height: 1.65;
+    font-variation-settings: 'wght' 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /*
+    Grain de papier. Une turbulence SVG en fond fixe, très faible opacité.
+    En mode sombre elle s'éclaircit pour rester perceptible sans salir.
+  */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='0.35'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body::before {
+      mix-blend-mode: screen;
+      opacity: 0.22;
+    }
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--police-titre);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 48, 'wght' 600;
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin-block: 0;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  img {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  a {
+    color: var(--braise-texte);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--braise);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--braise);
+    color: var(--sur-braise);
+  }
+}
+
+@layer utilitaires {
+  /* Conteneur principal, gouttière commune. */
+  .cadre {
+    inline-size: min(100%, var(--colonne));
+    margin-inline: auto;
+    padding-inline: var(--marge);
+  }
+
+  /* Visible uniquement des lecteurs d'écran. */
+  .sr-uniquement {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Titre de section en petites capitales espacées, façon rubrique de magazine. */
+  .rubrique {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    margin-block-end: 1.75rem;
+    font-family: var(--police-corps);
+    font-size: 0.8125rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--encre-doux);
+  }
+
+  .rubrique::after {
+    content: '';
+    flex: 1;
+    block-size: 1px;
+    background: var(--regle);
+  }
+
+  /* Lien d'évitement, révélé au focus clavier. */
+  .lien-evitement {
+    position: absolute;
+    inset-inline-start: var(--marge);
+    inset-block-start: -100%;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background: var(--braise);
+    color: var(--sur-braise);
+    font-variation-settings: 'wght' 600;
+    text-decoration: none;
+  }
+
+  .lien-evitement:focus {
+    inset-block-start: 0;
+  }
+}
+
+/* Une seule orchestration : les blocs montent en cascade au chargement. */
+@layer composants {
+  @media (prefers-reduced-motion: no-preference) {
+    .apparait {
+      animation: monter 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+      animation-delay: calc(var(--rang, 0) * 70ms);
+    }
+  }
+
+  @keyframes monter {
+    from {
+      opacity: 0;
+      transform: translateY(1.25rem);
+    }
+  }
+}

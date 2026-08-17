@@ -1,0 +1,195 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { formaterDuree, dureeTotale, libelleCategorie } from '../lib/format';
+
+interface Props {
+  recette: CollectionEntry<'recettes'>;
+  /** Rang dans la liste, pour décaler l'apparition en cascade. */
+  rang?: number;
+  /** true pour la première carte : image chargée sans attendre. */
+  prioritaire?: boolean;
+}
+
+const { recette, rang = 0, prioritaire = false } = Astro.props;
+const d = recette.data;
+---
+
+<article class="carte apparait" style={`--rang:${rang}`}>
+  <div class="carte__visuel">
+    <div class="carte__fenetre">
+      <Image
+        src={d.image}
+        alt={d.imageAlt}
+        widths={[320, 480, 720]}
+        sizes="(min-width: 62rem) 22rem, (min-width: 40rem) 44vw, 88vw"
+        loading={prioritaire ? 'eager' : 'lazy'}
+        fetchpriority={prioritaire ? 'high' : 'auto'}
+      />
+    </div>
+    {
+      d.airfryer && (
+        <p class="badge" aria-hidden="true">
+          <span>Air</span>
+          <span>fryer</span>
+        </p>
+      )
+    }
+    {d.flemme && <p class="fanion">Flemme</p>}
+  </div>
+
+  <div class="carte__texte">
+    <h3 class="carte__titre">
+      <a href={`/recettes/${recette.id}/`}>{d.titre}</a>
+    </h3>
+    <p class="carte__resume">{d.description}</p>
+    <p class="carte__pied">
+      <span>{libelleCategorie(d.categorie)}</span>
+      <span aria-hidden="true">·</span>
+      <span>{formaterDuree(dureeTotale(d))}</span>
+      {
+        d.airfryer && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span>Airfryer</span>
+          </>
+        )
+      }
+    </p>
+  </div>
+</article>
+
+<style>
+  .carte {
+    display: flex;
+    flex-direction: column;
+    background: var(--papier-carte);
+    border: 1px solid var(--regle);
+    box-shadow: var(--ombre-papier);
+  }
+
+  .carte__visuel {
+    position: relative;
+  }
+
+  /* Le rognage du zoom vit sur la fenêtre, pas sur le visuel :
+     le disque de température peut ainsi déborder sous la photo. */
+  .carte__fenetre {
+    overflow: hidden;
+  }
+
+  .carte__visuel :global(img) {
+    inline-size: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+
+  .carte:hover .carte__visuel :global(img),
+  .carte:focus-within .carte__visuel :global(img) {
+    transform: scale(1.04);
+  }
+
+  /*
+    Le macaron « Air / fryer » : la signature visuelle des recettes concernées.
+    Repris en toutes lettres dans le pied de carte, donc masqué ici aux
+    lecteurs d'écran pour ne pas doubler l'information.
+  */
+  .badge {
+    position: absolute;
+    inset-block-end: -1.375rem;
+    inset-inline-end: 1rem;
+    display: grid;
+    place-content: center;
+    inline-size: 4.25rem;
+    aspect-ratio: 1;
+    margin: 0;
+    border-radius: 50%;
+    background: var(--braise);
+    color: var(--sur-braise);
+    text-align: center;
+    box-shadow: 0 4px 14px -4px rgb(33 24 18 / 0.45);
+  }
+
+  .badge span {
+    display: block;
+    font-family: var(--police-titre);
+    font-variation-settings: 'SOFT' 30, 'opsz' 24, 'wght' 600;
+    font-size: 0.9375rem;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+  }
+
+  .badge span:last-child {
+    font-style: italic;
+    font-variation-settings: 'SOFT' 60, 'WONK' 1, 'opsz' 24, 'wght' 400;
+  }
+
+  .fanion {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    margin: 0;
+    padding: 0.3rem 0.875rem;
+    background: var(--encre);
+    color: var(--papier);
+    font-size: 0.6875rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .carte__texte {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+
+  .carte__titre {
+    font-size: 1.4375rem;
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 30, 'wght' 600;
+  }
+
+  .carte__titre a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* La carte entière devient cliquable, sans casser la sémantique du lien. */
+  .carte__titre a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .carte {
+    position: relative;
+  }
+
+  .carte__titre a:hover {
+    color: var(--braise-texte);
+  }
+
+  .carte__resume {
+    margin: 0;
+    color: var(--encre-doux);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  .carte__pied {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: auto 0 0;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--regle);
+    color: var(--encre-doux);
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+</style>

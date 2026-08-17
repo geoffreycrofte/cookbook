@@ -1,0 +1,321 @@
+---
+import { formaterDuree, decomposerIngredient } from '../lib/format';
+
+interface Ingredient {
+  quantite?: number;
+  unite?: string;
+  nom: string;
+  precision?: string;
+  ajustable: boolean;
+}
+
+interface Etape {
+  texte: string;
+  temperature?: number;
+  duree?: number;
+}
+
+interface Props {
+  ingredients: Ingredient[];
+  etapes: Etape[];
+  /** Rang de la section, pour préfixer les cases à cocher. */
+  rang: number;
+  /** Nombre de sections : sert à choisir le niveau de titre. */
+  total: number;
+  /** Identifiant unique du bloc « ingrédients », pour aria-labelledby. */
+  idIngredients: string;
+  idEtapes: string;
+  portions: number;
+  /** Affiché uniquement quand la recette n'a qu'une seule section. */
+  rappelPortions?: boolean;
+}
+
+const {
+  ingredients,
+  etapes,
+  rang,
+  total,
+  idIngredients,
+  idEtapes,
+  portions,
+  rappelPortions = false,
+} = Astro.props;
+
+// Une recette en plusieurs parties met leur nom en h2 : les rubriques
+// « Ingrédients » et « Préparation » descendent alors d'un niveau.
+const Titre = total > 1 ? 'h3' : 'h2';
+---
+
+<div class="corps">
+  <section class="ingredients" aria-labelledby={idIngredients}>
+    <Titre class="rubrique" id={idIngredients}>Ingrédients</Titre>
+    {
+      rappelPortions && (
+        <p class="ingredients__note">
+          Pour <span data-portions-rappel>{portions}</span> portions
+        </p>
+      )
+    }
+
+    <ul class="liste-ingredients" role="list">
+      {
+        ingredients.map((ingredient, i) => {
+          const { nom, mesure, precision } = decomposerIngredient(ingredient);
+          // data-quantite est absent quand la quantité l'est : cet ingrédient
+          // échappe alors au recalcul des portions.
+          return (
+            <li class="ingredient" data-cochable>
+              <label class="ingredient__ligne">
+                <input type="checkbox" data-coche={`s${rang}-ingredient-${i}`} />
+                <span class="ingredient__marque" aria-hidden="true" />
+                <span class="ingredient__nom">{nom}</span>
+                <span class="ingredient__conduite" aria-hidden="true" />
+                {mesure && (
+                  <span
+                    class="ingredient__mesure"
+                    data-quantite={ingredient.quantite}
+                    data-unite={ingredient.unite}
+                    data-ajustable={String(ingredient.ajustable)}
+                  >
+                    {mesure}
+                  </span>
+                )}
+              </label>
+              {precision && <span class="ingredient__precision">{precision}</span>}
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+
+  <section class="etapes" aria-labelledby={idEtapes}>
+    <Titre class="rubrique" id={idEtapes}>Préparation</Titre>
+
+    <ol class="liste-etapes" role="list">
+      {
+        etapes.map((etape, i) => (
+          <li class="etape" data-cochable>
+            <label class="etape__label">
+              <input type="checkbox" data-coche={`s${rang}-etape-${i}`} />
+              <span class="etape__texte">{etape.texte}</span>
+            </label>
+            {(etape.temperature !== undefined || etape.duree !== undefined) && (
+              <p class="etape__cuisson">
+                {etape.temperature !== undefined && <span>{etape.temperature} °C</span>}
+                {etape.duree !== undefined && <span>{formaterDuree(etape.duree)}</span>}
+              </p>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+</div>
+
+<style>
+  /* — Corps : ingrédients en colonne étroite, préparation en colonne large — */
+  .corps {
+    display: grid;
+    gap: clamp(3rem, 7vw, 4.5rem);
+  }
+
+  @media (min-width: 56rem) {
+    .corps {
+      grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+      gap: clamp(3rem, 6vw, 5rem);
+      align-items: start;
+    }
+  }
+
+  .ingredients__note {
+    margin-block: -1rem 1.5rem;
+    color: var(--encre-doux);
+    font-size: 0.875rem;
+  }
+
+  .liste-ingredients {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Ligne façon carte de restaurant : nom à gauche, mesure à droite,
+     points de conduite entre les deux. */
+  .ingredient {
+    padding-block: 0.6rem;
+  }
+
+  .ingredient__ligne {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  /* La case réelle reste dans le flux pour le clavier et les lecteurs
+     d'écran ; c'est .ingredient__marque qui est visible. */
+  .ingredient__ligne input,
+  .etape__label input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .ingredient__marque {
+    flex: 0 0 auto;
+    inline-size: 1.0625rem;
+    block-size: 1.0625rem;
+    align-self: center;
+    border: 1.5px solid var(--encre-doux);
+    border-radius: 3px;
+  }
+
+  .ingredient__ligne:hover .ingredient__marque {
+    border-color: var(--encre);
+  }
+
+  .ingredient__ligne:has(input:focus-visible) {
+    outline: 3px solid var(--braise);
+    outline-offset: 3px;
+  }
+
+  .ingredient__marque {
+    position: relative;
+  }
+
+  /* Coche dessinée avec deux bords pivotés : ni image, ni police d'icônes. */
+  .ingredient.est-fait .ingredient__marque {
+    background: var(--encre);
+    border-color: var(--encre);
+  }
+
+  .ingredient.est-fait .ingredient__marque::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 8%;
+    inset-inline-start: 32%;
+    inline-size: 28%;
+    block-size: 58%;
+    border-inline-end: 2px solid var(--papier);
+    border-block-end: 2px solid var(--papier);
+    transform: rotate(42deg);
+  }
+
+  .ingredient.est-fait .ingredient__nom,
+  .ingredient.est-fait .ingredient__mesure {
+    color: var(--encre-doux);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+
+  .ingredient + .ingredient {
+    border-block-start: 1px solid var(--regle);
+  }
+
+  .ingredient__nom {
+    flex: 0 1 auto;
+  }
+
+  .ingredient__conduite {
+    flex: 1 1 1rem;
+    min-inline-size: 1rem;
+    border-block-end: 1px dotted var(--regle);
+    transform: translateY(-0.3em);
+  }
+
+  .ingredient__mesure {
+    flex: 0 0 auto;
+    font-variation-settings: 'wght' 700;
+    white-space: nowrap;
+  }
+
+  .ingredient__precision {
+    display: block;
+    max-inline-size: 32ch;
+    margin-block-start: 0.15rem;
+    color: var(--encre-doux);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .liste-etapes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: etape;
+  }
+
+  .etape {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+    gap: 0 1.25rem;
+    padding-block: 1.5rem;
+  }
+
+  .etape + .etape {
+    border-block-start: 1px solid var(--regle);
+  }
+
+  /* Numéral ajouré dans la marge : le rappel du chiffre en titrage. */
+  .etape::before {
+    counter-increment: etape;
+    content: counter(etape, decimal-leading-zero);
+    grid-row: span 2;
+    font-family: var(--police-titre);
+    font-variation-settings: 'SOFT' 30, 'opsz' 60, 'wght' 500;
+    font-size: 2.5rem;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--braise-texte);
+  }
+
+  @supports (-webkit-text-stroke: 1px currentColor) {
+    .etape::before {
+      color: transparent;
+      -webkit-text-stroke: 1.25px var(--braise);
+    }
+  }
+
+  .etape__label {
+    display: block;
+    cursor: pointer;
+  }
+
+  .etape__label:has(input:focus-visible) {
+    outline: 3px solid var(--braise);
+    outline-offset: 4px;
+  }
+
+  .etape__texte {
+    display: block;
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  /* Étape faite : le numéral ajouré se remplit et le texte s'efface. */
+  .etape.est-fait::before {
+    color: var(--braise);
+    -webkit-text-stroke: 0;
+  }
+
+  .etape.est-fait .etape__texte {
+    color: var(--encre-doux);
+  }
+
+  .etape__cuisson {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0.625rem 0 0;
+    font-size: 0.8125rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--olive);
+  }
+</style>

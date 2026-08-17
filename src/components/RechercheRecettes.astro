@@ -1,0 +1,376 @@
+---
+import { libelleCategorie, libelleRegime } from '../lib/format';
+import type { EntreeIndex } from '../lib/recherche';
+
+interface Props {
+  index: EntreeIndex[];
+  categories: string[];
+  tags: string[];
+  regimes: string[];
+}
+
+const { index, categories, tags, regimes } = Astro.props;
+
+const groupes = [
+  {
+    id: 'categorie',
+    legende: 'Catégories',
+    options: categories.map((c) => ({ valeur: c, libelle: libelleCategorie(c) })),
+  },
+  {
+    id: 'tag',
+    legende: 'Étiquettes',
+    options: tags.map((t) => ({ valeur: t, libelle: t })),
+  },
+  {
+    id: 'regime',
+    legende: 'Régimes',
+    options: regimes.map((r) => ({ valeur: r, libelle: libelleRegime(r) })),
+  },
+  {
+    id: 'cuisson',
+    legende: 'Cuisson',
+    options: [{ valeur: 'airfryer', libelle: 'À l’airfryer' }],
+  },
+].filter((groupe) => groupe.options.length > 0);
+---
+
+{/* Sans JavaScript, ce bloc reste masqué et la liste complète s'affiche telle quelle. */}
+<section class="recherche" hidden data-recherche aria-labelledby="titre-recherche">
+  <h2 class="rubrique" id="titre-recherche">Chercher une recette</h2>
+
+  <div class="recherche__champ">
+    <label class="recherche__label" for="requete">Mot clé ou ingrédient</label>
+    <input
+      class="recherche__saisie"
+      id="requete"
+      type="search"
+      name="requete"
+      autocomplete="off"
+      placeholder="poulet, paprika, sans gluten…"
+      data-requete
+    />
+  </div>
+
+  <div class="recherche__facettes">
+    {
+      groupes.map((groupe) => (
+        <fieldset class="facette">
+          <legend class="facette__legende">{groupe.legende}</legend>
+          <div class="facette__options">
+            {groupe.options.map((option) => (
+              <label class="jeton">
+                <input
+                  type="checkbox"
+                  name={groupe.id}
+                  value={option.valeur}
+                  data-filtre={groupe.id}
+                />
+                <span>{option.libelle}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))
+    }
+  </div>
+
+  <div class="recherche__pied">
+    <p class="recherche__compte" role="status" data-compte></p>
+    <button class="recherche__reinit" type="button" hidden data-reinit>
+      Tout réafficher
+    </button>
+  </div>
+</section>
+
+<p class="vide" hidden data-vide>
+  Aucune recette ne correspond. Essayez un autre mot, ou retirez un filtre.
+</p>
+
+<script
+  is:inline
+  type="application/json"
+  data-index-recettes
+  set:html={JSON.stringify(index)}
+/>
+
+<script>
+  import Fuse from 'fuse.js';
+  import type { EntreeIndex } from '../lib/recherche';
+
+  const blocTrouve = document.querySelector<HTMLElement>('[data-recherche]');
+  const donneesTrouvees = document.querySelector<HTMLScriptElement>('[data-index-recettes]');
+  const grilleTrouvee = document.querySelector<HTMLElement>('[data-grille]');
+  if (!blocTrouve || !donneesTrouvees || !grilleTrouvee) {
+    throw new Error('Recherche : élément manquant.');
+  }
+
+  // Constantes non nullables : le typage suit dans les fonctions plus bas.
+  const bloc = blocTrouve;
+  const donnees = donneesTrouvees;
+  const grille = grilleTrouvee;
+
+  const index: EntreeIndex[] = JSON.parse(donnees.textContent ?? '[]');
+
+  // Le bloc n'est révélé qu'ici : sans JavaScript il n'aurait servi à rien.
+  bloc.hidden = false;
+
+  const saisie = bloc.querySelector<HTMLInputElement>('[data-requete]')!;
+  const compte = bloc.querySelector<HTMLElement>('[data-compte]')!;
+  const reinit = bloc.querySelector<HTMLButtonElement>('[data-reinit]')!;
+  const filtres = [...bloc.querySelectorAll<HTMLInputElement>('[data-filtre]')];
+  const messageVide = document.querySelector<HTMLElement>('[data-vide]')!;
+
+  const cartes = new Map<string, HTMLElement>();
+  for (const element of grille.querySelectorAll<HTMLElement>('[data-recette]')) {
+    cartes.set(element.dataset.recette!, element);
+  }
+
+  /** Tolérance aux fautes de frappe : 0,4 laisse passer une ou deux lettres fausses. */
+  const fuse = new Fuse(index, {
+    keys: [
+      { name: 'motsTitre', weight: 3 },
+      { name: 'motsIngredients', weight: 2 },
+      { name: 'motsTags', weight: 1 },
+    ],
+    threshold: 0.3,
+    ignoreLocation: true,
+    minMatchCharLength: 3,
+  });
+
+  /** Ordre initial des cartes, restauré dès que la recherche est vidée. */
+  const ordreInitial = [...cartes.keys()];
+
+  const normaliser = (texte: string) =>
+    texte
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+
+  const valeursCochees = (groupe: string) =>
+    filtres.filter((f) => f.dataset.filtre === groupe && f.checked).map((f) => f.value);
+
+  function correspondAuxFiltres(entree: EntreeIndex): boolean {
+    const categories = valeursCochees('categorie');
+    const etiquettes = valeursCochees('tag');
+    const regimes = valeursCochees('regime');
+    const cuissons = valeursCochees('cuisson');
+
+    if (categories.length > 0 && !categories.includes(entree.categorie)) return false;
+    if (etiquettes.length > 0 && !etiquettes.some((t) => entree.tags.includes(t))) return false;
+    if (regimes.length > 0 && !regimes.some((r) => entree.regime.includes(r))) return false;
+    if (cuissons.includes('airfryer') && !entree.airfryer) return false;
+
+    return true;
+  }
+
+  function appliquer() {
+    const requete = normaliser(saisie.value);
+
+    const parRecherche =
+      requete.length < 2 ? index : fuse.search(requete).map((resultat) => resultat.item);
+
+    const retenues = parRecherche.filter(correspondAuxFiltres);
+    const slugsRetenus = new Set(retenues.map((entree) => entree.slug));
+
+    for (const [slug, carte] of cartes) {
+      carte.hidden = !slugsRetenus.has(slug);
+    }
+
+    // L'ordre suit la pertinence pendant une recherche, et revient à l'ordre
+    // d'origine dès qu'on la vide.
+    const ordre = requete.length >= 2 ? retenues.map((e) => e.slug) : ordreInitial;
+    for (const slug of ordre) {
+      const carte = cartes.get(slug);
+      if (carte) grille.append(carte);
+    }
+
+    const total = index.length;
+    const nombre = retenues.length;
+    const filtrage = requete.length >= 2 || filtres.some((f) => f.checked);
+
+    compte.textContent = filtrage
+      ? `${nombre} recette${nombre > 1 ? 's' : ''} sur ${total}`
+      : `${total} recette${total > 1 ? 's' : ''}`;
+
+    reinit.hidden = !filtrage;
+    messageVide.hidden = nombre > 0;
+  }
+
+  let minuterie: number | undefined;
+  saisie.addEventListener('input', () => {
+    window.clearTimeout(minuterie);
+    minuterie = window.setTimeout(appliquer, 150);
+  });
+
+  for (const filtre of filtres) filtre.addEventListener('change', appliquer);
+
+  reinit.addEventListener('click', () => {
+    saisie.value = '';
+    for (const filtre of filtres) filtre.checked = false;
+    appliquer();
+    saisie.focus();
+  });
+
+  // La touche Échap vide la recherche sans quitter le champ.
+  saisie.addEventListener('keydown', (evenement) => {
+    if (evenement.key === 'Escape' && saisie.value !== '') {
+      evenement.preventDefault();
+      saisie.value = '';
+      appliquer();
+    }
+  });
+
+  appliquer();
+</script>
+
+<style>
+  .recherche {
+    margin-block-end: 2.5rem;
+    padding: 1.75rem;
+    background: var(--papier-carte);
+    border: 1px solid var(--regle);
+  }
+
+  .recherche__champ {
+    max-inline-size: 34rem;
+  }
+
+  .recherche__label {
+    display: block;
+    margin-block-end: 0.5rem;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--encre-doux);
+  }
+
+  .recherche__saisie {
+    inline-size: 100%;
+    min-block-size: 2.875rem;
+    padding: 0.5rem 0.875rem;
+    background: var(--papier);
+    border: 1px solid var(--encre);
+    border-radius: 0;
+    color: var(--encre);
+    font-family: inherit;
+    font-size: 1.0625rem;
+  }
+
+  .recherche__saisie::placeholder {
+    color: var(--encre-doux);
+  }
+
+  .recherche__facettes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2.5rem;
+    margin-block-start: 1.75rem;
+  }
+
+  .facette {
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .facette__legende {
+    padding: 0;
+    margin-block-end: 0.625rem;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--encre-doux);
+  }
+
+  .facette__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Case à cocher réelle, conservée sous le jeton pour le clavier
+     et les technologies d'assistance. */
+  .jeton {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--regle);
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  .jeton input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .jeton:hover {
+    border-color: var(--encre-doux);
+  }
+
+  .jeton:has(input:focus-visible) {
+    outline: 3px solid var(--braise);
+    outline-offset: 2px;
+  }
+
+  .jeton:has(input:checked) {
+    background: var(--encre);
+    border-color: var(--encre);
+    color: var(--papier);
+    font-variation-settings: 'wght' 600;
+  }
+
+  .recherche__pied {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-block-start: 1.5rem;
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--regle);
+  }
+
+  .recherche__compte {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-variation-settings: 'wght' 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--encre-doux);
+  }
+
+  .recherche__reinit {
+    min-block-size: 2.75rem;
+    padding: 0.4rem 1rem;
+    background: none;
+    border: 1px solid var(--encre);
+    border-radius: 999px;
+    color: var(--encre);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.875rem;
+  }
+
+  .recherche__reinit:hover {
+    background: var(--encre);
+    color: var(--papier);
+  }
+
+  .vide {
+    margin-block: 2rem;
+    color: var(--encre-doux);
+    font-size: 1.0625rem;
+  }
+</style>

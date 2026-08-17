@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Édition des recettes</title>
+    <link rel="icon" href="/icones/favicon.svg" type="image/svg+xml" />
+    <style>
+      body {
+        margin: 0;
+        background: #faf4e8;
+        color: #211812;
+        font-family: system-ui, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      Version épinglée et vérifiée par empreinte (SRI).
+
+      Ce script détient un jeton GitHub ayant droit d'écriture sur le dépôt :
+      une version flottante depuis un CDN reviendrait à faire confiance
+      aveuglément à ce qui sera servi demain. L'attribut `integrity` fait
+      échouer le chargement si le fichier livré diffère d'un seul octet.
+
+      Pour mettre à jour : npm run cms:maj
+    -->
+    <script
+      src="https://unpkg.com/@sveltia/cms@0.191.2/dist/sveltia-cms.js"
+      integrity="sha384-/515Oqeo3H/B5Xo6/EUX3tHOEJhHmL4t2iSViilisGq+TnqZbIcxj/8k8rRPGQfA"
+      crossorigin="anonymous"
+    ></script>
+
+    <noscript>
+      <p style="padding: 2rem">
+        L’édition des recettes nécessite JavaScript. Sans lui, vous pouvez toujours modifier les
+        fichiers <code>.md</code> directement sur GitHub.
+      </p>
+    </noscript>
+  </body>
+</html>

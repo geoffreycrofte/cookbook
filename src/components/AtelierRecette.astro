@@ -1,0 +1,334 @@
+---
+interface Props {
+  /** Sert de clé de mémorisation locale des cases cochées. */
+  slug: string;
+  portions: number;
+}
+
+const { slug, portions } = Astro.props;
+---
+
+{/* Sans JavaScript, aucun de ces réglages n'aurait d'effet : le bloc reste masqué. */}
+<div class="atelier" hidden data-atelier data-slug={slug} data-portions={portions}>
+  <div class="reglage">
+    <p class="reglage__titre" id="titre-portions">Portions</p>
+    <div class="compteur" role="group" aria-labelledby="titre-portions">
+      <button class="compteur__bouton" type="button" data-portions-moins>
+        <span aria-hidden="true">−</span>
+        <span class="sr-uniquement">Une portion de moins</span>
+      </button>
+      <output class="compteur__valeur" data-portions-valeur for="titre-portions">{portions}</output>
+      <button class="compteur__bouton" type="button" data-portions-plus>
+        <span aria-hidden="true">+</span>
+        <span class="sr-uniquement">Une portion de plus</span>
+      </button>
+    </div>
+    <p class="reglage__note" data-portions-note hidden>
+      Quantités recalculées pour <span data-portions-echo></span> portions.
+    </p>
+  </div>
+
+  <div class="reglage" hidden data-veille-bloc>
+    <p class="reglage__titre" id="titre-veille">Écran</p>
+    <button class="bascule" type="button" aria-pressed="false" data-veille>
+      <span class="bascule__temoin" aria-hidden="true"></span>
+      <span>Garder l’écran allumé</span>
+    </button>
+    <p class="reglage__note" data-veille-note role="status"></p>
+  </div>
+
+  <div class="reglage reglage--fin">
+    <button class="lien-bouton" type="button" data-decocher hidden>Tout décocher</button>
+  </div>
+</div>
+
+<script>
+  import { formaterQuantite } from '../lib/format';
+  import { accorderUnite } from '../lib/typographie';
+
+  const atelier = document.querySelector<HTMLElement>('[data-atelier]');
+  if (atelier) {
+    const slug = atelier.dataset.slug!;
+    const portionsBase = Number(atelier.dataset.portions);
+    atelier.hidden = false;
+
+    /* ---------------------------------------------------------------
+       Portions : recalcul des quantités marquées comme ajustables.
+       --------------------------------------------------------------- */
+    const valeur = atelier.querySelector<HTMLOutputElement>('[data-portions-valeur]')!;
+    const note = atelier.querySelector<HTMLElement>('[data-portions-note]')!;
+    const echo = atelier.querySelector<HTMLElement>('[data-portions-echo]')!;
+    const moins = atelier.querySelector<HTMLButtonElement>('[data-portions-moins]')!;
+    const plus = atelier.querySelector<HTMLButtonElement>('[data-portions-plus]')!;
+    const mesures = [...document.querySelectorAll<HTMLElement>('[data-quantite]')];
+    const rappels = [...document.querySelectorAll<HTMLElement>('[data-portions-rappel]')];
+
+    let portions = portionsBase;
+
+    function rendrePortions() {
+      const facteur = portions / portionsBase;
+
+      for (const mesure of mesures) {
+        const base = Number(mesure.dataset.quantite);
+        const unite = mesure.dataset.unite ?? '';
+        const ajustable = mesure.dataset.ajustable !== 'false';
+        const quantite = ajustable ? base * facteur : base;
+
+        mesure.textContent = [
+          formaterQuantite(quantite),
+          unite ? accorderUnite(unite, quantite) : '',
+        ]
+          .filter(Boolean)
+          .join(' ');
+      }
+
+      valeur.textContent = String(portions);
+      for (const rappel of rappels) rappel.textContent = String(portions);
+
+      const modifie = portions !== portionsBase;
+      note.hidden = !modifie;
+      echo.textContent = String(portions);
+
+      moins.disabled = portions <= 1;
+      plus.disabled = portions >= 60;
+    }
+
+    moins.addEventListener('click', () => {
+      if (portions > 1) portions -= 1;
+      rendrePortions();
+    });
+
+    plus.addEventListener('click', () => {
+      if (portions < 60) portions += 1;
+      rendrePortions();
+    });
+
+    rendrePortions();
+
+    /* ---------------------------------------------------------------
+       Cases à cocher : mémorisées localement, par recette.
+       --------------------------------------------------------------- */
+    const cases = [...document.querySelectorAll<HTMLInputElement>('[data-coche]')];
+    const decocher = atelier.querySelector<HTMLButtonElement>('[data-decocher]')!;
+    const cle = `recette:${slug}:coches`;
+
+    function lireMemoire(): string[] {
+      try {
+        const brut = localStorage.getItem(cle);
+        return brut ? (JSON.parse(brut) as string[]) : [];
+      } catch {
+        // Navigation privée ou stockage refusé : on continue sans mémoire.
+        return [];
+      }
+    }
+
+    function ecrireMemoire(ids: string[]) {
+      try {
+        localStorage.setItem(cle, JSON.stringify(ids));
+      } catch {
+        /* sans effet */
+      }
+    }
+
+    function rendreCoches() {
+      const cochees = cases.filter((c) => c.checked);
+      for (const c of cases) {
+        c.closest('[data-cochable]')?.classList.toggle('est-fait', c.checked);
+      }
+      decocher.hidden = cochees.length === 0;
+      ecrireMemoire(cochees.map((c) => c.dataset.coche!));
+    }
+
+    const memorisees = new Set(lireMemoire());
+    for (const c of cases) {
+      if (memorisees.has(c.dataset.coche!)) c.checked = true;
+      c.addEventListener('change', rendreCoches);
+    }
+    rendreCoches();
+
+    decocher.addEventListener('click', () => {
+      for (const c of cases) c.checked = false;
+      rendreCoches();
+    });
+
+    /* ---------------------------------------------------------------
+       Écran toujours allumé, quand l'appareil le permet.
+       --------------------------------------------------------------- */
+    const blocVeille = atelier.querySelector<HTMLElement>('[data-veille-bloc]')!;
+    const bascule = atelier.querySelector<HTMLButtonElement>('[data-veille]')!;
+    const noteVeille = atelier.querySelector<HTMLElement>('[data-veille-note]')!;
+
+    if ('wakeLock' in navigator) {
+      blocVeille.hidden = false;
+      let verrou: WakeLockSentinel | null = null;
+
+      const relacher = async () => {
+        await verrou?.release().catch(() => {});
+        verrou = null;
+        bascule.setAttribute('aria-pressed', 'false');
+        noteVeille.textContent = '';
+      };
+
+      const demander = async () => {
+        try {
+          verrou = await navigator.wakeLock.request('screen');
+          bascule.setAttribute('aria-pressed', 'true');
+          noteVeille.textContent = 'L’écran restera allumé sur cette page.';
+          verrou.addEventListener('release', () => {
+            bascule.setAttribute('aria-pressed', 'false');
+          });
+        } catch {
+          noteVeille.textContent = 'Votre appareil a refusé de garder l’écran allumé.';
+        }
+      };
+
+      bascule.addEventListener('click', () => {
+        if (bascule.getAttribute('aria-pressed') === 'true') relacher();
+        else demander();
+      });
+
+      // Le verrou saute quand l'onglet passe en arrière-plan : on le reprend.
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && bascule.getAttribute('aria-pressed') === 'true') {
+          demander();
+        }
+      });
+    }
+  }
+</script>
+
+<style>
+  .atelier {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1.5rem 2.5rem;
+    margin-block: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    background: var(--papier-carte);
+    border: 1px solid var(--regle);
+  }
+
+  .reglage--fin {
+    margin-inline-start: auto;
+  }
+
+  .reglage__titre {
+    margin: 0 0 0.5rem;
+    font-size: 0.6875rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--encre-doux);
+  }
+
+  .reglage__note {
+    margin: 0.5rem 0 0;
+    max-inline-size: 22rem;
+    color: var(--encre-doux);
+    font-size: 0.8125rem;
+  }
+
+  .compteur {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid var(--encre);
+  }
+
+  .compteur__bouton {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    background: none;
+    border: 0;
+    color: var(--encre);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.375rem;
+    line-height: 1;
+  }
+
+  .compteur__bouton:hover:not(:disabled) {
+    background: var(--encre);
+    color: var(--papier);
+  }
+
+  .compteur__bouton:disabled {
+    color: var(--encre-doux);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .compteur__valeur {
+    min-inline-size: 2.5rem;
+    font-family: var(--police-titre);
+    font-variation-settings: 'SOFT' 30, 'opsz' 40, 'wght' 500;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .bascule {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-block-size: 2.75rem;
+    padding: 0.4rem 1rem 0.4rem 0.75rem;
+    background: none;
+    border: 1px solid var(--encre);
+    border-radius: 999px;
+    color: var(--encre);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9375rem;
+  }
+
+  .bascule__temoin {
+    inline-size: 1.75rem;
+    block-size: 1rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    position: relative;
+  }
+
+  .bascule__temoin::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 2px;
+    inline-size: 0.625rem;
+    block-size: 0.625rem;
+    border-radius: 50%;
+    background: currentColor;
+    transform: translateY(-50%);
+    transition: inset-inline-start 0.2s ease;
+  }
+
+  .bascule[aria-pressed='true'] {
+    background: var(--encre);
+    border-color: var(--encre);
+    color: var(--papier);
+  }
+
+  .bascule[aria-pressed='true'] .bascule__temoin::after {
+    inset-inline-start: calc(100% - 0.625rem - 2px);
+  }
+
+  .lien-bouton {
+    min-block-size: 2.75rem;
+    padding: 0.4rem 0.25rem;
+    background: none;
+    border: 0;
+    color: var(--braise-texte);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.875rem;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bascule__temoin::after {
+      transition: none;
+    }
+  }
+</style>

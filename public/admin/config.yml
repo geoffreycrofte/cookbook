@@ -1,0 +1,272 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+#
+# Configuration de l'interface d'édition (Sveltia CMS), servie sur /admin/.
+#
+# Elle doit rester le miroir de src/content.config.ts. En cas de divergence,
+# c'est le schéma Astro qui tranche : il fait échouer le build, là où le CMS
+# se contenterait d'écrire un fichier invalide.
+
+backend:
+  name: github
+  repo: geoffreycrofte/cookbook
+  branch: main
+  # Aucun `base_url` : la connexion se fait par jeton personnel, sans service
+  # d'authentification tiers à déployer. Voir le README.
+
+# Chemins de secours. La collection des recettes les redéfinit pour ranger
+# chaque photo dans le dossier de sa recette.
+media_folder: public/media
+public_folder: /media
+
+# La langue de l'interface suit celle du navigateur : rien à déclarer ici.
+
+collections:
+  - name: recettes
+    label: Recettes
+    label_singular: Recette
+    description: >-
+      Une recette par dossier, avec sa photo à côté. Les champs marqués comme
+      facultatifs peuvent rester vides.
+    folder: src/content/recettes
+    # Une recette est un dossier : <slug>/index.md, la photo à côté.
+    path: '{{slug}}/index'
+    media_folder: ''
+    public_folder: ''
+    create: true
+    identifier_field: titre
+    slug: '{{titre}}'
+    summary: '{{titre}}'
+    sortable_fields: [miseAJour, titre, portions]
+    view_groups:
+      - label: Catégorie
+        field: categorie
+    fields:
+      - { label: Titre, name: titre, widget: string }
+
+      - label: Description
+        name: description
+        widget: text
+        hint: Une phrase, 200 caractères au maximum. Elle s’affiche sous le titre et dans les résultats de recherche.
+
+      - label: Photo du plat fini
+        name: image
+        widget: image
+        hint: Elle est enregistrée dans le dossier de la recette et optimisée automatiquement au build.
+
+      - label: Description de la photo
+        name: imageAlt
+        widget: string
+        hint: Ce que montre la photo, pour les personnes qui ne la voient pas. Obligatoire.
+
+      - label: Crédit photo
+        name: credit
+        widget: string
+        required: false
+        hint: À remplir uniquement si la photo n’est pas de vous.
+
+      # — Temps et rendement —
+      - { label: Préparation (minutes), name: preparation, widget: number, value_type: int, min: 0 }
+      - { label: Cuisson (minutes), name: cuisson, widget: number, value_type: int, min: 0 }
+      - label: Repos (minutes)
+        name: repos
+        widget: number
+        value_type: int
+        min: 0
+        default: 0
+        required: false
+      - { label: Portions, name: portions, widget: number, value_type: int, min: 1, default: 4 }
+
+      # — Cuisson à l'airfryer —
+      - label: Cuisson à l’airfryer
+        name: airfryer
+        widget: boolean
+        default: false
+        hint: Si vous cochez, la température devient obligatoire.
+
+      - label: Température (°C)
+        name: temperature
+        widget: number
+        value_type: int
+        min: 40
+        max: 250
+        required: false
+
+      - { label: Préchauffage nécessaire, name: prechauffage, widget: boolean, required: false }
+
+      - label: Secouer le panier à mi-cuisson
+        name: secouerAMiCuisson
+        widget: boolean
+        default: false
+        required: false
+        hint: Réservé aux recettes à l’airfryer.
+
+      # — Classement —
+      - label: Catégorie
+        name: categorie
+        widget: select
+        options:
+          - { label: Entrée, value: entree }
+          - { label: Plat, value: plat }
+          - { label: Dessert, value: dessert }
+          - { label: Snack, value: snack }
+          - { label: Accompagnement, value: accompagnement }
+
+      - label: Difficulté
+        name: difficulte
+        widget: select
+        default: facile
+        options:
+          - { label: Facile, value: facile }
+          - { label: Moyen, value: moyen }
+          - { label: Technique, value: technique }
+
+      - label: Saisons
+        name: saison
+        widget: select
+        multiple: true
+        required: false
+        options:
+          - { label: Printemps, value: printemps }
+          - { label: Été, value: ete }
+          - { label: Automne, value: automne }
+          - { label: Hiver, value: hiver }
+
+      - label: Régimes
+        name: regime
+        widget: select
+        multiple: true
+        required: false
+        hint: Liste fermée. Pour en ajouter une valeur, il faut modifier src/content.config.ts.
+        options:
+          - { label: Végétarien, value: vegetarien }
+          - { label: Vegan, value: vegan }
+          - { label: Sans gluten, value: sans-gluten }
+          - { label: Sans lactose, value: sans-lactose }
+          - { label: Sans porc, value: sans-porc }
+          - { label: Sans fruits à coque, value: sans-fruits-a-coque }
+
+      - label: Étiquettes
+        name: tags
+        widget: list
+        required: false
+        hint: Texte libre, en minuscules. Elles alimentent les filtres de la page d’accueil.
+
+      - label: Recette de la flemme
+        name: flemme
+        widget: boolean
+        default: false
+        hint: Elle entre alors dans le tirage au sort « J’ai la flemme ».
+
+      # — Préparations —
+      # Deux façons de décrire une recette, jamais les deux à la fois.
+      # Le build refuse la contradiction avec un message explicite.
+      - label: Ingrédients (recette simple)
+        name: ingredients
+        widget: list
+        required: false
+        collapsed: false
+        label_singular: Ingrédient
+        summary: '{{fields.quantite}} {{fields.unite}} {{fields.nom}}'
+        hint: À laisser vide si la recette est découpée en parties, plus bas.
+        fields:
+          - { label: Quantité, name: quantite, widget: number, value_type: float, required: false }
+          - label: Unité
+            name: unite
+            widget: string
+            required: false
+            hint: 'g, kg, ml, cuillère à soupe, pièce, pincée… au singulier : l’accord au pluriel est automatique.'
+          - { label: Ingrédient, name: nom, widget: string }
+          - label: Précision
+            name: precision
+            widget: string
+            required: false
+            hint: '« coupé en dés », « à température ambiante »…'
+          - label: Se multiplie avec les portions
+            name: ajustable
+            widget: boolean
+            default: true
+            hint: À décocher pour le sel, la levure et tout ce qui ne double pas.
+
+      - label: Étapes (recette simple)
+        name: etapes
+        widget: list
+        required: false
+        label_singular: Étape
+        summary: '{{fields.texte}}'
+        hint: À laisser vide si la recette est découpée en parties, plus bas.
+        fields:
+          - { label: Étape, name: texte, widget: text }
+          - label: Température (°C)
+            name: temperature
+            widget: number
+            value_type: int
+            min: 40
+            max: 250
+            required: false
+          - { label: Durée (minutes), name: duree, widget: number, value_type: float, required: false }
+
+      - label: Parties (recette en plusieurs préparations)
+        name: parties
+        widget: list
+        required: false
+        label_singular: Partie
+        summary: '{{fields.nom}}'
+        hint: >-
+          Pour un plat qui demande plusieurs préparations distinctes : le plat,
+          une sauce, un pain. Deux parties au minimum. Dans ce cas, laissez vides
+          les champs « Ingrédients » et « Étapes » ci-dessus.
+        fields:
+          - { label: Nom de la partie, name: nom, widget: string }
+          - label: Note d’enchaînement
+            name: note
+            widget: string
+            required: false
+            hint: '« À préparer pendant que le curry mijote. »'
+          - label: Ingrédients
+            name: ingredients
+            widget: list
+            label_singular: Ingrédient
+            summary: '{{fields.quantite}} {{fields.unite}} {{fields.nom}}'
+            fields:
+              - { label: Quantité, name: quantite, widget: number, value_type: float, required: false }
+              - { label: Unité, name: unite, widget: string, required: false }
+              - { label: Ingrédient, name: nom, widget: string }
+              - { label: Précision, name: precision, widget: string, required: false }
+              - { label: Se multiplie avec les portions, name: ajustable, widget: boolean, default: true }
+          - label: Étapes
+            name: etapes
+            widget: list
+            label_singular: Étape
+            summary: '{{fields.texte}}'
+            fields:
+              - { label: Étape, name: texte, widget: text }
+              - label: Température (°C)
+                name: temperature
+                widget: number
+                value_type: int
+                min: 40
+                max: 250
+                required: false
+              - { label: Durée (minutes), name: duree, widget: number, value_type: float, required: false }
+
+      # — Métadonnées —
+      - label: Dernière mise à jour
+        name: miseAJour
+        widget: datetime
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+        format: 'YYYY-MM-DD'
+
+      - label: Brouillon
+        name: brouillon
+        widget: boolean
+        default: false
+        hint: Coché, la recette reste hors du site publié.
+
+      - label: Mes notes
+        name: body
+        widget: markdown
+        required: false
+        hint: >-
+          Introduction, astuces et variantes. Les espaces insécables avant les
+          deux-points et les points d’interrogation sont ajoutés automatiquement.

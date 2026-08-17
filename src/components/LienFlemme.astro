@@ -1,0 +1,96 @@
+---
+interface Props {
+  /** Slugs des recettes marquées « flemme ». Le composant ne rend rien s'il est vide. */
+  slugs: string[];
+}
+
+const { slugs } = Astro.props;
+
+// Une destination est choisie au build : le lien fonctionne sans JavaScript,
+// s'ouvre dans un nouvel onglet, et se laisse indexer normalement.
+const destination = slugs[0];
+---
+
+{
+  destination && (
+    <a
+      class="flemme"
+      href={`/recettes/${destination}/`}
+      data-flemme
+      data-slugs={JSON.stringify(slugs)}
+    >
+      <span class="flemme__losange" aria-hidden="true">
+        ◆
+      </span>
+      <span>J’ai la flemme</span>
+      <span class="flemme__note">une recette au hasard</span>
+    </a>
+  )
+}
+
+<script>
+  const lien = document.querySelector<HTMLAnchorElement>('[data-flemme]');
+  if (lien) {
+    const slugs: string[] = JSON.parse(lien.dataset.slugs ?? '[]');
+
+    const tirer = () => {
+      const slug = slugs[Math.floor(Math.random() * slugs.length)];
+      if (slug) lien.href = `/recettes/${slug}/`;
+    };
+
+    // Tirage au chargement : l'ouverture dans un nouvel onglet reste aléatoire.
+    tirer();
+
+    lien.addEventListener('click', (evenement) => {
+      // On laisse le navigateur faire pour un clic milieu, un Cmd/Ctrl+clic
+      // ou un clic droit : la destination tirée au chargement suffit.
+      if (evenement.button !== 0 || evenement.metaKey || evenement.ctrlKey || evenement.shiftKey) {
+        return;
+      }
+      evenement.preventDefault();
+      tirer();
+      window.location.assign(lien.href);
+    });
+  }
+</script>
+
+<style>
+  .flemme {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    min-block-size: 2.75rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--braise);
+    color: var(--sur-braise);
+    font-variation-settings: 'wght' 600;
+    text-decoration: none;
+    transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+
+  .flemme:hover {
+    background: var(--encre);
+    color: var(--papier);
+    transform: translateY(-2px);
+  }
+
+  .flemme__losange {
+    font-size: 0.7em;
+  }
+
+  .flemme__note {
+    font-size: 0.8125rem;
+    font-variation-settings: 'wght' 400;
+    opacity: 0.85;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flemme {
+      transition: none;
+    }
+
+    .flemme:hover {
+      transform: none;
+    }
+  }
+</style>

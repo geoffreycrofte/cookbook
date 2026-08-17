@@ -1,0 +1,189 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import CarteRecette from '../components/CarteRecette.astro';
+import RechercheRecettes from '../components/RechercheRecettes.astro';
+import LienFlemme from '../components/LienFlemme.astro';
+import { dureeTotale } from '../lib/format';
+import { construireIndex, recenser, recenserCategories } from '../lib/recherche';
+
+const recettes = (await getCollection('recettes', ({ data }) => !data.brouillon)).sort(
+  (a, b) => b.data.miseAJour.getTime() - a.data.miseAJour.getTime()
+);
+
+const nombreFlemme = recettes.filter((r) => r.data.flemme).length;
+const nombreAirfryer = recettes.filter((r) => r.data.airfryer).length;
+const plusRapide = recettes.length
+  ? Math.min(...recettes.map((r) => dureeTotale(r.data)))
+  : 0;
+
+const index = construireIndex(recettes);
+const categories = recenserCategories(recettes);
+const tags = recenser(recettes, 'tags');
+const regimes = recenser(recettes, 'regime');
+const slugsFlemme = recettes.filter((r) => r.data.flemme).map((r) => r.id);
+---
+
+<Base
+  accueil
+  titre="Recettes du Lux"
+  description="Mes recettes, testées dans ma cuisine : durées, températures et ce qu'il faut surveiller."
+>
+  <section class="ouverture cadre">
+    <p class="ouverture__surtitre">Le carnet</p>
+    <h1 class="ouverture__titre">
+      Tout ce que je cuis <em>chez moi</em>
+    </h1>
+    <p class="ouverture__chapeau">
+      Des recettes que j'ai réellement faites, avec la durée et le détail qui change tout. Beaucoup
+      passent à l'airfryer, les autres non. Pas de récit interminable avant la liste des
+      ingrédients.
+    </p>
+
+    <dl class="sommaire">
+      <div class="sommaire__bloc">
+        <dt>Recettes</dt>
+        <dd>{recettes.length}</dd>
+      </div>
+      <div class="sommaire__bloc">
+        <dt>À l'airfryer</dt>
+        <dd>{nombreAirfryer}</dd>
+      </div>
+      <div class="sommaire__bloc">
+        <dt>De la flemme</dt>
+        <dd>{nombreFlemme}</dd>
+      </div>
+      <div class="sommaire__bloc">
+        <dt>La plus rapide</dt>
+        <dd>{plusRapide}<span class="sommaire__unite">min</span></dd>
+      </div>
+    </dl>
+
+    {slugsFlemme.length > 0 && <LienFlemme slugs={slugsFlemme} />}
+  </section>
+
+  <section class="collection cadre" aria-labelledby="titre-collection">
+    <RechercheRecettes index={index} categories={categories} tags={tags} regimes={regimes} />
+
+    <h2 class="rubrique" id="titre-collection">Toutes les recettes</h2>
+
+    {
+      recettes.length === 0 ? (
+        <p>Aucune recette pour le moment.</p>
+      ) : (
+        <ul class="grille" data-grille>
+          {recettes.map((recette, rang) => (
+            <li data-recette={recette.id}>
+              <CarteRecette recette={recette} rang={rang} prioritaire={rang === 0} />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</Base>
+
+<style>
+  .ouverture {
+    padding-block: clamp(3.5rem, 9vw, 7rem) clamp(3rem, 7vw, 5rem);
+  }
+
+  .ouverture__surtitre {
+    margin: 0 0 1.25rem;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--braise-texte);
+  }
+
+  .ouverture__titre {
+    max-inline-size: 16ch;
+    margin: 0;
+    font-size: clamp(2.75rem, 9vw, 6.5rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 144, 'wght' 600;
+    letter-spacing: -0.03em;
+  }
+
+  .ouverture__titre em {
+    display: block;
+    font-style: italic;
+    font-variation-settings: 'SOFT' 70, 'WONK' 1, 'opsz' 144, 'wght' 400;
+    color: var(--braise-texte);
+  }
+
+  .ouverture__chapeau {
+    max-inline-size: var(--colonne-texte);
+    margin-block: 2rem 0;
+    color: var(--encre-doux);
+    font-size: 1.1875rem;
+    line-height: 1.6;
+  }
+
+  /* Sommaire chiffré : le même traitement de numéral que les fiches recette. */
+  .sommaire {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 clamp(2rem, 6vw, 4.5rem);
+    margin-block: 3rem 0;
+    padding-block-start: 1.75rem;
+    border-block-start: 2px solid var(--encre);
+  }
+
+  .sommaire__bloc dt {
+    font-size: 0.6875rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--encre-doux);
+  }
+
+  .sommaire__bloc dd {
+    margin: 0.125rem 0 0;
+    font-family: var(--police-titre);
+    font-variation-settings: 'SOFT' 30, 'opsz' 60, 'wght' 500;
+    font-size: clamp(2.25rem, 6vw, 3.25rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .sommaire__unite {
+    margin-inline-start: 0.15em;
+    font-family: var(--police-corps);
+    font-size: 0.9rem;
+    font-variation-settings: 'wght' 600;
+    letter-spacing: 0.06em;
+    color: var(--encre-doux);
+  }
+
+  /* Le lien « J'ai la flemme » suit le sommaire chiffré. */
+  .ouverture :global(.flemme) {
+    margin-block-start: 2.5rem;
+  }
+
+  .collection {
+    padding-block-end: 2rem;
+  }
+
+  .grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .grille > li {
+    display: flex;
+  }
+
+  /* `display: flex` l'emporterait sur l'attribut hidden posé par la recherche. */
+  .grille > li[hidden] {
+    display: none;
+  }
+
+  .grille > li > :global(*) {
+    inline-size: 100%;
+  }
+</style>
