@@ -17,15 +17,27 @@ const { slug, portions } = Astro.props;
         <span aria-hidden="true">−</span>
         <span class="sr-uniquement">Une portion de moins</span>
       </button>
-      <output class="compteur__valeur" data-portions-valeur for="titre-portions">{portions}</output>
+      {/*
+        `aria-live="off"` neutralise le rôle « status » implicite de `output` :
+        le nombre seul (« 3 ») serait annoncé sans contexte, et ferait doublon
+        avec le message ci-dessous.
+      */}
+      <output class="compteur__valeur" aria-live="off" data-portions-valeur for="titre-portions"
+        >{portions}</output
+      >
       <button class="compteur__bouton" type="button" data-portions-plus>
         <span aria-hidden="true">+</span>
         <span class="sr-uniquement">Une portion de plus</span>
       </button>
     </div>
-    <p class="reglage__note" data-portions-note hidden>
-      Quantités recalculées pour <span data-portions-echo></span> portions.
-    </p>
+    {/*
+      Le recalcul se voit à l'écran : les quantités changent sous les yeux.
+      Le message ne sert donc qu'aux lecteurs d'écran, à qui ce changement
+      hors du point de focus échapperait. Toujours présent dans le DOM, jamais
+      `hidden` : une région live retirée de l'arbre d'accessibilité n'annonce
+      plus rien.
+    */}
+    <p class="sr-uniquement" role="status" data-portions-note></p>
   </div>
 
   <div class="reglage" hidden data-veille-bloc>
@@ -57,13 +69,14 @@ const { slug, portions } = Astro.props;
        --------------------------------------------------------------- */
     const valeur = atelier.querySelector<HTMLOutputElement>('[data-portions-valeur]')!;
     const note = atelier.querySelector<HTMLElement>('[data-portions-note]')!;
-    const echo = atelier.querySelector<HTMLElement>('[data-portions-echo]')!;
     const moins = atelier.querySelector<HTMLButtonElement>('[data-portions-moins]')!;
     const plus = atelier.querySelector<HTMLButtonElement>('[data-portions-plus]')!;
     const mesures = [...document.querySelectorAll<HTMLElement>('[data-quantite]')];
     const rappels = [...document.querySelectorAll<HTMLElement>('[data-portions-rappel]')];
 
     let portions = portionsBase;
+    // Le premier rendu ne fait qu'afficher la recette : rien à annoncer.
+    let interaction = false;
 
     function rendrePortions() {
       const facteur = portions / portionsBase;
@@ -83,11 +96,10 @@ const { slug, portions } = Astro.props;
       }
 
       valeur.textContent = String(portions);
-      for (const rappel of rappels) rappel.textContent = String(portions);
+      const libelle = `${portions} ${accorderUnite('portion', portions)}`;
+      for (const rappel of rappels) rappel.textContent = libelle;
 
-      const modifie = portions !== portionsBase;
-      note.hidden = !modifie;
-      echo.textContent = String(portions);
+      note.textContent = interaction ? `Quantités recalculées pour ${libelle}.` : '';
 
       moins.disabled = portions <= 1;
       plus.disabled = portions >= 60;
@@ -95,11 +107,13 @@ const { slug, portions } = Astro.props;
 
     moins.addEventListener('click', () => {
       if (portions > 1) portions -= 1;
+      interaction = true;
       rendrePortions();
     });
 
     plus.addEventListener('click', () => {
       if (portions < 60) portions += 1;
+      interaction = true;
       rendrePortions();
     });
 

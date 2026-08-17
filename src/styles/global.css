@@ -2,16 +2,21 @@
   Papier & braise
   ---------------
   Un magazine de cuisine imprimé sur papier crème, où la température et la
-  durée sont traitées comme des chiffres de titrage. Aucun JavaScript.
+  durée sont traitées comme des chiffres de titrage.
 
   Contrastes vérifiés en clair et en sombre pour un niveau AA.
+
+  Le thème suit la préférence système par défaut. Dès que le visiteur actionne
+  la bascule de l'en-tête, un attribut `data-theme` posé sur `<html>` prend le
+  dessus. La règle média ne sert donc qu'avant l'exécution du script, et aux
+  visiteurs sans JavaScript.
 */
 
 @layer reglages, base, composants, utilitaires;
 
 @layer reglages {
   :root {
-    color-scheme: light dark;
+    color-scheme: light;
 
     /* Papier */
     --papier: #faf4e8;
@@ -43,8 +48,17 @@
     --ombre-papier: 0 1px 2px rgb(33 24 18 / 0.06), 0 8px 24px -12px rgb(33 24 18 / 0.18);
   }
 
+  /*
+    Palette sombre. Elle apparaît deux fois, faute de pouvoir écrire une règle
+    média et un sélecteur d'attribut dans la même déclaration : la première
+    couvre la préférence système, la seconde le choix explicite du visiteur.
+    Toute retouche de couleur doit être reportée dans les deux, ainsi que dans
+    THEME_SOMBRE de scripts/verifier-contrastes.mjs.
+  */
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme='clair']) {
+      color-scheme: dark;
+
       --papier: #14100d;
       --papier-creux: #1c1713;
       --papier-carte: #1e1813;
@@ -61,6 +75,26 @@
 
       --ombre-papier: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
     }
+  }
+
+  :root[data-theme='sombre'] {
+    color-scheme: dark;
+
+    --papier: #14100d;
+    --papier-creux: #1c1713;
+    --papier-carte: #1e1813;
+
+    --encre: #f5ede1;
+    --encre-doux: #b6a392;
+    --regle: #3a2e25;
+
+    --braise: #e0603a;
+    --braise-texte: #f0906b;
+    --sur-braise: #1a0d07;
+
+    --olive: #a7b881;
+
+    --ombre-papier: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
   }
 }
 
@@ -103,11 +137,17 @@
     mix-blend-mode: multiply;
   }
 
+  /* Même dédoublement que la palette : préférence système, puis choix explicite. */
   @media (prefers-color-scheme: dark) {
-    body::before {
+    :root:not([data-theme='clair']) body::before {
       mix-blend-mode: screen;
       opacity: 0.22;
     }
+  }
+
+  :root[data-theme='sombre'] body::before {
+    mix-blend-mode: screen;
+    opacity: 0.22;
   }
 
   h1,

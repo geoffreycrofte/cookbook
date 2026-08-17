@@ -1,5 +1,6 @@
 ---
 import { formaterDuree, decomposerIngredient } from '../lib/format';
+import { accorderUnite } from '../lib/typographie';
 
 interface Ingredient {
   quantite?: number;
@@ -52,7 +53,8 @@ const Titre = total > 1 ? 'h3' : 'h2';
     {
       rappelPortions && (
         <p class="ingredients__note">
-          Pour <span data-portions-rappel>{portions}</span> portions
+          {/* Le mot est dans le span : sinon il resterait au pluriel à 1 portion. */}
+          Pour <span data-portions-rappel>{portions} {accorderUnite('portion', portions)}</span>
         </p>
       )
     }

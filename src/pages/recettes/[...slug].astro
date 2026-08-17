@@ -329,8 +329,12 @@ const cadrans: Cadran[] = [
   /* — Le bandeau de chiffres : la donnée traitée comme du titrage — */
   .bandeau {
     margin-block-start: clamp(3rem, 7vw, 5rem);
-    border-block: 2px solid var(--encre);
-    background: var(--papier-creux);
+    /* Deux filets très atténués : ils bornent la bande sans la trancher.
+       C'est le fond qui porte désormais la séparation. */
+    border-block: 2px solid color-mix(in oklab, var(--encre) 14%, transparent);
+    /* Une pointe de braise réchauffe le creux et détache la bande du papier,
+       dans les deux thèmes, sans toucher à la palette. */
+    background: color-mix(in oklab, var(--braise) 5%, var(--papier-creux));
   }
 
   .bandeau__liste {

@@ -2,6 +2,8 @@
 import '@fontsource-variable/fraunces/full.css';
 import '@fontsource-variable/karla/index.css';
 import '../styles/global.css';
+import BasculeTheme from '../components/BasculeTheme.astro';
+import { CLE_THEME, COULEURS_THEME } from '../lib/theme';
 
 /**
  * Les fichiers de police ne sont découverts qu'après l'analyse du CSS, soit
@@ -63,8 +65,9 @@ const annee = new Date().getFullYear();
     }
     <meta name="twitter:card" content={imagePartage ? 'summary_large_image' : 'summary'} />
 
-    <meta name="theme-color" content="#faf4e8" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#14100d" media="(prefers-color-scheme: dark)" />
+    {/* Repli sans JavaScript : le script plus bas remplace ces deux balises. */}
+    <meta name="theme-color" content={COULEURS_THEME.clair} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={COULEURS_THEME.sombre} media="(prefers-color-scheme: dark)" />
     <meta name="generator" content={Astro.generator} />
 
     <link rel="preload" href={fraunces} as="font" type="font/woff2" crossorigin />
@@ -77,6 +80,39 @@ const annee = new Date().getFullYear();
     <meta name="apple-mobile-web-app-capable" content="yes" />
 
     <slot name="tete" />
+
+    {/*
+      Applique le thème avant le premier rendu : posé plus tard, l'attribut
+      ferait clignoter la page en clair avant de passer au sombre. Le script est
+      donc en ligne et bloquant, il tient en quelques lignes.
+    */}
+    <script is:inline define:vars={{ CLE_THEME, COULEURS_THEME }}>
+      let choix = null;
+      try {
+        choix = localStorage.getItem(CLE_THEME);
+      } catch {
+        /* Stockage refusé : on suit la préférence système. */
+      }
+
+      const theme =
+        choix === 'clair' || choix === 'sombre'
+          ? choix
+          : matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'sombre'
+            : 'clair';
+
+      document.documentElement.dataset.theme = theme;
+
+      // Une balise theme-color pilotée par le script remplace les deux
+      // variantes média, qui ne pourraient pas suivre un choix explicite.
+      for (const balise of document.querySelectorAll('meta[name="theme-color"]')) {
+        balise.remove();
+      }
+      const balise = document.createElement('meta');
+      balise.name = 'theme-color';
+      balise.content = COULEURS_THEME[theme];
+      document.head.append(balise);
+    </script>
   </head>
 
   <body>
@@ -90,7 +126,10 @@ const annee = new Date().getFullYear();
           <span class="marque__nom">Recettes</span>
           <span class="marque__complement">du Lux</span>
         </a>
-        <p class="entete__note">Testées dans ma cuisine</p>
+        <div class="entete__outils">
+          <p class="entete__note">Testées dans ma cuisine</p>
+          <BasculeTheme />
+        </div>
       </div>
     </header>
 
@@ -182,6 +221,13 @@ const annee = new Date().getFullYear();
   .marque:hover .marque__complement {
     text-decoration: underline;
     text-underline-offset: 0.2em;
+  }
+
+  .entete__outils {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.5rem;
   }
 
   .entete__note {
