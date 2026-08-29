@@ -347,9 +347,10 @@ const cadrans: Cadran[] = [
     /* Deux filets très atténués : ils bornent la bande sans la trancher.
        C'est le fond qui porte désormais la séparation. */
     border-block: 2px solid color-mix(in oklab, var(--encre) 14%, transparent);
-    /* Une pointe de braise réchauffe le creux et détache la bande du papier,
-       dans les deux thèmes, sans toucher à la palette. */
-    background: color-mix(in oklab, var(--braise) 5%, var(--papier-creux));
+    /* Un lavis de vert basilic sur le papier (et non le creux gris) : la bande
+       reste claire mais prend une vraie teinte verte, dans les deux thèmes,
+       sans toucher à la palette. Monter vers 15-18 % pour plus de vert. */
+    background: color-mix(in oklab, var(--olive) 10%, var(--papier));
   }
 
   .bandeau__liste {
@@ -394,7 +395,7 @@ const cadrans: Cadran[] = [
   }
 
   .cadran--vedette dd {
-    color: var(--braise-texte);
+    color: var(--olive);
   }
 
   .cadran__unite {

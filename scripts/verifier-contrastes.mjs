@@ -32,7 +32,7 @@ const THEME_CLAIR = {
   braise: '#cf3a2e',
   braiseTexte: '#b8302a',
   surBraise: '#fff5f4',
-  olive: '#3d6b3a',
+  olive: '#3a6b4b',
 };
 
 const THEME_SOMBRE = {
