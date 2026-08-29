@@ -186,6 +186,11 @@ collections:
             widget: boolean
             default: true
             hint: À décocher pour le sel, la levure et tout ce qui ne double pas.
+          - label: Optionnel
+            name: optionnel
+            widget: boolean
+            default: false
+            hint: Affiche un petit « optionnel » au-dessus de l’ingrédient.
 
       - label: Étapes (recette simple)
         name: etapes
@@ -243,6 +248,7 @@ collections:
               - { label: Ingrédient, name: nom, widget: string }
               - { label: Précision, name: precision, widget: string, required: false }
               - { label: Se multiplie avec les portions, name: ajustable, widget: boolean, default: true }
+              - { label: Optionnel, name: optionnel, widget: boolean, default: false }
           - label: Étapes
             name: etapes
             widget: list

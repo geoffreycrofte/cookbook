@@ -43,14 +43,14 @@ parties:
         unite: "cuillère à soupe"
         nom: "maïzena"
         precision: "environ 10 g"
+      - quantite: 2
+        unite: "cuillère à soupe"
+        nom: "sauce d'huître (sans gluten)"
+        precision: "environ 36 g ; aussi appelé oyster sauce, remplaçable par de la sauce soja sans gluten"
       - quantite: 20
         unite: "g"
         nom: "gingembre râpé"
-        precision: "optionel"
-      - quantite: 2
-        unite: "cuillère à soupe"
-        nom: "sauce d'huître"
-        precision: "(oyster sauce) environ 36 g"
+        optionnel: true
     etapes:
       - texte: "Hacher finement le chou chinois et la carotte."
       - texte: "Acheter du poulet déjà haché (ou hacher le poulet avec un mixer) et le mettre dans un bol."
@@ -63,7 +63,8 @@ parties:
       - quantite: 20
         unite: "g"
         nom: "graines de sésame"
-        precision: "optionel, pour la déco"
+        precision: "pour la déco"
+        optionnel: true
     etapes:
       - texte: "Faire des boules d'environ 25 g chacune (1 grosse cuillère à soupe pleine)."
       - texte: "Disposer sur le panier de l'air fryer sans les superposer. Conseil: mettre du papier sulfurisé en fond pour éviter que ça coule quand le chou va rendre de l'eau."
@@ -82,15 +83,11 @@ parties:
       - quantite: 90
         unite: "g"
         nom: "fromage blanc ou skyr 0 %"
-        precision: "ou 3 cuillères à soupe"
-      - quantite: 1.5
-        unite: "cuillère à soupe"
-        nom: "sauce hoisin (optionel)"
-        precision: "environ 20g"
+        precision: "environ 3 cuillères à soupe"
       - quantite: 15
         unite: "g"
         nom: "poudre de cacahuète dégraissée"
-        precision: "ou 1 cuillère à soupe de beurre de cacahuète"
+        precision: "remplaçable par 1 cuillère à soupe de beurre de cacahuète"
       - quantite: 1
         unite: "cuillère à café"
         nom: "huile de sésame"
@@ -101,6 +98,11 @@ parties:
         unite: "cuillère à soupe"
         nom: "eau chaude"
         precision: "pour délayer"
+      - quantite: 1.5
+        unite: "cuillère à soupe"
+        nom: "sauce hoisin sans gluten"
+        precision: "environ 20 g"
+        optionnel: true
     etapes:
       - texte: "Presser l'ail."
       - texte: "Mélanger le fromage blanc / skyr, la sauce hoisin, la poudre de cacahuète, l'ail, l'huile de sésame et le vinaigre de riz."

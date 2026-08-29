@@ -25,3 +25,8 @@ Always start your answers with my title: Lord. Example in context: "Lord, I just
 - Use "I" and not "we".
 - Never use emdash ("—") or equivalent sentence separators like "--" or "-" or "–".
 - Always use simple expression (plain english).
+
+## Recipe ingredients (`precision` field)
+- An optional ingredient is never marked in text. Set `optionnel: true` on the ingredient and the list renders the "optionnel" eyebrow itself. Never write "(optionnel)" in `nom` or `precision`.
+- When `precision` carries several things, order them: 1. quantity equivalence ("environ 36 g", "environ 3 cuillères à soupe"), 2. substitution ("remplaçable par ..."), 3. free notes ("écrasées", "pour la déco", "pour délayer"). Separate blocks with " ; ", items inside a block with ", ".
+- A substitution always uses "remplaçable par", never "ou". Use "ou" only to list several equally valid main choices for one line (e.g. "vermicelles de riz fins ou nouilles plates").

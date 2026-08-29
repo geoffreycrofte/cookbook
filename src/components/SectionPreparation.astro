@@ -9,6 +9,7 @@ interface Ingredient {
   nom: string;
   precision?: string;
   ajustable: boolean;
+  optionnel: boolean;
 }
 
 interface Etape {
@@ -74,7 +75,12 @@ const Titre = total > 1 ? 'h3' : 'h2';
               <label class="ingredient__ligne">
                 <input type="checkbox" data-coche={`s${rang}-ingredient-${i}`} />
                 <span class="ingredient__marque" aria-hidden="true" />
-                <span class="ingredient__nom">{nom}</span>
+                <span class="ingredient__nom">
+                  {ingredient.optionnel && (
+                    <span class="ingredient__option">optionnel</span>
+                  )}
+                  {nom}
+                </span>
                 {mesure && (
                   <span
                     class="ingredient__mesure"
@@ -234,6 +240,21 @@ const Titre = total > 1 ? 'h3' : 'h2';
 
   .ingredient__nom {
     flex: 0 1 auto;
+  }
+
+  /* Petit chapeau au-dessus du nom pour un ingrédient qu'on peut omettre. */
+  .ingredient__option {
+    display: block;
+    color: var(--encre-doux);
+    font-size: 0.6875rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .ingredient.est-fait .ingredient__option {
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
   }
 
   .ingredient__mesure {

@@ -1,6 +1,6 @@
 ---
 titre: "Soupe de nouilles froides au saumon mariné"
-description: "Une soupe froide crémeuse parfaite pour l'été. Le saumon mariné se cuit à l'airfryer, la soupe se mixe au blender, le tout servi sur des nouilles soba froides."
+description: "Une soupe froide crémeuse parfaite pour l'été. Le saumon mariné se cuit à l'airfryer, la soupe se mixe au blender, le tout servi sur des nouilles de riz froides."
 image: "./plat-fini.jpg"
 imageAlt: "Un bol de nouilles froides nappées d'une soupe crémeuse claire, avec des lamelles de concombre, des edamames et un pavé de saumon posé dessus"
 credit: "Geoffrey"
@@ -18,7 +18,7 @@ secouerAMiCuisson: false
 categorie: "plat"
 difficulte: "facile"
 saison: ["ete"]
-regime: []
+regime: ["sans-gluten"]
 tags: ["saumon", "asiatique", "japonais", "airfryer", "été"]
 flemme: false
 
@@ -33,30 +33,27 @@ parties:
       - quantite: 2
         unite: "cuillère à soupe"
         nom: "pâte de miso"
+        precision: "miso de riz pour rester sans gluten"
       - quantite: 1
         unite: "cuillère à café"
         nom: "huile de sésame"
       - quantite: 2
         unite: "cuillère à soupe"
-        nom: "sauce soja"
+        nom: "sauce soja (sans gluten)"
       - quantite: 3
         unite: "pièce"
         nom: "oignons nouveaux"
-      - quantite: 2
-        unite: "gousse"
-        nom: "ail"
-        precision: "écrasées, optionel"
-        ajustable: false
-      - quantite: 1
-        unite: "cuillère à soupe"
-        nom: "gochujang"
-        precision: "optionel, pour épicer ; remplaçable par de l'harissa ou toute pâte pimentée"
-        ajustable: false
       - nom: "eau"
         precision: "pour délayer la marinade"
         ajustable: false
+      - quantite: 2
+        unite: "gousse"
+        nom: "ail"
+        precision: "écrasées"
+        ajustable: false
+        optionnel: true
     etapes:
-      - texte: "Mélanger tous les ingrédients listés de la marinade : pâte de miso, huile de sésame, sauce soja, oignons nouveaux émincés, ail écrasé et gochujang. Délayer avec un peu d'eau pour obtenir une pâte souple."
+      - texte: "Mélanger tous les ingrédients listés de la marinade : pâte de miso, huile de sésame, sauce soja, oignons nouveaux émincés et ail écrasé. Délayer avec un peu d'eau pour obtenir une pâte souple."
         image: ./step-01.jpg
         imageAlt: "Préparation d'un saumon mariné, ail pâte miso ajoutés à une sauce soja avec des oignons nouveaux, puis un filet de saumon enrobé de cette marinade dans un bol, et enfin deux filets marinés placés dans le panier du airfryer."
       - texte: "Masser les pavés de saumon avec la marinade et laisser mariner au moins 30 minutes."
@@ -68,6 +65,7 @@ parties:
       - quantite: 35
         unite: "g"
         nom: "pâte de miso"
+        precision: "miso de riz pour rester sans gluten"
       - quantite: 10
         unite: "g"
         nom: "tahini"
@@ -86,23 +84,25 @@ parties:
       - quantite: 35
         unite: "g"
         nom: "pâte de curry rouge"
-        precision: "optionel, environ 35 g (20 ml + 15 g) ; remplaçable par n'importe quelle pâte de piment"
+        precision: "remplaçable par n'importe quelle pâte de piment sans gluten"
+        optionnel: true
       - nom: "arôme de coco"
-        precision: "optionel, à doser avec parcimonie car il est souvent sucré"
+        precision: "à doser avec parcimonie car il est souvent sucré"
         ajustable: false
+        optionnel: true
     etapes:
-      - texte: "Mettre tous les ingrédients listés de la soupe dans le blender et mixer jusqu'à obtenir une soupe crémeuse et rose si vous avez mis le gojuchang ou la pâte de curry rouge."
+      - texte: "Mettre tous les ingrédients listés de la soupe dans le blender et mixer jusqu'à obtenir une soupe crémeuse et rose si vous avez mis la pâte de curry rouge."
         image: ./step-02.jpg
         imageAlt: "Un paquet de tofu soyeux, un pot de pâte de curry rouge vide et une boîte de lait d'avoine bio sans sucre suivit des morceaux de tofu dans le bol d'un mini blender posé sur un plan de travail"
       - texte: "Si la soupe est trop dense, la délayer petit à petit avec de l'eau ou du lait végétal jusqu'à la consistance voulue."
-  - nom: "Les nouilles soba"
+  - nom: "Les nouilles de riz"
     ingredients:
       - quantite: 200
         unite: "g"
-        nom: "nouilles soba"
-        precision: "de 150 à 250 g par personne ; remplaçables par n'importe quelles nouilles froides, du konjac, des nouilles de haricots noirs, etc."
+        nom: "nouilles de riz"
+        precision: "de 150 à 250 g par personne : vermicelles de riz fins, nouilles de riz plates type pad thaï ou nouilles de riz complet ; remplaçables par du konjac, des nouilles de haricot mungo, des nouilles de patate douce ou des soba 100 % sarrasin"
     etapes:
-      - texte: "Cuire les nouilles soba selon les indications du paquet."
+      - texte: "Cuire les nouilles de riz selon les indications du paquet."
       - texte: "Les refroidir sous l'eau froide, avec des glaçons si besoin, puis bien les égoutter."
   - nom: "Le montage"
     ingredients:
@@ -119,8 +119,9 @@ parties:
         nom: "beni shoga"
         precision: "une cuillère à soupe par personne"
       - nom: "furikake"
-        precision: "optionel, pour décorer"
+        precision: "pour décorer"
         ajustable: false
+        optionnel: true
     etapes:
       - texte: "Dresser les nouilles puis la soupe dans l'assiette."
         image: ./step-03.jpg
@@ -141,4 +142,4 @@ Tout se prépare à l'avance et se garde au frais : il ne reste que le montage a
 
 ## Variantes
 
-Les nouilles soba se remplacent par n'importe quelles nouilles froides, du konjac ou des nouilles de haricots noirs.
+Les nouilles de riz se remplacent par du konjac, des nouilles de haricot mungo, des nouilles de patate douce ou des soba 100 % sarrasin. Pour garder la recette sans gluten, prendre une sauce soja sans gluten, un miso de riz et une pâte pimentée certifiée sans gluten.

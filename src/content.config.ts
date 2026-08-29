@@ -54,6 +54,8 @@ const ingredient = z.object({
   precision: facultatif(z.string()),
   /** false pour ce qui ne se multiplie pas avec les portions (sel, épices d'assaisonnement). */
   ajustable: z.boolean().default(true),
+  /** true pour un ingrédient qu'on peut omettre : la liste l'affiche comme « optionnel ». */
+  optionnel: z.boolean().default(false),
 });
 
 /**
