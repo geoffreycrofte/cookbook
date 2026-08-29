@@ -3,14 +3,14 @@
 Objectif : remplacer la palette actuelle (« Papier & braise », crème + brun +
 terracotta) jugée trop générique. Travail mené sur la branche `theme-couleurs`.
 
-Deux palettes retenues pour essai, toutes deux issues de fichiers Figma avec
-matrice de contraste. Les jeux de tokens prêts à coller sont dans
-`src/styles/themes/` :
+Trois palettes retenues pour essai. Les jeux de tokens prêts à coller sont
+dans `src/styles/themes/` :
 
-| Palette | Fichier | Identité |
-| --- | --- | --- |
-| Rumi | `src/styles/themes/rumi.css` | Violet profond + ambre |
-| Soda Pop | `src/styles/themes/soda-pop.css` | Jaune fluo + magenta fraise |
+| Palette | Fichier | Identité | Source |
+| --- | --- | --- | --- |
+| Rumi | `src/styles/themes/rumi.css` | Violet profond + ambre | Figma + matrice |
+| Soda Pop | `src/styles/themes/soda-pop.css` | Jaune fluo + magenta fraise | Figma + matrice |
+| Tomate & basilic | `src/styles/themes/tomate-basilic.css` | Rouge tomate franc + vert basilic | Composée à la main, ratios calculés |
 
 ## Correspondance des tokens
 
@@ -51,6 +51,19 @@ Rôle par token :
 Règle Soda Pop : le jaune fluo `main-50` ne sert jamais de couleur de texte
 (1.18:1 sur blanc), uniquement en aplat.
 
+### Tomate & basilic
+
+Pas de matrice Figma : ratios calculés (WCAG 2.1), à confirmer avec
+`npm run contrastes`.
+
+| usage | clair | sombre |
+| --- | --- | --- |
+| corps | encre `#1b1b19` / papier, ~16 AAA | encre `#f2f1ec` / carte, ~15 AAA |
+| titres, chiffres, liens | rouge `#b8302a`, ~5.5 AA | rouge `#f0897c`, ~7 AA |
+| aplats / boutons | blanc sur rouge `#cf3a2e`, ~4.9 AA | `#1a0908` sur rouge `#e75b4c`, ~5.7 AA |
+| donnée de cuisson | vert basilic `#3d6b3a`, ~5.7 AA | vert basilic `#6fae6a`, ~6.5 AA |
+| texte atténué | gris `#57574f`, ~7 AAA | gris `#a8a89f`, ~7 AAA |
+
 ## Valeurs dérivées (hors matrice)
 
 Chaque palette Figma s'arrête à un `gray-100` unique, insuffisant pour un fond
@@ -58,8 +71,10 @@ de page + une carte distincts en mode sombre. Valeurs ajoutées à la main :
 
 - Rumi sombre : `--papier #2e262f`, `--papier-creux #271f28`.
 - Soda Pop sombre : `--papier #2b1728`, `--papier-creux #241320`.
-- Les deux, mode clair : `--papier-creux` est un gris/rose très pâle pour les
-  aplats calmes (emplacements photo).
+- Rumi / Soda Pop, mode clair : `--papier-creux` est un gris/rose très pâle
+  pour les aplats calmes (emplacements photo).
+- Tomate & basilic : toute la palette est composée à la main, aucun ratio
+  n'est vérifié par une source externe.
 
 ## Pour brancher une palette
 
@@ -78,6 +93,7 @@ Maquettes de la recette « croustillants de poulet » dans chaque palette
 
 - Rumi : https://claude.ai/code/artifact/81db6232-75e3-4681-83d9-5a53222ecaf9
 - Soda Pop : https://claude.ai/code/artifact/691cc226-f5e5-4d3d-810b-a5feca3f3054
+- Tomate & basilic : https://claude.ai/code/artifact/950e8f2c-1626-4fc1-9226-1a67de069477
 
 ## Tests à faire par l'utilisateur
 

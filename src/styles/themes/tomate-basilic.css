@@ -1,0 +1,56 @@
+/*
+  Palette candidate « Tomate & basilic » (rouge tomate + vert basilic)
+  -------------------------------------------------------------------
+  Pas de source Figma : palette composée à la main. Les ratios ci-dessous sont
+  calculés (WCAG 2.1, sRGB), pas lus dans une matrice. AA visé partout ; à
+  confirmer avec `npm run contrastes` avant de brancher.
+
+  Non branchée : pour l'essayer, remplacer les valeurs correspondantes dans
+  les trois blocs de src/styles/global.css (clair + 2 sombres) et reporter le
+  THEME_SOMBRE de scripts/verifier-contrastes.mjs.
+
+  Intention : garder de la chaleur (rouge franc, pas terracotta brun), papier
+  gris neutre plutôt que crème, vert basilic pour la donnée secondaire.
+*/
+
+:root {
+  color-scheme: light;
+
+  --papier: #f6f6f4;
+  --papier-creux: #eae9e5;
+  --papier-carte: #ffffff;
+
+  --encre: #1b1b19;          /* sur papier : ~16:1 AAA */
+  --encre-doux: #57574f;     /* sur papier : ~7:1 AAA  */
+  --regle: #dcdbd4;          /* filet non textuel      */
+
+  --braise: #cf3a2e;         /* aplats : blanc dessus ~4.9:1 AA */
+  --braise-texte: #b8302a;   /* sur papier : ~5.5:1 AA */
+  --sur-braise: #fff5f4;
+
+  --olive: #3d6b3a;          /* vert basilic sur papier : ~5.7:1 AA */
+
+  --ombre-papier: 0 1px 2px rgb(27 27 25 / 0.07), 0 10px 28px -14px rgb(27 27 25 / 0.22);
+}
+
+/* Sombre : à dupliquer dans @media (prefers-color-scheme: dark) et dans
+   :root[data-theme='sombre'] de global.css. */
+:root[data-theme='sombre'] {
+  color-scheme: dark;
+
+  --papier: #121210;
+  --papier-creux: #1a1a18;
+  --papier-carte: #1d1d1b;
+
+  --encre: #f2f1ec;          /* sur carte : ~15:1 AAA */
+  --encre-doux: #a8a89f;     /* sur carte : ~7:1 AAA  */
+  --regle: #33332e;          /* filet non textuel     */
+
+  --braise: #e75b4c;         /* aplats : #1a0908 dessus ~5.7:1 AA */
+  --braise-texte: #f0897c;   /* sur carte : ~7:1 AA */
+  --sur-braise: #1a0908;
+
+  --olive: #6fae6a;          /* vert basilic sur carte : ~6.5:1 AA */
+
+  --ombre-papier: 0 1px 2px rgb(0 0 0 / 0.45), 0 10px 28px -14px rgb(0 0 0 / 0.75);
+}
