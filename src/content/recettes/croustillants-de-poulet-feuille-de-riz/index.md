@@ -45,7 +45,7 @@ parties:
         precision: "environ 10 g"
       - quantite: 2
         unite: "cuillère à soupe"
-        nom: "sauce d'huître (sans gluten)"
+        nom: "sauce d'huître sans gluten"
         precision: "environ 36 g ; aussi appelé oyster sauce, remplaçable par de la sauce soja sans gluten"
       - quantite: 20
         unite: "g"

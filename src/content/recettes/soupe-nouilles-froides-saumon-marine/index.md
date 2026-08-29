@@ -39,7 +39,7 @@ parties:
         nom: "huile de sésame"
       - quantite: 2
         unite: "cuillère à soupe"
-        nom: "sauce soja (sans gluten)"
+        nom: "sauce soja sans gluten"
       - quantite: 3
         unite: "pièce"
         nom: "oignons nouveaux"

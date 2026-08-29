@@ -170,8 +170,8 @@ const Titre = total > 1 ? 'h3' : 'h2';
 
   .ingredient__ligne {
     display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
+    align-items: flex-start;
+    gap: 0.75rem;
     cursor: pointer;
   }
 
@@ -191,7 +191,10 @@ const Titre = total > 1 ? 'h3' : 'h2';
     flex: 0 0 auto;
     inline-size: 1.0625rem;
     block-size: 1.0625rem;
-    align-self: center;
+    align-self: flex-start;
+    /* Rattrape le demi-interligne du nom pour que le haut de la case
+       tombe sur le haut du texte de la première ligne. */
+    margin-block-start: calc((1.4 - 1) * 0.5em);
     border: 1.5px solid var(--encre-doux);
     border-radius: 3px;
   }
@@ -240,6 +243,7 @@ const Titre = total > 1 ? 'h3' : 'h2';
 
   .ingredient__nom {
     flex: 0 1 auto;
+    line-height: 1.4;
   }
 
   /* Petit chapeau au-dessus du nom pour un ingrédient qu'on peut omettre. */
@@ -259,18 +263,23 @@ const Titre = total > 1 ? 'h3' : 'h2';
 
   .ingredient__mesure {
     flex: 0 0 auto;
+    /* auto pousse la mesure à droite ; le padding garantit un écart
+       minimal même quand le nom occupe presque toute la ligne. */
     margin-inline-start: auto;
+    padding-inline-start: 1.5rem;
     font-variation-settings: 'wght' 700;
+    line-height: 1.4;
     white-space: nowrap;
   }
 
   .ingredient__precision {
     display: block;
-    max-inline-size: 32ch;
-    margin-block-start: 0.15rem;
+    /* Aligné à gauche avec le nom : on saute la case et son gap. */
+    margin-block-start: 0.35rem;
+    margin-inline-start: calc(1.0625rem + 0.75rem);
     color: var(--encre-doux);
     font-size: 0.875rem;
-    line-height: 1.4;
+    line-height: 1.25;
   }
 
   .liste-etapes {
