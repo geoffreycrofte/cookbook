@@ -75,7 +75,6 @@ const Titre = total > 1 ? 'h3' : 'h2';
                 <input type="checkbox" data-coche={`s${rang}-ingredient-${i}`} />
                 <span class="ingredient__marque" aria-hidden="true" />
                 <span class="ingredient__nom">{nom}</span>
-                <span class="ingredient__conduite" aria-hidden="true" />
                 {mesure && (
                   <span
                     class="ingredient__mesure"
@@ -158,8 +157,7 @@ const Titre = total > 1 ? 'h3' : 'h2';
     list-style: none;
   }
 
-  /* Ligne façon carte de restaurant : nom à gauche, mesure à droite,
-     points de conduite entre les deux. */
+  /* Ligne façon carte de restaurant : nom à gauche, mesure à droite. */
   .ingredient {
     padding-block: 0.6rem;
   }
@@ -238,15 +236,9 @@ const Titre = total > 1 ? 'h3' : 'h2';
     flex: 0 1 auto;
   }
 
-  .ingredient__conduite {
-    flex: 1 1 1rem;
-    min-inline-size: 1rem;
-    border-block-end: 1px dotted var(--regle);
-    transform: translateY(-0.3em);
-  }
-
   .ingredient__mesure {
     flex: 0 0 auto;
+    margin-inline-start: auto;
     font-variation-settings: 'wght' 700;
     white-space: nowrap;
   }

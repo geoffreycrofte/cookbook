@@ -28,7 +28,7 @@ interface Ingredient {
 
 /**
  * Sépare l'ingrédient en trois blocs, pour l'affichage en liste de menu :
- * le nom à gauche, la mesure à droite, reliés par des points de conduite,
+ * le nom à gauche, la mesure à droite,
  * et la précision sur une ligne discrète en dessous.
  * La mesure est vide pour les ingrédients non mesurés ("sel et poivre").
  */
