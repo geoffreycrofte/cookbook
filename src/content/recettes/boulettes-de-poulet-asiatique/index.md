@@ -19,7 +19,7 @@ categorie: "plat"
 difficulte: "facile"
 saison: ["automne", "hiver"]
 regime: ["sans-gluten"]
-tags: ["poulet", "asiatique", "apéritif", "familial"]
+tags: ["poulet", "asiatique"]
 flemme: false
 
 parties:
