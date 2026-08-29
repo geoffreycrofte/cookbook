@@ -118,7 +118,7 @@ const recettes = defineCollection({
       image: contexte.image(),
       /** Alternative textuelle. Obligatoire : c'est une exigence d'accessibilité. */
       imageAlt: texteFr(),
-      /** Crédit photo, quand elle n'est pas de moi. */
+      /** Crédit photo, quand elle n'est pas de nous. */
       credit: facultatif(z.string()),
 
       // Temps et rendement
@@ -145,7 +145,7 @@ const recettes = defineCollection({
       tags: z
         .array(z.string().transform((t) => t.trim().toLowerCase()))
         .default([]),
-      /** Tirage « J'ai la flemme ». Drapeau manuel, c'est mon jugement qui décide. */
+      /** Tirage « J'ai la flemme ». Drapeau manuel, c'est notre jugement qui décide. */
       flemme: z.boolean().default(false),
 
       /**
@@ -206,4 +206,65 @@ const recettes = defineCollection({
       })),
 });
 
-export const collections = { recettes };
+/**
+ * Une pièce de matériel = un dossier dans src/content/materiel/<slug>/
+ * contenant index.md et sa photo carrée.
+ *
+ * Le slug sert d'ancre sur la page /materiel/ : une recette renvoie vers
+ * `/materiel/#airfryer` et la page met l'élément en avant. Renommer un dossier
+ * casse donc les liens des recettes, autant le choisir une fois pour toutes.
+ */
+
+const RUBRIQUES = ['cuisson', 'ustensile', 'ingredient'] as const;
+
+/*
+ * Note : la forme carrée de la photo ne peut pas être vérifiée par le schéma.
+ * Le chargeur de contenu ne résout les dimensions qu'au rendu de la page ; ici,
+ * `image()` ne voit encore qu'un chemin. La page recadre donc au centre en 1/1,
+ * et l'interface d'édition rappelle d'y déposer un carré.
+ */
+
+const materiel = defineCollection({
+  loader: glob({
+    pattern: '**/index.md',
+    base: './src/content/materiel',
+    generateId: ({ entry }) => entry.replace(/\/index\.md$/, ''),
+  }),
+
+  schema: (contexte) =>
+    z.object({
+      nom: texteFr(),
+      description: z.string().min(1).max(400).transform(typographieFr),
+
+      image: contexte.image(),
+      /** Alternative textuelle. Obligatoire : c'est une exigence d'accessibilité. */
+      imageAlt: texteFr(),
+
+      rubrique: z.enum(RUBRIQUES),
+
+      /**
+       * Lien vers le produit, souvent affilié. Facultatif : un ustensile peut
+       * n'avoir aucun lien digne de confiance.
+       */
+      lien: facultatif(z.string().url().startsWith('https://', 'Le lien doit être en HTTPS.')),
+      /** Nom du marchand, affiché dans le libellé du lien : « Voir sur Amazon ». */
+      lienMarchand: facultatif(z.string().min(1)),
+      /** true quand le lien rapporte une commission : la page l'annonce alors. */
+      lienAffilie: z.boolean().default(false),
+
+      /** Tri manuel à l'intérieur de la rubrique, du plus petit au plus grand. */
+      ordre: z.number().int().default(100),
+
+      miseAJour: z.coerce.date(),
+      /** Exclu du site publié tant que true. */
+      brouillon: z.boolean().default(false),
+    }).refine((m) => m.lien !== undefined || m.lienMarchand === undefined, {
+      message: 'Un marchand sans lien n’a rien à afficher : indiquez le lien, ou retirez le marchand.',
+      path: ['lienMarchand'],
+    }).refine((m) => m.lien !== undefined || !m.lienAffilie, {
+      message: '« lienAffilie » ne s’applique qu’à un élément qui a un lien.',
+      path: ['lienAffilie'],
+    }),
+});
+
+export const collections = { recettes, materiel };

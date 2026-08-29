@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const racine = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dossierRecettes = path.join(racine, 'src/content/recettes');
+const dossierMateriel = path.join(racine, 'src/content/materiel');
 const dist = path.join(racine, 'dist');
 
 const echecs = [];
@@ -49,6 +50,37 @@ async function recettesAttendues() {
   }
 
   return attendues;
+}
+
+/** Slugs attendus sur la page matériel : un dossier non marqué brouillon. */
+async function materielAttendu() {
+  if (!existsSync(dossierMateriel)) return [];
+
+  const dossiers = await readdir(dossierMateriel, { withFileTypes: true });
+  const attendus = [];
+
+  for (const dossier of dossiers) {
+    if (!dossier.isDirectory()) continue;
+
+    const fichier = path.join(dossierMateriel, dossier.name, 'index.md');
+    if (!existsSync(fichier)) {
+      echecs.push(`Le dossier de matériel « ${dossier.name} » ne contient pas d'index.md.`);
+      continue;
+    }
+
+    const source = await readFile(fichier, 'utf-8');
+    if (/^brouillon:\s*true\s*$/m.test(source)) continue;
+
+    const nom = source.match(/^nom:\s*"?(.+?)"?\s*$/m)?.[1];
+    if (!nom) {
+      echecs.push(`L'élément de matériel « ${dossier.name} » n'a pas de nom exploitable.`);
+      continue;
+    }
+
+    attendus.push({ slug: dossier.name, nom });
+  }
+
+  return attendus;
 }
 
 if (!existsSync(dist)) {
@@ -91,6 +123,31 @@ for (const { slug, titre } of attendues) {
   );
 }
 
+/**
+ * La page matériel. Ses ancres sont un contrat avec les recettes, qui y
+ * renvoient sous la forme /materiel/#airfryer : une ancre disparue est un lien
+ * mort, sans erreur visible au build.
+ */
+const materiel = await materielAttendu();
+const pageMateriel = path.join(dist, 'materiel', 'index.html');
+
+if (materiel.length > 0) {
+  if (!existsSync(pageMateriel)) {
+    echecs.push('La page /materiel/ n’a pas été générée.');
+  } else {
+    const contenu = await readFile(pageMateriel, 'utf-8');
+    constate(contenu.includes('<h1'), 'La page /materiel/ n’a pas de titre de niveau 1.');
+
+    for (const { slug, nom } of materiel) {
+      constate(
+        contenu.includes(`id="${slug}"`),
+        `L’ancre « #${slug} » est absente de la page /materiel/.`,
+      );
+      constate(contenu.includes(nom), `Le nom « ${nom} » n’apparaît pas sur la page /materiel/.`);
+    }
+  }
+}
+
 if (echecs.length > 0) {
   console.error('\nLe site construit ne rend pas ce qu’il devrait :\n');
   for (const echec of echecs) console.error(`  · ${echec}`);
@@ -99,5 +156,6 @@ if (echecs.length > 0) {
 }
 
 console.log(
-  `\n${attendues.length} recette(s) publiée(s) et référencée(s) sur la page d’accueil.\n`,
+  `\n${attendues.length} recette(s) publiée(s) et référencée(s) sur la page d’accueil.` +
+    `\n${materiel.length} élément(s) de matériel publié(s) avec leur ancre.\n`,
 );

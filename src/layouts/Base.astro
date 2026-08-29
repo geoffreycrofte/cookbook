@@ -127,7 +127,7 @@ const annee = new Date().getFullYear();
           <span class="marque__complement">du Lux</span>
         </a>
         <div class="entete__outils">
-          <p class="entete__note">Testées dans ma cuisine</p>
+          <p class="entete__note">Testées dans notre cuisine</p>
           <BasculeTheme />
         </div>
       </div>
@@ -142,7 +142,7 @@ const annee = new Date().getFullYear();
         <div>
           <p class="pied__signature">Recettes <em>du Lux</em></p>
           <p class="pied__mention">
-            Mes recettes, mes ratages et mes réussites. {annee}.
+            Nos recettes, nos ratages et nos réussites. {annee}.
           </p>
         </div>
 
@@ -150,9 +150,32 @@ const annee = new Date().getFullYear();
         <nav class="pied__nav" aria-label="Pied de page">
           <h2 class="sr-uniquement">Navigation du pied de page</h2>
           <ul>
-            <li><a href="/">Toutes les recettes</a></li>
+            <li><a href="/materiel/">Notre matériel de cuisine</a></li>
             <li><a href="/plan-du-site/">Plan du site</a></li>
-            <li><a href="/rss.xml">Flux RSS</a></li>
+            <li><a href="/conditions-d-utilisation/">Conditions d’utilisation</a></li>
+            <li>
+              {/*
+                Le nom accessible du lien vient du texte masqué : une icône
+                seule n'en donne aucun. Le SVG est décoratif et retiré de
+                l'arbre d'accessibilité (RAWeb 1.2).
+              */}
+              <a class="pied__flux" href="/rss.xml">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M5 12a7 7 0 0 1 7 7"></path>
+                  <path d="M5 5a14 14 0 0 1 14 14"></path>
+                  <circle cx="5.5" cy="18.5" r="1.6" fill="currentColor" stroke="none"></circle>
+                </svg>
+                <span class="sr-uniquement">Flux RSS</span>
+              </a>
+            </li>
           </ul>
         </nav>
       </div>
@@ -286,5 +309,20 @@ const annee = new Date().getFullYear();
     align-items: center;
     min-block-size: 1.75rem;
     font-size: 0.9375rem;
+  }
+
+  /*
+    Sélecteur en deux parties pour passer devant « .pied__nav a », plus
+    spécifique qu'une classe seule.
+  */
+  .pied__nav .pied__flux {
+    justify-content: center;
+    inline-size: 2rem;
+    min-block-size: 2rem;
+  }
+
+  .pied__nav .pied__flux svg {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
   }
 </style>

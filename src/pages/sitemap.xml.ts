@@ -22,12 +22,30 @@ export const GET: APIRoute = async ({ site }) => {
     return !plus || date > plus ? date : plus;
   }, undefined);
 
+  const materiel = await getCollection('materiel', ({ data }) => !data.brouillon);
+  const materielRecent = materiel.reduce<Date | undefined>((plus, element) => {
+    const date = element.data.miseAJour;
+    return !plus || date > plus ? date : plus;
+  }, undefined);
+
   const pages = [
     {
       url: new URL('/', site).href,
       date: laPlusRecente,
       priorite: '1.0',
       frequence: 'weekly',
+    },
+    {
+      url: new URL('/materiel/', site).href,
+      date: materielRecent,
+      priorite: '0.5',
+      frequence: 'monthly',
+    },
+    {
+      url: new URL('/conditions-d-utilisation/', site).href,
+      date: undefined,
+      priorite: '0.2',
+      frequence: 'yearly',
     },
     {
       url: new URL('/plan-du-site/', site).href,

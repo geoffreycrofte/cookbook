@@ -1,6 +1,6 @@
 # Recettes du Lux
 
-Le code de [recettes.crofte.fr](https://recettes.crofte.fr) : mon carnet de recettes, en site statique.
+Le code de [recettes.crofte.fr](https://recettes.crofte.fr) : notre carnet de recettes, en site statique.
 
 Construit avec [Astro](https://astro.build), publié sur GitHub Pages à chaque push sur `main`.
 
@@ -81,6 +81,37 @@ parties:
 Une recette utilise soit `ingredients` et `etapes`, soit `parties`, jamais les deux. Le build refuse les deux autres cas avec un message explicite. Le champ `note` est facultatif et sert aux indications d'enchaînement.
 - `brouillon: true` garde la recette hors du site publié.
 
+## Ajouter du matériel de cuisine
+
+La page [`/materiel/`](https://recettes.crofte.fr/materiel/) liste le matériel
+de cuisson, les ustensiles et les ingrédients difficiles à trouver. Un élément
+est un dossier dans `src/content/materiel/`, nommé d'après son ancre :
+
+```
+src/content/materiel/
+  airfryer/
+    index.md      ← la fiche
+    photo.png     ← la photo, carrée
+```
+
+Points à retenir :
+
+- Le nom du dossier est l'ancre de l'élément sur la page : `airfryer` devient
+  `/materiel/#airfryer`. Une recette y renvoie depuis son corps markdown, et la
+  page met la fiche en avant à l'arrivée. Renommer un dossier casse ces liens.
+- `rubrique` vaut `cuisson`, `ustensile` ou `ingredient`. La liste s'étend dans
+  `src/content.config.ts` et `src/lib/format.ts`.
+- La photo doit être carrée. Le build ne peut pas le vérifier, la page recadre
+  au centre : une photo qui ne l'est pas se fait rogner.
+- `lien` est facultatif et doit être en HTTPS. `lienMarchand` donne le libellé
+  (« Voir sur Amazon ») et `lienAffilie: true` affiche la mention de
+  transparence sur la page ainsi qu'un marqueur sur le lien.
+- `ordre` trie à l'intérieur de la rubrique, du plus petit au plus grand.
+- `brouillon: true` garde l'élément hors du site publié.
+
+Le détail de la page et ses tests de validation sont dans
+[`docs/PAGE-MATERIEL.md`](docs/PAGE-MATERIEL.md).
+
 ## Éditer depuis une interface (/admin)
 
 Le site expose une interface d'édition sur [recettes.crofte.fr/admin/](https://recettes.crofte.fr/admin/), propulsée par [Sveltia CMS](https://sveltiacms.app/). Elle écrit des fichiers `.md` dans ce dépôt : le markdown reste la source de vérité, l'interface n'est qu'un confort.
@@ -125,6 +156,21 @@ Le script réécrit l'URL et recalcule l'empreinte. Relancez `npm run cms:verifi
 ## Déploiement
 
 Le workflow `.github/workflows/deploy.yml` construit et publie sur GitHub Pages à chaque push sur `main`. Le domaine personnalisé est déclaré dans `public/CNAME`.
+
+## Pages de contenu
+
+Deux pages éditoriales complètent les recettes :
+
+- `/materiel/` : le matériel de cuisine, alimenté par la collection `materiel`
+  (voir plus haut).
+- `/conditions-d-utilisation/` : conditions d'utilisation, mentions légales et
+  politique de données, en une seule page. Elle est écrite en dur dans
+  `src/pages/conditions-d-utilisation.astro`, et les données d'identité
+  (éditeur, hébergeur, seuil de reversement, adresse de contact) viennent de
+  `src/lib/site.ts`.
+
+Le site parle au pluriel : il est tenu par Stéphanie et Geoffrey. Les nouvelles
+pages suivent cette voix, « nous » et « on », jamais « je ».
 
 ## Documentation
 

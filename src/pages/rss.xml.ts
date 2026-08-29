@@ -43,7 +43,7 @@ ${d.tags.map((tag) => `      <category>${echapper(tag)}</category>`).join('\n')}
     <title>Recettes du Lux</title>
     <link>${echapper(new URL('/', site).href)}</link>
     <atom:link href="${echapper(lienFlux)}" rel="self" type="application/rss+xml" />
-    <description>Mes recettes, testées dans ma cuisine.</description>
+    <description>Nos recettes, testées dans notre cuisine.</description>
     <language>fr-FR</language>
 ${articles}
   </channel>

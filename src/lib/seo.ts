@@ -35,7 +35,8 @@ interface Options {
   url: string;
   /** URL absolue de l'image principale. */
   image: string;
-  auteur: string;
+  /** Les personnes créditées. Le site en compte deux. */
+  auteurs: readonly string[];
   /**
    * URL absolue de l'illustration de chaque étape qui en a une, rangée sous
    * l'objet étape lui-même. Les chemins optimisés ne sont connus qu'au rendu
@@ -48,7 +49,7 @@ export function jsonLdRecette({
   recette,
   url,
   image,
-  auteur,
+  auteurs,
   imagesEtapes,
 }: Options): Record<string, unknown> {
   const d = recette.data;
@@ -86,7 +87,7 @@ export function jsonLdRecette({
     name: d.titre,
     description: d.description,
     image: [image],
-    author: { '@type': 'Person', name: auteur },
+    author: auteurs.map((nom) => ({ '@type': 'Person', name: nom })),
     datePublished: d.miseAJour.toISOString().slice(0, 10),
     dateModified: d.miseAJour.toISOString().slice(0, 10),
     inLanguage: 'fr-FR',

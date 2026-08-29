@@ -1,0 +1,345 @@
+---
+import Base from '../layouts/Base.astro';
+import { AUTEURS_TEXTE, CONTACT, EDITEUR, HEBERGEUR, SEUIL_DON } from '../lib/site';
+
+/**
+ * Conditions d'utilisation, mentions légales et politique de données, en une
+ * seule page. Le site en compte trop peu pour justifier trois pages distinctes,
+ * et les personnes qui les cherchent les trouvent au même endroit.
+ *
+ * Les données d'identité (éditeur, hébergeur, seuil de don) viennent de
+ * src/lib/site.ts : elles servent aussi ailleurs, et ne doivent exister qu'une
+ * fois.
+ */
+
+const TITRE = 'Conditions d’utilisation';
+const DESCRIPTION =
+  'Ce que vous pouvez faire de ces recettes, comment fonctionnent les liens affiliés, qui édite le site et pourquoi aucune donnée n’est collectée.';
+
+const MISE_A_JOUR = new Date('2026-08-29');
+const dateMaj = MISE_A_JOUR.toLocaleDateString('fr-FR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const SECTIONS = [
+  { id: 'objet', titre: 'Pourquoi ce site existe' },
+  { id: 'recettes', titre: 'D’où viennent les recettes' },
+  { id: 'reutilisation', titre: 'Réutiliser nos recettes' },
+  { id: 'liens-affilies', titre: 'Liens affiliés et cagnotte' },
+  { id: 'responsabilite', titre: 'Ce que nous ne garantissons pas' },
+  { id: 'editeur', titre: 'Éditeur du site' },
+  ...(CONTACT ? [{ id: 'contact', titre: 'Nous écrire' }] : []),
+  { id: 'hebergement', titre: 'Hébergement' },
+  { id: 'donnees', titre: 'Données personnelles et cookies' },
+  { id: 'evolution', titre: 'Évolution de ces conditions' },
+];
+---
+
+<Base titre={TITRE} description={DESCRIPTION}>
+  <div class="cadre conditions">
+    <p class="conditions__surtitre">Le cadre</p>
+    <h1 class="conditions__titre">{TITRE}</h1>
+    <p class="conditions__chapeau">
+      Un carnet de cuisine n’a pas besoin d’un contrat de trente pages. Voici, en clair, ce que
+      vous pouvez faire de ce que vous trouvez ici, et ce que nous faisons de votre côté&#8239;:
+      rien du tout.
+    </p>
+    <p class="conditions__date">Dernière mise à jour&nbsp;: {dateMaj}.</p>
+
+    <nav class="conditions__sommaire" aria-labelledby="titre-sommaire">
+      <h2 class="rubrique" id="titre-sommaire">Sommaire</h2>
+      <ul>
+        {
+          SECTIONS.map((section) => (
+            <li>
+              <a href={`#${section.id}`}>{section.titre}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <section class="bloc" id="objet" aria-labelledby="titre-objet">
+      <h2 class="bloc__titre" id="titre-objet">Pourquoi ce site existe</h2>
+      <p>
+        Recettes du Lux est le carnet de cuisine de {AUTEURS_TEXTE}. Son but premier est de
+        partager nos recettes avec nos amis et notre famille, sans avoir à les recopier dans une
+        conversation à chaque fois qu’on nous les redemande. Que d’autres passent par là et s’en
+        servent nous fait plaisir, mais ce n’est pas un média, ce n’est pas un commerce, et
+        personne n’est payé pour l’écrire.
+      </p>
+      <p>
+        Utiliser le site n’exige ni compte, ni inscription, ni acceptation d’un long contrat. Le
+        consulter vaut acceptation de ce qui suit.
+      </p>
+    </section>
+
+    <section class="bloc" id="recettes" aria-labelledby="titre-recettes">
+      <h2 class="bloc__titre" id="titre-recettes">D’où viennent les recettes</h2>
+      <p>
+        Presque aucune recette ne sort de nulle part. Les nôtres sont des mélanges&#8239;: une base
+        trouvée sur internet, une variante lue ailleurs, une méthode empruntée à une vidéo, le tout
+        recuisiné chez nous jusqu’à tomber sur la version qui nous convient. Ce que vous lisez ici
+        est donc une adaptation, écrite avec nos mots, avec nos quantités et nos durées, telle que
+        nous la faisons réellement, avec <a href="/materiel">notre matériel</a>.
+      </p>
+      <p>
+        Une recette, en tant que suite d’ingrédients et d’opérations, n’est pas protégée par le
+        droit d’auteur&#8239;: c’est sa rédaction qui l’est. Nous ne recopions donc pas les textes
+        des autres. Si vous reconnaissez malgré tout votre travail dans l’un des nôtres, faites-le-nous
+        savoir et nous corrigerons ou retirerons la page.
+      </p>
+    </section>
+
+    <section class="bloc" id="reutilisation" aria-labelledby="titre-reutilisation">
+      <h2 class="bloc__titre" id="titre-reutilisation">Réutiliser nos recettes</h2>
+      <p>
+        Les textes de recettes de ce site sont libres de droits, à une seule condition&#8239;:
+        citer ce site. Vous pouvez les reprendre, les traduire, les adapter, les imprimer, les
+        cuisiner en atelier ou les publier ailleurs, <strong>en dehors d'un cadre commercial</strong>, tant que
+        la mention reste visible.
+      </p>
+      <p class="bloc__exemple">
+        D’après une recette de <strong>Recettes du Lux</strong>, recettes.crofte.fr
+      </p>
+      <p>
+        C’est l’esprit de la licence <span lang="en">Creative Commons</span> Attribution 4.0. En
+        pratique&#8239;: servez-vous, dites d’où ça vient.
+      </p>
+      <p>
+        Les photographies sont hors de cet accord. Elles viennent toutes de notre travail. Elles ne se
+        reprennent donc pas automatiquement avec le texte. Merci de respecter cet aspect.
+      </p>
+    </section>
+
+    <section class="bloc" id="liens-affilies" aria-labelledby="titre-liens-affilies">
+      <h2 class="bloc__titre" id="titre-liens-affilies">Liens affiliés et cagnotte</h2>
+      <p>
+        Certains liens de la page <a href="/materiel/">Notre matériel de cuisine</a> sont affiliés.
+        Si vous achetez à partir de l’un d’eux, nous touchons une petite commission, sans que le
+        prix change pour vous. Ces liens sont signalés un par un, sur la page même.
+      </p>
+      <p>
+        Il ne s’agit en aucun cas d’un partenariat avec les marques. Personne ne nous paie pour
+        figurer sur cette page, personne ne relit ce que nous en écrivons, et aucune marque n’a de
+        droit de regard sur le site. Nous citons ce que nous utilisons vraiment&#8239;; le lien
+        vient après, quand il en existe un.
+      </p>
+      <p>
+        Ce que rapporte l’affiliation part dans un pot commun. Il n’alimente pas nos courses&#8239;:
+        dès qu’il atteint {SEUIL_DON}&nbsp;€, la somme est reversée à une association. En dessous
+        de ce plancher, la cagnotte attend, parce qu’un don plus petit n'est pas reconnu au Luxembourg.
+      </p>
+    </section>
+
+    <section class="bloc" id="responsabilite" aria-labelledby="titre-responsabilite">
+      <h2 class="bloc__titre" id="titre-responsabilite">Ce que nous ne garantissons pas</h2>
+      <p>
+        Nous ne sommes pas des cuisiniers professionnels. Les durées, les températures et les
+        quantités sont celles qui marchent avec notre matériel, dans notre cuisine. Un four, un
+        airfryer ou une plaque ne se ressemblent jamais tout à fait&#8239;: surveillez, goûtez,
+        ajustez.
+      </p>
+      <p>
+        Les recettes ne tiennent pas lieu d’avis médical ni de garantie sanitaire. Les allergènes,
+        les cuissons à cœur des viandes et la conservation des restes relèvent de votre
+        vigilance. Les liens sortants mènent à des sites que nous ne maîtrisons pas, et dont nous
+        ne répondons pas.
+      </p>
+    </section>
+
+    <section class="bloc" id="editeur" aria-labelledby="titre-editeur">
+      <h2 class="bloc__titre" id="titre-editeur">Éditeur du site</h2>
+      <dl class="fiche">
+        <div>
+          <dt>Éditeur</dt>
+          <dd>{EDITEUR.nom}</dd>
+        </div>
+        <div>
+          <dt>Immatriculation</dt>
+          <dd>{EDITEUR.immatriculation}</dd>
+        </div>
+        <div>
+          <dt>Pays</dt>
+          <dd>{EDITEUR.pays}</dd>
+        </div>
+        <div>
+          <dt>Responsables de la publication</dt>
+          <dd>{AUTEURS_TEXTE}</dd>
+        </div>
+      </dl>
+    </section>
+
+    {
+      CONTACT && (
+        <section class="bloc" id="contact" aria-labelledby="titre-contact">
+          <h2 class="bloc__titre" id="titre-contact">
+            Nous écrire
+          </h2>
+          <p>
+            Une question, une erreur repérée, une recette que vous reconnaissez comme la
+            vôtre&#8239;: <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+          </p>
+        </section>
+      )
+    }
+
+    <section class="bloc" id="hebergement" aria-labelledby="titre-hebergement">
+      <h2 class="bloc__titre" id="titre-hebergement">Hébergement</h2>
+      <p>
+        Le site est hébergé en France, chez {HEBERGEUR.raisonSociale} ({HEBERGEUR.nom}),
+        {' '}{HEBERGEUR.adresse}.
+      </p>
+    </section>
+
+    <section class="bloc" id="donnees" aria-labelledby="titre-donnees">
+      <h2 class="bloc__titre" id="titre-donnees">Données personnelles et cookies</h2>
+      <p>
+        <strong>Aucun cookie de traçage n’est déposé, et aucune donnée personnelle n’est
+        traitée.</strong> Pas de mesure d’audience, pas de régie publicitaire, pas de bouton de
+        réseau social, pas de formulaire. Nous ne savons pas qui vous êtes et nous n’avons rien à
+        transmettre à qui que ce soit.
+      </p>
+      <p>
+        Deux choses seulement sont enregistrées dans votre navigateur, sur votre appareil, et n’en
+        sortent jamais&#8239;:
+      </p>
+      <ul>
+        <li>
+          votre choix de thème clair ou sombre, gardé dans le stockage local pour que la page ne
+          clignote pas au chargement suivant&#8239;;
+        </li>
+        <li>
+          les pages déjà consultées, mises en cache par le <span lang="en">service worker</span>
+          {' '}pour que le carnet reste lisible en cuisine sans réseau.
+        </li>
+      </ul>
+      <p>
+        Vider les données du site dans votre navigateur efface les deux, sans rien casser. Les
+        journaux techniques de l’hébergeur relèvent de sa propre politique.
+      </p>
+    </section>
+
+    <section class="bloc" id="evolution" aria-labelledby="titre-evolution">
+      <h2 class="bloc__titre" id="titre-evolution">Évolution de ces conditions</h2>
+      <p>
+        Ces conditions peuvent changer, par exemple si le site se met à proposer autre chose que
+        des recettes. La version en ligne fait foi, et sa date de mise à jour est indiquée en haut
+        de cette page.
+      </p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .conditions {
+    padding-block: clamp(3rem, 8vw, 5rem) 0;
+    max-inline-size: 52rem;
+  }
+
+  .conditions__surtitre {
+    margin: 0 0 1.25rem;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--braise-texte);
+  }
+
+  .conditions__titre {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 90, 'wght' 600;
+    letter-spacing: -0.03em;
+  }
+
+  .conditions__chapeau {
+    max-inline-size: var(--colonne-texte);
+    margin-block: 1.5rem 0;
+    color: var(--encre-doux);
+    font-size: 1.1875rem;
+  }
+
+  .conditions__date {
+    margin-block: 0.75rem 0;
+    color: var(--encre-doux);
+    font-size: 0.875rem;
+  }
+
+  .conditions__sommaire {
+    margin-block-start: 3rem;
+  }
+
+  .conditions__sommaire ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 0.25rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Cible tactile d'au moins 24 px (WCAG 2.5.8). */
+  .conditions__sommaire a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 1.75rem;
+  }
+
+  .bloc {
+    margin-block-start: 3.5rem;
+    scroll-margin-block-start: 2rem;
+    max-inline-size: var(--colonne-texte);
+  }
+
+  .bloc__titre {
+    font-size: clamp(1.375rem, 3.5vw, 1.75rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 36, 'wght' 600;
+  }
+
+  .bloc p,
+  .bloc ul {
+    margin-block: 1rem 0;
+  }
+
+  .bloc ul {
+    padding-inline-start: 1.25rem;
+  }
+
+  .bloc__exemple {
+    padding: 0.875rem 1.125rem;
+    border-inline-start: 3px solid var(--braise);
+    background: var(--papier-creux);
+    font-family: var(--police-titre);
+    font-variation-settings: 'SOFT' 40, 'opsz' 20, 'wght' 400;
+  }
+
+  .fiche {
+    margin-block: 1.25rem 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .fiche > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    padding-block-end: 0.75rem;
+    border-block-end: 1px solid var(--regle);
+  }
+
+  .fiche dt {
+    flex: 0 0 14rem;
+    color: var(--encre-doux);
+    font-size: 0.8125rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .fiche dd {
+    margin: 0;
+    font-variation-settings: 'wght' 600;
+  }
+</style>

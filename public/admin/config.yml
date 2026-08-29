@@ -283,10 +283,109 @@ collections:
         default: false
         hint: Coché, la recette reste hors du site publié.
 
-      - label: Mes notes
+      - label: Nos notes
         name: body
         widget: markdown
         required: false
         hint: >-
           Introduction, astuces et variantes. Les espaces insécables avant les
           deux-points et les points d’interrogation sont ajoutés automatiquement.
+
+  - name: materiel
+    label: Matériel de cuisine
+    label_singular: Élément
+    description: >-
+      Le matériel de cuisson, les ustensiles et les ingrédients difficiles à
+      trouver, affichés sur la page /materiel/. Un élément par dossier, avec sa
+      photo carrée à côté.
+    folder: src/content/materiel
+    # Un élément est un dossier : <slug>/index.md, la photo à côté.
+    path: '{{slug}}/index'
+    media_folder: ''
+    public_folder: ''
+    create: true
+    identifier_field: nom
+    slug: '{{nom}}'
+    summary: '{{nom}}'
+    sortable_fields: [ordre, nom, miseAJour]
+    view_groups:
+      - label: Rubrique
+        field: rubrique
+    fields:
+      - label: Nom
+        name: nom
+        widget: string
+        hint: >-
+          Il donne aussi l’adresse de l’élément. « Airfryer » devient
+          /materiel/#airfryer, l’ancre vers laquelle une recette peut renvoyer.
+          Renommer un élément déjà en ligne casse ces liens.
+
+      - label: Description
+        name: description
+        widget: text
+        hint: Quelques phrases, 400 caractères au maximum. À quoi ça sert, et pourquoi celui-là.
+
+      - label: Photo
+        name: image
+        widget: image
+        hint: Carrée. Elle est enregistrée dans le dossier de l’élément et optimisée automatiquement au build.
+
+      - label: Description de la photo
+        name: imageAlt
+        widget: string
+        hint: Ce que montre la photo, pour les personnes qui ne la voient pas. Obligatoire.
+
+      - label: Rubrique
+        name: rubrique
+        widget: select
+        options:
+          - { label: Matériel de cuisson, value: cuisson }
+          - { label: Ustensiles, value: ustensile }
+          - { label: Ingrédients difficiles à trouver, value: ingredient }
+
+      # — Lien vers le produit —
+      - label: Lien
+        name: lien
+        widget: string
+        required: false
+        pattern: ['^https://', 'Le lien doit commencer par https://']
+        hint: Facultatif. L’adresse complète de la page produit.
+
+      - label: Marchand
+        name: lienMarchand
+        widget: string
+        required: false
+        hint: 'Affiché dans le bouton : « Voir sur Amazon ». À ne remplir que s’il y a un lien.'
+
+      - label: Lien affilié
+        name: lienAffilie
+        widget: boolean
+        default: false
+        required: false
+        hint: Coché, la page signale le lien comme affilié et affiche la mention de transparence.
+
+      - label: Ordre d’affichage
+        name: ordre
+        widget: number
+        value_type: int
+        default: 100
+        hint: Du plus petit au plus grand, à l’intérieur de la rubrique. À égalité, l’ordre alphabétique tranche.
+
+      - label: Dernière mise à jour
+        name: miseAJour
+        widget: datetime
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+        format: 'YYYY-MM-DD'
+
+      - label: Brouillon
+        name: brouillon
+        widget: boolean
+        default: false
+        hint: Coché, l’élément reste hors du site publié.
+
+      - label: Nos notes
+        name: body
+        widget: markdown
+        required: false
+        hint: Facultatif. Un complément affiché sous la description.

@@ -59,7 +59,7 @@ etapes:
 miseAJour: 2026-08-17
 ---
 
-Cette recette est ma référence pour tester un airfryer. Elle ne pardonne rien : si l'appareil chauffe mal ou si le panier est trop chargé, la peau reste molle et ça se voit tout de suite.
+Cette recette est notre référence pour tester un airfryer. Elle ne pardonne rien : si l'appareil chauffe mal ou si le panier est trop chargé, la peau reste molle et ça se voit tout de suite.
 
 ## Astuces
 
