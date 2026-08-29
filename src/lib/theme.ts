@@ -15,8 +15,8 @@ export const CLE_THEME = 'theme';
  * Sert à la balise `theme-color`, qui n'accepte pas de variable CSS.
  */
 export const COULEURS_THEME: Record<Theme, string> = {
-  clair: '#faf4e8',
-  sombre: '#14100d',
+  clair: '#fffbfc',
+  sombre: '#121210',
 };
 
 /** Requête média consultée tant que le visiteur n'a rien choisi. */

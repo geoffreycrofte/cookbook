@@ -1,0 +1,57 @@
+/*
+  Palette candidate « Rumi » (violet & ambre)
+  -------------------------------------------
+  Source : Figma « Rumi color palette ». Contrastes issus de la matrice du
+  fichier (AAA >= 7, AA >= 4.5, AA18 >= 3 pour le grand texte).
+
+  Non branchée : pour l'essayer, remplacer les valeurs correspondantes dans
+  les trois blocs de src/styles/global.css (clair + 2 sombres) et reporter le
+  THEME_SOMBRE de scripts/verifier-contrastes.mjs, puis `npm run contrastes`.
+
+  Tokens Figma :
+    main       100 #530068 · 50 #a052b7 · 30 #ed9bf8 · 05 #fddcfe
+    secondary  100 #894403 · 50 #f09a23 · 30 #ffc16b · 05 #ffdca8
+    gray       100 #382e39 · 50 #7d717f · 30 #d6d0d7 · blanc #ffffff
+*/
+
+:root {
+  color-scheme: light;
+
+  --papier: #ffffff;
+  --papier-creux: #efeaf0;   /* dérivé (gris très pâle), hors matrice */
+  --papier-carte: #ffffff;
+
+  --encre: #382e39;          /* gray-100 sur blanc : 12.97:1 AAA */
+  --encre-doux: #7d717f;     /* gray-50 sur blanc  : 4.62:1 AA   */
+  --regle: #d6d0d7;          /* gray-30, filet non textuel       */
+
+  --braise: #a052b7;         /* main-50, aplats : blanc dessus 4.78:1 AA */
+  --braise-texte: #530068;   /* main-100 sur blanc : 13.39:1 AAA */
+  --sur-braise: #ffffff;
+
+  --olive: #894403;          /* secondary-100 sur blanc : 7.26:1 AAA */
+
+  --ombre-papier: 0 1px 2px rgb(56 46 57 / 0.08), 0 10px 28px -14px rgb(56 46 57 / 0.22);
+}
+
+/* Sombre : à dupliquer dans @media (prefers-color-scheme: dark) et dans
+   :root[data-theme='sombre'] de global.css. */
+:root[data-theme='sombre'] {
+  color-scheme: dark;
+
+  --papier: #2e262f;         /* dérivé, plus foncé que gray-100 */
+  --papier-creux: #271f28;   /* dérivé */
+  --papier-carte: #382e39;   /* gray-100 */
+
+  --encre: #ffffff;          /* blanc sur gray-100 : 12.97:1 AAA */
+  --encre-doux: #d6d0d7;     /* gray-30 sur gray-100 : 8.56:1 AAA */
+  --regle: #7d717f;          /* gray-50, filet non textuel */
+
+  --braise: #ed9bf8;         /* main-30, aplats : gray-100 dessus 6.57:1 AA */
+  --braise-texte: #ed9bf8;   /* main-30 sur gray-100 : 6.57:1 AA */
+  --sur-braise: #382e39;
+
+  --olive: #ffc16b;          /* secondary-30 sur gray-100 : 8.09:1 AAA */
+
+  --ombre-papier: 0 1px 2px rgb(0 0 0 / 0.45), 0 10px 28px -14px rgb(0 0 0 / 0.75);
+}
