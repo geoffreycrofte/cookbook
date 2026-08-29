@@ -24,27 +24,27 @@ const contraste = (a, b) => {
 
 // Les valeurs doivent rester alignées sur les jetons de src/styles/global.css.
 const THEME_CLAIR = {
-  papier: '#faf4e8',
-  creux: '#f2e8d6',
-  carte: '#fffcf6',
-  encre: '#211812',
-  doux: '#6b5647',
-  braise: '#c3401f',
-  braiseTexte: '#a93317',
-  surBraise: '#fff8f2',
-  olive: '#4e5a34',
+  papier: '#fffbfc',
+  creux: '#f3edee',
+  carte: '#ffffff',
+  encre: '#1b1b19',
+  doux: '#57574f',
+  braise: '#cf3a2e',
+  braiseTexte: '#b8302a',
+  surBraise: '#fff5f4',
+  olive: '#3a6b4b',
 };
 
 const THEME_SOMBRE = {
-  papier: '#14100d',
-  creux: '#1c1713',
-  carte: '#1e1813',
-  encre: '#f5ede1',
-  doux: '#b6a392',
-  braise: '#e0603a',
-  braiseTexte: '#f0906b',
-  surBraise: '#1a0d07',
-  olive: '#a7b881',
+  papier: '#121210',
+  creux: '#1a1a18',
+  carte: '#1d1d1b',
+  encre: '#f2f1ec',
+  doux: '#a8a89f',
+  braise: '#e75b4c',
+  braiseTexte: '#f0897c',
+  surBraise: '#1a0908',
+  olive: '#6fae6a',
 };
 
 /** Seuil 4,5 pour le texte courant, 3 pour les éléments non textuels. */

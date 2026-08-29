@@ -1,10 +1,12 @@
 /*
-  Papier & braise
-  ---------------
-  Un magazine de cuisine imprimé sur papier crème, où la température et la
-  durée sont traitées comme des chiffres de titrage.
+  Tomate & basilic
+  ----------------
+  Un magazine de cuisine sur papier presque blanc, accent rouge tomate, vert
+  basilic pour les données de cuisson traitées comme des chiffres de titrage.
 
-  Contrastes vérifiés en clair et en sombre pour un niveau AA.
+  Contrastes vérifiés en clair et en sombre pour un niveau AA
+  (npm run contrastes). Deux autres palettes sont gardées de côté dans
+  src/styles/themes/ (Rumi, Soda Pop) en vue d'un futur sélecteur de thème.
 
   Le thème suit la préférence système par défaut. Dès que le visiteur actionne
   la bascule de l'en-tête, un attribut `data-theme` posé sur `<html>` prend le
@@ -19,23 +21,23 @@
     color-scheme: light;
 
     /* Papier */
-    --papier: #faf4e8;
-    --papier-creux: #f2e8d6;
-    --papier-carte: #fffcf6;
+    --papier: #fffbfc;
+    --papier-creux: #f3edee;
+    --papier-carte: #ffffff;
 
     /* Encre */
-    --encre: #211812;
-    --encre-doux: #6b5647;
-    --regle: #ddcdb2;
+    --encre: #1b1b19;
+    --encre-doux: #57574f;
+    --regle: #dcdbd4;
 
-    /* Braise : l'accent. Deux valeurs, une pour les aplats, une pour le texte,
-       afin de garder 4,5:1 partout sans ternir les grands aplats. */
-    --braise: #c3401f;
-    --braise-texte: #a93317;
-    --sur-braise: #fff8f2;
+    /* Braise : l'accent (rouge tomate). Deux valeurs, une pour les aplats, une
+       pour le texte, afin de garder 4,5:1 partout sans ternir les grands aplats. */
+    --braise: #cf3a2e;
+    --braise-texte: #b8302a;
+    --sur-braise: #fff5f4;
 
-    /* Olive : les données de cuisson, secondaires mais lisibles. */
-    --olive: #4e5a34;
+    /* Olive : les données de cuisson (vert basilic), secondaires mais lisibles. */
+    --olive: #3a6b4b;
 
     --police-titre: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
     --police-corps: 'Karla Variable', system-ui, sans-serif;
@@ -45,7 +47,7 @@
     --colonne: 74rem;
     --colonne-texte: 38rem;
 
-    --ombre-papier: 0 1px 2px rgb(33 24 18 / 0.06), 0 8px 24px -12px rgb(33 24 18 / 0.18);
+    --ombre-papier: 0 1px 2px rgb(27 27 25 / 0.07), 0 8px 24px -12px rgb(27 27 25 / 0.2);
   }
 
   /*
@@ -59,19 +61,19 @@
     :root:not([data-theme='clair']) {
       color-scheme: dark;
 
-      --papier: #14100d;
-      --papier-creux: #1c1713;
-      --papier-carte: #1e1813;
+      --papier: #121210;
+      --papier-creux: #1a1a18;
+      --papier-carte: #1d1d1b;
 
-      --encre: #f5ede1;
-      --encre-doux: #b6a392;
-      --regle: #3a2e25;
+      --encre: #f2f1ec;
+      --encre-doux: #a8a89f;
+      --regle: #33332e;
 
-      --braise: #e0603a;
-      --braise-texte: #f0906b;
-      --sur-braise: #1a0d07;
+      --braise: #e75b4c;
+      --braise-texte: #f0897c;
+      --sur-braise: #1a0908;
 
-      --olive: #a7b881;
+      --olive: #6fae6a;
 
       --ombre-papier: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
     }
@@ -80,19 +82,19 @@
   :root[data-theme='sombre'] {
     color-scheme: dark;
 
-    --papier: #14100d;
-    --papier-creux: #1c1713;
-    --papier-carte: #1e1813;
+    --papier: #121210;
+    --papier-creux: #1a1a18;
+    --papier-carte: #1d1d1b;
 
-    --encre: #f5ede1;
-    --encre-doux: #b6a392;
-    --regle: #3a2e25;
+    --encre: #f2f1ec;
+    --encre-doux: #a8a89f;
+    --regle: #33332e;
 
-    --braise: #e0603a;
-    --braise-texte: #f0906b;
-    --sur-braise: #1a0d07;
+    --braise: #e75b4c;
+    --braise-texte: #f0897c;
+    --sur-braise: #1a0908;
 
-    --olive: #a7b881;
+    --olive: #6fae6a;
 
     --ombre-papier: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
   }

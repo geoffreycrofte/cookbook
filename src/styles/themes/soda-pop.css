@@ -1,0 +1,60 @@
+/*
+  Palette candidate « Soda Pop » (pink strawberry edition : jaune fluo & magenta)
+  -----------------------------------------------------------------------------
+  Source : Figma « Soda Pop color palette ». Contrastes issus de la matrice du
+  fichier (AAA >= 7, AA >= 4.5, AA18 >= 3 pour le grand texte).
+
+  Non branchée : pour l'essayer, remplacer les valeurs correspondantes dans
+  les trois blocs de src/styles/global.css (clair + 2 sombres) et reporter le
+  THEME_SOMBRE de scripts/verifier-contrastes.mjs, puis `npm run contrastes`.
+
+  Règle de la palette : le jaune fluo (main-50) ne sert JAMAIS de couleur de
+  texte (1.18:1 sur blanc). Uniquement en aplat, avec gray-100 par-dessus.
+
+  Tokens Figma :
+    main       100 #635700 · 50 #fff838 · 30 #fefcbf · 05 #ffffcd
+    secondary  100 #66004a · 50 #b51c87 · 30 #ed8cd0 · 05 #ffe8f3
+    gray       100 #391e34 · 50 #797277 · 30 #dfdade · blanc #ffffff
+*/
+
+:root {
+  color-scheme: light;
+
+  --papier: #ffffff;
+  --papier-creux: #fff3f8;   /* secondary-05 éclairci, hors matrice */
+  --papier-carte: #ffffff;
+
+  --encre: #391e34;          /* gray-100 sur blanc : 14.9:1 AAA */
+  --encre-doux: #797277;     /* gray-50 sur blanc  : 4.68:1 AA  */
+  --regle: #dfdade;          /* gray-30, filet non textuel      */
+
+  --braise: #fff838;         /* main-50, aplats : gray-100 dessus 13.29:1 AAA */
+  --braise-texte: #66004a;   /* secondary-100 sur blanc : 12.62:1 AAA */
+  --sur-braise: #391e34;
+
+  --olive: #635700;          /* main-100 sur blanc : 7.25:1 AAA */
+
+  --ombre-papier: 0 1px 2px rgb(57 30 52 / 0.09), 0 10px 28px -14px rgb(57 30 52 / 0.24);
+}
+
+/* Sombre : à dupliquer dans @media (prefers-color-scheme: dark) et dans
+   :root[data-theme='sombre'] de global.css. */
+:root[data-theme='sombre'] {
+  color-scheme: dark;
+
+  --papier: #2b1728;         /* dérivé, plus foncé que gray-100 */
+  --papier-creux: #241320;   /* dérivé */
+  --papier-carte: #391e34;   /* gray-100 */
+
+  --encre: #ffffff;          /* blanc sur gray-100 : 14.9:1 AAA */
+  --encre-doux: #dfdade;     /* gray-30 sur gray-100 : 10.8:1 AAA */
+  --regle: #797277;          /* gray-50, filet non textuel (3.18:1) */
+
+  --braise: #fff838;         /* main-50, aplats : gray-100 dessus 13.29:1 AAA */
+  --braise-texte: #ed8cd0;   /* secondary-30 sur gray-100 : 6.57:1 AA */
+  --sur-braise: #391e34;
+
+  --olive: #fefcbf;          /* main-30 sur gray-100 : 14.1:1 AAA */
+
+  --ombre-papier: 0 1px 2px rgb(0 0 0 / 0.45), 0 10px 28px -14px rgb(0 0 0 / 0.75);
+}
