@@ -1,7 +1,7 @@
 {
   "name": "Recettes du Lux",
   "short_name": "Recettes",
-  "description": "Mon carnet de recettes, consultable en cuisine même sans réseau.",
+  "description": "Notre carnet de recettes, consultable en cuisine même sans réseau.",
   "lang": "fr",
   "dir": "ltr",
   "start_url": "/",

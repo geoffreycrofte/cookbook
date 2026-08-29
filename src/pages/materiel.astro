@@ -1,0 +1,357 @@
+---
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { jsonLdFilAriane } from '../lib/seo';
+import { RUBRIQUES_MATERIEL } from '../lib/format';
+
+/**
+ * Le matériel de la cuisine, en une seule page.
+ *
+ * Chaque élément porte son slug en `id` : une recette renvoie vers
+ * `/materiel/#airfryer` et la page met la fiche en avant grâce à `:target`.
+ * Les slugs sont donc un contrat avec les recettes, à ne pas renommer à la
+ * légère.
+ */
+
+const TITRE = 'Notre matériel de cuisine';
+const DESCRIPTION =
+  'Le matériel de cuisson, les ustensiles et les quelques ingrédients difficiles à trouver qui reviennent dans nos recettes.';
+
+const materiel = await getCollection('materiel', ({ data }) => !data.brouillon);
+
+// Le corps markdown est facultatif : je ne rends le composant que s'il existe.
+const rendus = new Map<string, Awaited<ReturnType<typeof render>>['Content']>();
+for (const element of materiel) {
+  if (!element.body?.trim()) continue;
+  const { Content } = await render(element);
+  rendus.set(element.id, Content);
+}
+
+const groupes = RUBRIQUES_MATERIEL.map((rubrique) => ({
+  ...rubrique,
+  elements: materiel
+    .filter((element) => element.data.rubrique === rubrique.valeur)
+    .sort(
+      (a, b) =>
+        a.data.ordre - b.data.ordre || a.data.nom.localeCompare(b.data.nom, 'fr')
+    ),
+})).filter((groupe) => groupe.elements.length > 0);
+
+const affiliation = materiel.some((element) => element.data.lienAffilie);
+
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const donneesFilAriane = jsonLdFilAriane(new URL('/', Astro.site).href, TITRE, url);
+
+/**
+ * Liste balisée, pour que les moteurs génératifs citent les éléments plutôt
+ * que la page entière. Les liens marchands n'y figurent pas : ils n'ont rien
+ * à faire dans un balisage éditorial.
+ */
+const donneesListe = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: TITRE,
+  description: DESCRIPTION,
+  numberOfItems: materiel.length,
+  itemListElement: groupes
+    .flatMap((groupe) => groupe.elements)
+    .map((element, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: element.data.nom,
+      description: element.data.description,
+      url: `${url}#${element.id}`,
+    })),
+};
+---
+
+<Base titre={TITRE} description={DESCRIPTION}>
+  <Fragment slot="tete">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(donneesFilAriane)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(donneesListe)} />
+  </Fragment>
+
+  <div class="cadre materiel">
+    <p class="materiel__surtitre">Dans notre cuisine</p>
+    <h1 class="materiel__titre">{TITRE}</h1>
+    <p class="materiel__chapeau">
+      Les appareils, les ustensiles et les quelques ingrédients qui reviennent dans nos recettes.
+      Rien d’indispensable ici : ce sont les objets que nous utilisons vraiment, avec la raison
+      pour laquelle nous les avons gardés.
+    </p>
+
+    {
+      affiliation && (
+        <p class="materiel__transparence">
+          Certains liens sont affiliés : si vous achetez à partir de l’un d’eux, nous touchons une
+          petite commission, sans que le prix change pour vous. Ces liens sont signalés un par un.
+          Ils ne décident pas de ce qui figure sur cette page.
+        </p>
+      )
+    }
+
+    {
+      groupes.length > 1 && (
+        <nav class="materiel__sommaire" aria-labelledby="titre-sommaire">
+          <h2 class="rubrique" id="titre-sommaire">
+            Sommaire
+          </h2>
+          <ul>
+            {groupes.map((groupe) => (
+              <li>
+                <a href={`#rubrique-${groupe.valeur}`}>
+                  {groupe.libelle} ({groupe.elements.length})
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+
+    {
+      groupes.map((groupe) => (
+        <section class="groupe" id={`rubrique-${groupe.valeur}`} aria-labelledby={`titre-${groupe.valeur}`}>
+          <h2 class="groupe__titre" id={`titre-${groupe.valeur}`}>
+            {groupe.libelle}
+          </h2>
+          <p class="groupe__resume">{groupe.resume}</p>
+
+          <ul class="liste">
+            {groupe.elements.map((element) => {
+              const d = element.data;
+              const Notes = rendus.get(element.id);
+
+              return (
+                <li class="objet" id={element.id}>
+                  <div class="objet__visuel">
+                    <Image
+                      src={d.image}
+                      alt={d.imageAlt}
+                      widths={[160, 320]}
+                      sizes="(min-width: 48rem) 10rem, 6.5rem"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div class="objet__texte">
+                    <h3 class="objet__nom">{d.nom}</h3>
+                    <p class="objet__description">{d.description}</p>
+                    {Notes && (
+                      <div class="objet__notes">
+                        <Notes />
+                      </div>
+                    )}
+
+                    {d.lien && (
+                      <p class="objet__lien">
+                        <a
+                          href={d.lien}
+                          rel={d.lienAffilie ? 'sponsored nofollow noopener' : 'nofollow noopener'}
+                        >
+                          {d.lienMarchand ? `Voir sur ${d.lienMarchand}` : 'Voir le produit'}
+                          <span class="sr-uniquement"> : {d.nom}</span>
+                        </a>
+                        {d.lienAffilie && <span class="objet__affilie">lien affilié</span>}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))
+    }
+
+    {groupes.length === 0 && <p>Aucun élément pour le moment.</p>}
+  </div>
+</Base>
+
+<style>
+  .materiel {
+    padding-block: clamp(3rem, 8vw, 5rem) 0;
+    max-inline-size: 58rem;
+  }
+
+  .materiel__surtitre {
+    margin: 0 0 1.25rem;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--braise-texte);
+  }
+
+  .materiel__titre {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 90, 'wght' 600;
+    letter-spacing: -0.03em;
+  }
+
+  .materiel__chapeau {
+    max-inline-size: var(--colonne-texte);
+    margin-block: 1.5rem 0;
+    color: var(--encre-doux);
+    font-size: 1.1875rem;
+  }
+
+  .materiel__transparence {
+    max-inline-size: var(--colonne-texte);
+    margin-block: 2rem 0;
+    padding: 0.875rem 1.125rem;
+    border-inline-start: 3px solid var(--regle);
+    background: var(--papier-creux);
+    color: var(--encre-doux);
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+
+  .materiel__sommaire {
+    margin-block-start: 3rem;
+  }
+
+  .materiel__sommaire ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Cible tactile d'au moins 24 px (WCAG 2.5.8). */
+  .materiel__sommaire a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 1.75rem;
+  }
+
+  .groupe {
+    margin-block-start: 4rem;
+    scroll-margin-block-start: 2rem;
+  }
+
+  .groupe__titre {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 40, 'wght' 600;
+  }
+
+  .groupe__resume {
+    margin-block: 0.5rem 0;
+    color: var(--encre-doux);
+  }
+
+  .liste {
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .objet {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--regle);
+    background: var(--papier-carte);
+    box-shadow: var(--ombre-papier);
+    scroll-margin-block: 5rem;
+  }
+
+  .objet__visuel {
+    flex: none;
+    inline-size: 6.5rem;
+  }
+
+  .objet__visuel :global(img) {
+    inline-size: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: 1px solid var(--regle);
+  }
+
+  @media (min-width: 48rem) {
+    .objet__visuel {
+      inline-size: 10rem;
+    }
+  }
+
+  .objet__texte {
+    flex: 1 1 18rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .objet__nom {
+    font-size: 1.25rem;
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 28, 'wght' 600;
+  }
+
+  .objet__description,
+  .objet__notes :global(p) {
+    margin: 0;
+    color: var(--encre-doux);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .objet__notes :global(p + p) {
+    margin-block-start: 0.75rem;
+  }
+
+  .objet__lien {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin: auto 0 0;
+    padding-block-start: 0.75rem;
+  }
+
+  .objet__lien a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 1.75rem;
+    font-variation-settings: 'wght' 600;
+  }
+
+  .objet__affilie {
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--regle);
+    color: var(--encre-doux);
+    font-size: 0.6875rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /*
+    Élément ciblé par une ancre venue d'une recette (/materiel/#airfryer).
+    La mise en avant ne repose pas sur la seule couleur : le cadre s'épaissit
+    et un liseré apparaît sur le côté, visibles en monochrome (RAWeb 3.1).
+  */
+  .objet:target {
+    border-color: var(--braise);
+    box-shadow:
+      inset 0.375rem 0 0 var(--braise),
+      var(--ombre-papier);
+    padding-inline-start: 1.625rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .objet:target {
+      animation: signaler 1.2s ease-out 1;
+    }
+
+    @keyframes signaler {
+      from {
+        background: color-mix(in oklab, var(--braise) 14%, var(--papier-carte));
+      }
+    }
+  }
+</style>

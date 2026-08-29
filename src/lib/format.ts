@@ -94,3 +94,29 @@ const LIBELLES_REGIME: Record<string, string> = {
 export function libelleRegime(regime: string): string {
   return LIBELLES_REGIME[regime] ?? regime;
 }
+
+/**
+ * Rubriques de la page matériel. L'ordre du tableau est celui de la page :
+ * on cuit d'abord, on manipule ensuite, on assaisonne à la fin.
+ */
+export const RUBRIQUES_MATERIEL = [
+  {
+    valeur: 'cuisson',
+    libelle: 'Matériel de cuisson',
+    resume: 'Ce qui chauffe, cuit et dore.',
+  },
+  {
+    valeur: 'ustensile',
+    libelle: 'Ustensiles',
+    resume: 'Ce qui coupe, mesure et mélange.',
+  },
+  {
+    valeur: 'ingredient',
+    libelle: 'Ingrédients difficiles à trouver',
+    resume: 'Ceux qui reviennent souvent et qui ne sont pas au coin de la rue.',
+  },
+] as const;
+
+export function libelleRubrique(rubrique: string): string {
+  return RUBRIQUES_MATERIEL.find((r) => r.valeur === rubrique)?.libelle ?? rubrique;
+}

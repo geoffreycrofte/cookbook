@@ -6,6 +6,7 @@ import Base from '../../layouts/Base.astro';
 import AtelierRecette from '../../components/AtelierRecette.astro';
 import SectionPreparation from '../../components/SectionPreparation.astro';
 import { formaterDuree, dureeTotale, libelleCategorie } from '../../lib/format';
+import { AUTEURS } from '../../lib/site';
 
 export async function getStaticPaths() {
   const recettes = await getCollection('recettes', ({ data }) => !data.brouillon);
@@ -71,7 +72,7 @@ const donneesRecette = jsonLdRecette({
   recette,
   url,
   image: new URL(imagePartage.src, Astro.site).href,
-  auteur: 'Geoffrey Crofte',
+  auteurs: AUTEURS,
   imagesEtapes,
 });
 const donneesFilAriane = jsonLdFilAriane(
@@ -215,7 +216,7 @@ const cadrans: Cadran[] = [
     </div>
 
     <section class="cadre notes" aria-labelledby="titre-notes">
-      <h2 class="rubrique" id="titre-notes">Mes notes</h2>
+      <h2 class="rubrique" id="titre-notes">Nos notes</h2>
       <div class="prose">
         <Content />
       </div>
