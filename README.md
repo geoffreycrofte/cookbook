@@ -50,6 +50,19 @@ Points à retenir :
 - `tags` est libre, mais ramené en minuscules pour éviter que la casse ne dédouble les filtres.
 - `flemme: true` fait entrer la recette dans le tirage « J'ai la flemme ».
 
+### Illustrer une étape
+
+Une étape peut porter sa propre photo, pour montrer un geste, une texture ou un résultat intermédiaire. C'est facultatif, étape par étape : la plupart n'en ont pas besoin.
+
+```yaml
+etapes:
+  - texte: "Replier la pâte en trois, comme une lettre."
+    image: ./pliage.jpg
+    imageAlt: "La pâte repliée en trois sur le plan de travail fariné."
+```
+
+Le fichier vit dans le dossier de la recette, à côté de `plat-fini.jpg`, et `image` y renvoie en chemin relatif. `imageAlt` devient obligatoire dès qu'une photo est là : sans lui, le build échoue. La photo est optimisée et redimensionnée automatiquement, et elle rejoint le balisage schema.org de l'étape.
+
 ### Une recette en plusieurs préparations
 
 Un plat qui demande plusieurs préparations distinctes (le plat, une sauce, un pain) remplace `ingredients` et `etapes` par `parties`. Chaque partie devient une section titrée sur la fiche, avec ses propres ingrédients et ses propres étapes.

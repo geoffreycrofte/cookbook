@@ -36,12 +36,35 @@ interface Options {
   /** URL absolue de l'image principale. */
   image: string;
   auteur: string;
+  /**
+   * URL absolue de l'illustration de chaque étape qui en a une, rangée sous
+   * l'objet étape lui-même. Les chemins optimisés ne sont connus qu'au rendu
+   * de la page : c'est elle qui les calcule et les passe ici.
+   */
+  imagesEtapes?: Map<object, string>;
 }
 
-export function jsonLdRecette({ recette, url, image, auteur }: Options): Record<string, unknown> {
+export function jsonLdRecette({
+  recette,
+  url,
+  image,
+  auteur,
+  imagesEtapes,
+}: Options): Record<string, unknown> {
   const d = recette.data;
   const total = dureeTotale(d);
   const plusieursParties = d.sections.length > 1;
+
+  const enEtape = (etape: { texte: string }, i: number) => {
+    const bloc: Record<string, unknown> = {
+      '@type': 'HowToStep',
+      position: i + 1,
+      text: etape.texte,
+    };
+    const illustration = imagesEtapes?.get(etape);
+    if (illustration) bloc.image = illustration;
+    return bloc;
+  };
 
   /**
    * Une recette en plusieurs parties se balise en HowToSection, ce que Google
@@ -51,17 +74,9 @@ export function jsonLdRecette({ recette, url, image, auteur }: Options): Record<
     ? d.sections.map((section) => ({
         '@type': 'HowToSection',
         name: section.nom,
-        itemListElement: section.etapes.map((etape, i) => ({
-          '@type': 'HowToStep',
-          position: i + 1,
-          text: etape.texte,
-        })),
+        itemListElement: section.etapes.map(enEtape),
       }))
-    : d.sections[0]!.etapes.map((etape, i) => ({
-        '@type': 'HowToStep',
-        position: i + 1,
-        text: etape.texte,
-      }));
+    : d.sections[0]!.etapes.map(enEtape);
 
   const regimes = d.regime.map((r) => REGIMES_SCHEMA[r]).filter((r): r is string => Boolean(r));
 

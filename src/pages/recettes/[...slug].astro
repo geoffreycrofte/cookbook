@@ -52,12 +52,27 @@ const imagePartage = await getImage({
   format: 'jpeg',
 });
 
+/**
+ * Illustrations des étapes, pour le balisage schema.org.
+ * La variante demandée est celle que le composant produit déjà pour son
+ * srcset : Astro reconnaît la transformation et ne réencode rien.
+ */
+const imagesEtapes = new Map<object, string>();
+for (const section of d.sections) {
+  for (const etape of section.etapes) {
+    if (!etape.image) continue;
+    const illustration = await getImage({ src: etape.image, width: 720 });
+    imagesEtapes.set(etape, new URL(illustration.src, Astro.site).href);
+  }
+}
+
 const url = new URL(Astro.url.pathname, Astro.site).href;
 const donneesRecette = jsonLdRecette({
   recette,
   url,
   image: new URL(imagePartage.src, Astro.site).href,
   auteur: 'Geoffrey Crofte',
+  imagesEtapes,
 });
 const donneesFilAriane = jsonLdFilAriane(
   new URL('/', Astro.site).href,

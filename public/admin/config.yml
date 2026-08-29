@@ -204,6 +204,16 @@ collections:
             max: 250
             required: false
           - { label: Durée (minutes), name: duree, widget: number, value_type: float, required: false }
+          - label: Photo de l’étape
+            name: image
+            widget: image
+            required: false
+            hint: Facultative. Un geste, une texture, un résultat intermédiaire.
+          - label: Description de la photo
+            name: imageAlt
+            widget: string
+            required: false
+            hint: Ce que montre la photo. Obligatoire dès qu’une photo est choisie.
 
       - label: Parties (recette en plusieurs préparations)
         name: parties
@@ -248,6 +258,16 @@ collections:
                 max: 250
                 required: false
               - { label: Durée (minutes), name: duree, widget: number, value_type: float, required: false }
+              - label: Photo de l’étape
+                name: image
+                widget: image
+                required: false
+                hint: Facultative. Un geste, une texture, un résultat intermédiaire.
+              - label: Description de la photo
+                name: imageAlt
+                widget: string
+                required: false
+                hint: Ce que montre la photo. Obligatoire dès qu’une photo est choisie.
 
       # — Métadonnées —
       - label: Dernière mise à jour

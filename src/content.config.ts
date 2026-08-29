@@ -1,4 +1,4 @@
-import { defineCollection } from 'astro:content';
+import { defineCollection, type SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
 // Astro 7 déprécie le ré-export `z` depuis 'astro:content'.
 import { z } from 'astro/zod';
@@ -56,13 +56,33 @@ const ingredient = z.object({
   ajustable: z.boolean().default(true),
 });
 
-const etape = z.object({
-  texte: texteFr(),
-  /** Température de l'airfryer pour cette étape, en °C. */
-  temperature: facultatif(z.number().int().min(40).max(250)),
-  /** Durée de l'étape, en minutes. */
-  duree: facultatif(z.number().positive()),
-});
+/**
+ * Une étape. Prend le contexte du schéma pour pouvoir déclarer une photo :
+ * `image()` n'existe que là, c'est lui qui résout le fichier posé à côté de
+ * l'index.md et en donne les dimensions.
+ */
+const etape = ({ image }: SchemaContext) =>
+  z
+    .object({
+      texte: texteFr(),
+      /** Température de l'airfryer pour cette étape, en °C. */
+      temperature: facultatif(z.number().int().min(40).max(250)),
+      /** Durée de l'étape, en minutes. */
+      duree: facultatif(z.number().positive()),
+
+      /**
+       * Illustration facultative : un geste, une texture, un résultat
+       * intermédiaire. Le fichier vit dans le dossier de la recette, comme la
+       * photo du plat fini.
+       */
+      image: facultatif(image()),
+      /** Alternative textuelle, exigée dès qu'une photo est là. */
+      imageAlt: facultatif(texteFr()),
+    })
+    .refine((e) => e.image === undefined || e.imageAlt !== undefined, {
+      message: 'Une étape illustrée doit décrire sa photo dans « imageAlt ».',
+      path: ['imageAlt'],
+    });
 
 /**
  * Une partie : un bloc de préparation nommé, avec ses propres ingrédients et
@@ -73,13 +93,14 @@ const etape = z.object({
  * C'est un choix assumé : la séparation à l'écran sans la mécanique de
  * références, dont la réutilisation entre plats resterait de toute façon rare.
  */
-const partie = z.object({
-  nom: texteFr(),
-  /** Ligne d'avertissement affichée sous le nom : « à préparer la veille ». */
-  note: facultatif(texteFr()),
-  ingredients: z.array(ingredient).min(1),
-  etapes: z.array(etape).min(1),
-});
+const partie = (contexte: SchemaContext) =>
+  z.object({
+    nom: texteFr(),
+    /** Ligne d'avertissement affichée sous le nom : « à préparer la veille ». */
+    note: facultatif(texteFr()),
+    ingredients: z.array(ingredient).min(1),
+    etapes: z.array(etape(contexte)).min(1),
+  });
 
 const recettes = defineCollection({
   loader: glob({
@@ -89,12 +110,12 @@ const recettes = defineCollection({
     generateId: ({ entry }) => entry.replace(/\/index\.md$/, ''),
   }),
 
-  schema: ({ image }) =>
+  schema: (contexte) =>
     z.object({
       titre: texteFr(),
       description: z.string().min(1).max(200).transform(typographieFr),
 
-      image: image(),
+      image: contexte.image(),
       /** Alternative textuelle. Obligatoire : c'est une exigence d'accessibilité. */
       imageAlt: texteFr(),
       /** Crédit photo, quand elle n'est pas de moi. */
@@ -133,8 +154,8 @@ const recettes = defineCollection({
        * Jamais les deux. Le rendu, lui, ne voit que `sections` (voir plus bas).
        */
       ingredients: z.array(ingredient).min(1).optional(),
-      etapes: z.array(etape).min(1).optional(),
-      parties: z.array(partie).min(2).optional(),
+      etapes: z.array(etape(contexte)).min(1).optional(),
+      parties: z.array(partie(contexte)).min(2).optional(),
 
       miseAJour: z.coerce.date(),
       /** Exclue du site publié tant que true. */

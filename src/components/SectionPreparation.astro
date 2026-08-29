@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { formaterDuree, decomposerIngredient } from '../lib/format';
 import { accorderUnite } from '../lib/typographie';
 
@@ -14,6 +15,9 @@ interface Etape {
   texte: string;
   temperature?: number;
   duree?: number;
+  /** Illustration facultative de l'étape. */
+  image?: ImageMetadata;
+  imageAlt?: string;
 }
 
 interface Props {
@@ -107,6 +111,18 @@ const Titre = total > 1 ? 'h3' : 'h2';
                 {etape.temperature !== undefined && <span>{etape.temperature} °C</span>}
                 {etape.duree !== undefined && <span>{formaterDuree(etape.duree)}</span>}
               </p>
+            )}
+            {etape.image && (
+              /* Hors du label : cliquer la photo pour la regarder ne doit pas
+                 cocher l'étape. */
+              <figure class="etape__illustration">
+                <Image
+                  src={etape.image}
+                  alt={etape.imageAlt ?? ''}
+                  widths={[320, 480, 720, 960]}
+                  sizes="(min-width: 56rem) 26rem, (min-width: 34rem) 60vw, calc(100vw - 7.5rem)"
+                />
+              </figure>
             )}
           </li>
         ))
@@ -266,7 +282,8 @@ const Titre = total > 1 ? 'h3' : 'h2';
   .etape::before {
     counter-increment: etape;
     content: counter(etape, decimal-leading-zero);
-    grid-row: span 2;
+    grid-column: 1;
+    grid-row: 1;
     font-family: var(--police-titre);
     font-variation-settings: 'SOFT' 30, 'opsz' 60, 'wght' 500;
     font-size: 2.5rem;
@@ -280,6 +297,15 @@ const Titre = total > 1 ? 'h3' : 'h2';
       color: transparent;
       -webkit-text-stroke: 1.25px var(--braise);
     }
+  }
+
+  /* Le contenu de l'étape occupe la seconde colonne, quel que soit le nombre
+     de blocs : texte seul, avec la cuisson, avec une photo, ou les deux. Le
+     placement automatique le ferait sinon glisser sous le numéro. */
+  .etape__label,
+  .etape__cuisson,
+  .etape__illustration {
+    grid-column: 2;
   }
 
   .etape__label {
@@ -307,6 +333,16 @@ const Titre = total > 1 ? 'h3' : 'h2';
 
   .etape.est-fait .etape__texte {
     color: var(--encre-doux);
+  }
+
+  .etape__illustration {
+    margin: 0.875rem 0 0;
+    max-inline-size: 26rem;
+  }
+
+  .etape__illustration img {
+    inline-size: 100%;
+    border: 1px solid var(--regle);
   }
 
   .etape__cuisson {
