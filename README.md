@@ -50,6 +50,21 @@ Points à retenir :
 - `tags` est libre, mais ramené en minuscules pour éviter que la casse ne dédouble les filtres.
 - `flemme: true` fait entrer la recette dans le tirage « J'ai la flemme ».
 
+### Décrire un ingrédient
+
+Un ingrédient a un `nom`, une `quantite` et une `unite` facultatives (absentes pour « sel, à votre goût »), et deux drapeaux :
+
+- `ajustable: false` pour ce qui ne se multiplie pas avec les portions (sel, levure, épices d'assaisonnement). `true` par défaut.
+- `optionnel: true` pour un ingrédient qu'on peut omettre. La liste affiche alors d'elle-même un petit « optionnel » au-dessus du nom : on n'écrit jamais « (optionnel) » à la main. Les ingrédients optionnels se placent en dernier dans leur liste.
+
+Le champ `precision` est la ligne discrète sous le nom. Quand il porte plusieurs informations, elles vont dans cet ordre, séparées par ` ; ` :
+
+1. équivalence de quantité : « environ 36 g », « environ 3 cuillères à soupe » ;
+2. remplacement : « remplaçable par… », toujours cette formule, jamais « ou » ;
+3. notes libres : « écrasées », « pour la déco », « pour délayer ».
+
+« ou » sert uniquement à lister plusieurs choix également valables pour un même ingrédient (« vermicelles de riz fins ou nouilles plates »).
+
 ### Illustrer une étape
 
 Une étape peut porter sa propre photo, pour montrer un geste, une texture ou un résultat intermédiaire. C'est facultatif, étape par étape : la plupart n'en ont pas besoin.

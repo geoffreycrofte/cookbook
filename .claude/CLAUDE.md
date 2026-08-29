@@ -26,6 +26,9 @@ Always start your answers with my title: Lord. Example in context: "Lord, I just
 - Never use emdash ("—") or equivalent sentence separators like "--" or "-" or "–".
 - Always use simple expression (plain english).
 
+## Adding a recipe
+When the user hands over a recipe to integrate (even rough / incomplete), follow the `ajouter-recette` skill (`.claude/skills/ajouter-recette/SKILL.md`) strictly, then run `npx astro check`.
+
 ## Recipe ingredients (`precision` field)
 - An optional ingredient is never marked in text. Set `optionnel: true` on the ingredient and the list renders the "optionnel" eyebrow itself. Never write "(optionnel)" in `nom` or `precision`.
 - When `precision` carries several things, order them: 1. quantity equivalence ("environ 36 g", "environ 3 cuillères à soupe"), 2. substitution ("remplaçable par ..."), 3. free notes ("écrasées", "pour la déco", "pour délayer"). Separate blocks with " ; ", items inside a block with ", ".
