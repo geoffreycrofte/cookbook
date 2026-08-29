@@ -112,8 +112,8 @@ export const RUBRIQUES_MATERIEL = [
   },
   {
     valeur: 'ingredient',
-    libelle: 'Ingrédients difficiles à trouver',
-    resume: 'Ceux qui reviennent souvent et qui ne sont pas au coin de la rue.',
+    libelle: 'Ingrédients peu communs',
+    resume: 'Ceux qui reviennent souvent et qui ne sont pas au coin de la rue pour tout le monde.',
   },
 ] as const;
 
