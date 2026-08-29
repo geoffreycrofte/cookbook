@@ -16,8 +16,8 @@
 :root {
   color-scheme: light;
 
-  --papier: #f6f6f4;
-  --papier-creux: #eae9e5;
+  --papier: #fffbfc;         /* blanc à pointe de rose */
+  --papier-creux: #f3edee;
   --papier-carte: #ffffff;
 
   --encre: #1b1b19;          /* sur papier : ~16:1 AAA */

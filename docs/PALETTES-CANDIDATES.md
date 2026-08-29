@@ -58,6 +58,7 @@ Pas de matrice Figma : ratios calculés (WCAG 2.1), à confirmer avec
 
 | usage | clair | sombre |
 | --- | --- | --- |
+| fond de page | `--papier #fffbfc` (blanc à pointe de rose) | `--papier #121210` |
 | corps | encre `#1b1b19` / papier, ~16 AAA | encre `#f2f1ec` / carte, ~15 AAA |
 | titres, chiffres, liens | rouge `#b8302a`, ~5.5 AA | rouge `#f0897c`, ~7 AA |
 | aplats / boutons | blanc sur rouge `#cf3a2e`, ~4.9 AA | `#1a0908` sur rouge `#e75b4c`, ~5.7 AA |
