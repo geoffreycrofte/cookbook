@@ -19,7 +19,7 @@ categorie: "plat"
 difficulte: "facile"
 saison: ["ete"]
 regime: ["sans-gluten"]
-tags: ["saumon", "asiatique", "japonais", "airfryer", "été"]
+tags: ["saumon", "asiatique", "japonais"]
 flemme: false
 
 parties:
@@ -113,13 +113,13 @@ parties:
       - quantite: 1
         unite: "poignée"
         nom: "edamames"
-        precision: "une poignée par personne"
+        precision: "par personne"
       - quantite: 1
         unite: "cuillère à soupe"
         nom: "beni shoga"
-        precision: "une cuillère à soupe par personne"
+        precision: "par personne"
       - nom: "furikake"
-        precision: "pour décorer"
+        precision: "sans gluten de préférence, pour décorer"
         ajustable: false
         optionnel: true
     etapes:
@@ -127,8 +127,7 @@ parties:
         image: ./step-03.jpg
         imageAlt: "Un bol de nouilles dans une sauce crémeuse, garni d'edamames, de concombre en lamelles, de morceaux de saumon, de gingembre rose, de nori émietté, de sésame, avec des baguettes en bois posées sur le bord."
       - texte: "Ajouter les lamelles de concombre, les edamames et le beni shoga."
-      - texte: "Poser le saumon par dessus."
-      - texte: "Optionel : décorer de furikake."
+      - texte: "Poser le saumon par dessus, puis décorer de furikake."
 
 
 miseAJour: 2026-08-29

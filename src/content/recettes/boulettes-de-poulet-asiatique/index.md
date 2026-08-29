@@ -31,12 +31,12 @@ parties:
       - quantite: 1
         unite: "pièce"
         nom: "carotte"
-        precision: "crue, environ 100 g"
+        precision: "environ 100 g ; crue"
       - quantite: 300
         unite: "g"
         nom: "viande de poulet hachée"
       - quantite: 1
-        unite: "oeuf"
+        unite: "pièce"
         nom: "œuf entier"
         precision: "environ 120 g"
       - quantite: 1
@@ -46,7 +46,7 @@ parties:
       - quantite: 2
         unite: "cuillère à soupe"
         nom: "sauce d'huître sans gluten"
-        precision: "environ 36 g ; aussi appelé oyster sauce, remplaçable par de la sauce soja sans gluten"
+        precision: "environ 36 g ; remplaçable par de la sauce soja sans gluten"
       - quantite: 20
         unite: "g"
         nom: "gingembre râpé"
@@ -57,7 +57,7 @@ parties:
       - texte: "Ajouter l'œuf, la maïzena (pour épaisser un peu), le chou, la carotte, le gingembre et la sauce d'huître. Pas besoin de saler : la sauce d'huître est déjà bien salée."
       - texte: "Mélanger avec les mains jusqu'à homogène. Si c'est trop liquide, rajouter de la Maizena."
         image: ./step-01.jpg
-        imageAlt: "Du chou finement hachés sur une planche en bois, de la sauce huitre dans une main devant du poulet dans un bold, puis le même chou dans un bol avec de la viande de poulet hachée mélangée avec des carottes râpées."
+        imageAlt: "Du chou finement haché sur une planche en bois, de la sauce huître dans une main devant du poulet dans un bol, puis le même chou dans un bol avec de la viande de poulet hachée mélangée avec des carottes râpées."
   - nom: "Le montage et la cuisson"
     ingredients:
       - quantite: 20
@@ -67,10 +67,10 @@ parties:
         optionnel: true
     etapes:
       - texte: "Faire des boules d'environ 25 g chacune (1 grosse cuillère à soupe pleine)."
-      - texte: "Disposer sur le panier de l'air fryer sans les superposer. Conseil: mettre du papier sulfurisé en fond pour éviter que ça coule quand le chou va rendre de l'eau."
+      - texte: "Disposer sur le panier de l'air fryer sans les superposer. Conseil : mettre du papier sulfurisé en fond pour éviter que ça coule quand le chou va rendre de l'eau."
         image: ./step-02.jpg
         imageAlt: "Huit boulettes de poulet et légumes enrobées de graines de sésame, disposées sur du papier sulfurisé dans un bac de airfryer."
-      - texte: "Mettez un pchit d'huile pour dorer (optionel : décorer de graines de sésame)."
+      - texte: "Mettre un filet d'huile pour dorer."
       - texte: "Cuire à l'air fryer en mode airfryer (ou 200 °C), secouer le panier à mi-cuisson pour une cuisson uniforme."
         temperature: 200
         duree: 12
@@ -98,6 +98,7 @@ parties:
         unite: "cuillère à soupe"
         nom: "eau chaude"
         precision: "pour délayer"
+        ajustable: false
       - quantite: 1.5
         unite: "cuillère à soupe"
         nom: "sauce hoisin sans gluten"
@@ -119,8 +120,8 @@ En général pour 6 à 8 boulettes en fonction de la taille pour la version 2 po
 
 ## Astuces
 
-Ne pas oublier de surveiller en milieux de cuisson.
-On peut les congeler cuites pour ensuite les réchauffer (170°C).
+Ne pas oublier de surveiller en milieu de cuisson.
+On peut les congeler cuites pour ensuite les réchauffer (170 °C).
 
 ## Variantes
 

@@ -1,5 +1,5 @@
 ---
-titre: "Croustillant de poulet en feuilles de riz"
+titre: "Croustillants de poulet en feuilles de riz"
 description: "Des croustillants de poulet en feuilles de riz avec leur sauce aux cacahuètes."
 image: "./plat-fini.jpg"
 imageAlt: "Des croustillants de poulet dorés en forme de triangle avec des graines de sésame, et une sauce cremeuse au milieu"
@@ -31,12 +31,12 @@ parties:
       - quantite: 1
         unite: "pièce"
         nom: "carotte"
-        precision: "crue, environ 100 g"
+        precision: "environ 100 g ; crue"
       - quantite: 300
         unite: "g"
         nom: "viande de poulet hachée"
       - quantite: 1
-        unite: "oeuf"
+        unite: "pièce"
         nom: "œuf entier"
         precision: "environ 120 g"
       - quantite: 1
@@ -46,7 +46,7 @@ parties:
       - quantite: 2
         unite: "cuillère à soupe"
         nom: "sauce d'huître sans gluten"
-        precision: "environ 36 g ; aussi appelé oyster sauce, remplaçable par de la sauce soja sans gluten"
+        precision: "environ 36 g ; remplaçable par de la sauce soja sans gluten"
       - quantite: 20
         unite: "g"
         nom: "gingembre râpé"
@@ -73,13 +73,13 @@ parties:
       - texte: "Humidifier un demi cercle de feuille de riz (bol d'eau tiède ou pinceau) jusqu'à ce qu'il devienne souple."
       - texte: "Déposer une cuillère à soupe de farce au milieu du demi cercle, sur le bord droit, en laissant de la marge sur les cotés."
       - texte: "Rabattre le premier coin de feuille de riz sur la farce, puis le deuxième coin par dessus pour former un triangle, et enfin rouler la pointe arrondie qui reste pour fermer le croustillant. Bien appuyer pour souder les bords."
-      - texte: "Répéter avec les cinq autres demi cercles. Vous pouvez bien sure tenter d'autres formes comme des petits cercles en mettant la farce au milieu et rabattant tous les cotés d'un coup."
+      - texte: "Répéter avec les cinq autres demi cercles. Il est possible de tenter d'autres formes comme des petits cercles en mettant la farce au milieu et en rabattant tous les cotés d'un coup."
         image: ./step-02.5.jpg
         imageAlt: "Suite de quatre photos montrant le pliage d'un croustillant de poulet sur une planche en bois, la farce au poulet, carottes et chou est déposée sur le bord d'une feuille de riz, puis les deux coins sont rabattus successivement pour former un triangle, et enfin la pointe arrondie est roulée et pressée pour souder les bords et fermer le croustillant."
-      - texte: "Disposer les croustillants sur le panier de l'air fryer sans les superposer. Conseil: mettre du papier sulfurisé en fond."
+      - texte: "Disposer les croustillants sur le panier de l'air fryer sans les superposer. Conseil : mettre du papier sulfurisé en fond."
         image: ./step-02.jpg
-        imageAlt: "Des croustillants de poulet en feuille de riz enrobés de graines de sésame, disposés sur du papier sulfurisé dans un bac de airfryer."
-      - texte: "Mettre un pchit d'huile sur chaque croustuillant pour dorer (optionel : décorer de graines de sésame)."
+        imageAlt: "Des croustillants de poulet en feuilles de riz enrobés de graines de sésame, disposés sur du papier sulfurisé dans un bac d'airfryer."
+      - texte: "Mettre un filet d'huile sur chaque croustillant pour dorer."
       - texte: "Cuire à l'air fryer en mode airfryer (ou 200 °C), retourner délicatement les croustillants à mi-cuisson pour qu'ils dorent des deux cotés."
         temperature: 200
         duree: 12
@@ -107,6 +107,7 @@ parties:
         unite: "cuillère à soupe"
         nom: "eau chaude"
         precision: "pour délayer"
+        ajustable: false
       - quantite: 1.5
         unite: "cuillère à soupe"
         nom: "sauce hoisin sans gluten"
@@ -118,7 +119,7 @@ parties:
       - texte: "Ajouter l'eau chaude petit à petit jusqu'à obtenir une sauce lisse et nappante."
         image: ./step-03.jpg
         imageAlt: "De l'ail écrasé dans un bol avec une cuillère, et un mini bol bleu contenant une sauce crémeuse de couleur beige."
-      - texte: "Servir avec les croustillants chauds avec la sauce"
+      - texte: "Servir les croustillants chauds avec la sauce."
 
 
 miseAJour: 2026-08-29
@@ -128,8 +129,8 @@ Compter 3 feuilles de riz coupées en deux, soit 6 croustillants pour la version
 
 ## Astuces
 
-Ne pas oublier de surveiller en milieux de cuisson.
-On peut les congeler cuits pour ensuite les réchauffer (170°C).
+Ne pas oublier de surveiller en milieu de cuisson.
+On peut les congeler cuits pour ensuite les réchauffer (170 °C).
 
 ## Variantes
 
