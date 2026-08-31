@@ -53,6 +53,8 @@ parties:
       - texte: "Cuire à l'airfryer à 200 °C pendant 15 minutes. Pas besoin de retourner les pièces en cours de cuisson."
         temperature: 200
         duree: 15
+        image: ./step-03.jpg
+        imageAlt: "Vue de haut sur les deux bacs d'un airfryer double, chacun rempli de pièces de poulet panées aux corn flakes, dorées après cuisson."
   - nom: "La salade d'accompagnement"
     note: "À préparer pendant la cuisson du poulet."
     ingredients:
@@ -68,13 +70,17 @@ parties:
       - quantite: 100
         unite: "g"
         nom: "pois chiche"
+      - nom: "assaisonnement pour salade composée"
+        precision: "au choix"
+        optionnel: true
     etapes:
       - texte: "Couper le concombre, les tomates et les cornichons en petits morceaux."
       - texte: "Répartir les pois chiche dans les assiettes avec les légumes coupés."
+      - texte: "Assaisonner avec l'assaisonnement de salade composée de son choix."
       - texte: "Dresser les assiettes avec les aiguillettes de poulet chaudes et la salade."
 
 miseAJour: 2026-08-31
-brouillon: true
+brouillon: false
 ---
 
 Une panure croustillante aux corn flakes pour des aiguillettes de poulet cuites à l'airfryer, à servir avec une salade fraîche de crudités et de pois chiche.
