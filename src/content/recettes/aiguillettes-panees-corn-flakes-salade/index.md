@@ -16,8 +16,8 @@ secouerAMiCuisson: false
 
 categorie: "plat"
 difficulte: "facile"
-saison: []
-regime: []
+saison: ["printemps", "ete"]
+regime: ["sans-gluten"]
 tags: ["poulet", "airfryer", "salade", "panure"]
 flemme: false
 
@@ -30,7 +30,7 @@ parties:
         precision: "remplaçable par du poulet coupé en petites pièces égales"
       - quantite: 300
         unite: "g"
-        nom: "corn flakes"
+        nom: "corn flakes sans gluten"
         precision: "nature, sans sucre ajouté"
       - quantite: 2
         unite: "pièce"
@@ -77,7 +77,7 @@ Une panure croustillante aux corn flakes pour des aiguillettes de poulet cuites 
 
 ## Astuces
 
-Bien choisir des corn flakes nature, sans sucre ajouté : une version sucrée donnerait un goût étrange à la panure.
+Bien choisir des corn flakes nature, sans sucre ajouté et sans gluten : une version sucrée donnerait un goût étrange à la panure, et toutes les marques de corn flakes ne sont pas sans gluten.
 
 Garder un tiers des corn flakes en réserve évite que le bol devienne trop compact à force des passages répétés. Pour une grande quantité de poulet, mieux vaut réserver une partie des céréales et en rajouter au fur et à mesure.
 
