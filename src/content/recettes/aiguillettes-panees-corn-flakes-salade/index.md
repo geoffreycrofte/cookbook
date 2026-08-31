@@ -117,7 +117,7 @@ parties:
         unite: ''
         nom: assaisonnement pour salade composée
         precision: au choix
-        ajustable: false
+        ajustable: true
         optionnel: true
     etapes:
       - texte: Couper le concombre, les tomates et les cornichons en petits morceaux.
