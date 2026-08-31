@@ -1,8 +1,8 @@
 ---
 titre: "Aiguillettes panées aux corn flakes et salade"
 description: "Des aiguillettes de poulet panées aux corn flakes, croustillantes à l'airfryer, servies avec une salade fraîche."
-image: "./plat-fini.png"
-imageAlt: "À compléter"
+image: "./plat-fini.jpg"
+imageAlt: "Un bol avec des aiguillettes de poulet panées et dorées, une salade de tomates, concombre, cornichons et pois chiche, une sauce crémeuse et des tranches de cornichon en décoration."
 
 preparation: 25
 cuisson: 15
