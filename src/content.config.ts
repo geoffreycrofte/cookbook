@@ -8,14 +8,32 @@ import { typographieFr } from './lib/typographie';
 const texteFr = (min = 1) => z.string().min(min).transform(typographieFr);
 
 /**
- * Champ facultatif tolérant au `null`.
+ * Champ facultatif tolérant au `null` et à la chaîne vide.
  *
- * Un formulaire de CMS écrit `champ: null` quand on laisse la case vide, là où
- * la main écrit simplement une ligne en moins. Sans cette tolérance, une
- * recette créée depuis l'interface ferait échouer le build pour rien.
+ * Sveltia CMS n'omet jamais une clé : un widget nombre laissé vide écrit
+ * `null`, un widget texte ou image laissé vide écrit `''`. La main, elle,
+ * écrit simplement une ligne en moins. Sans cette double tolérance, une
+ * recette éditée depuis l'interface ferait échouer le build pour rien.
  */
 const facultatif = <T extends z.ZodType>(schema: T) =>
-  schema.nullish().transform((valeur) => valeur ?? undefined);
+  z
+    .preprocess((valeur) => (valeur === '' ? undefined : valeur), schema.nullish())
+    .transform((valeur) => valeur ?? undefined);
+
+/**
+ * Liste facultative tolérante au tableau vide.
+ *
+ * Le widget « liste » de Sveltia CMS laissé vide écrit `champ: []` plutôt que
+ * d'omettre la clé. Une recette en `parties` reçoit ainsi des `ingredients`/
+ * `etapes` racine vides à chaque sauvegarde CMS (et inversement une recette
+ * simple reçoit `parties: []`) : sans cette tolérance, ces tableaux vides
+ * entrent en conflit avec l'exigence « l'un ou l'autre, jamais les deux ».
+ */
+const listeFacultative = <T extends z.ZodType>(schema: T) =>
+  z.preprocess(
+    (valeur) => (Array.isArray(valeur) && valeur.length === 0 ? undefined : valeur),
+    schema.optional()
+  );
 
 /**
  * Une recette = un dossier dans src/content/recettes/<slug>/
@@ -155,9 +173,9 @@ const recettes = defineCollection({
        * Recette en plusieurs préparations : `parties` à la place.
        * Jamais les deux. Le rendu, lui, ne voit que `sections` (voir plus bas).
        */
-      ingredients: z.array(ingredient).min(1).optional(),
-      etapes: z.array(etape(contexte)).min(1).optional(),
-      parties: z.array(partie(contexte)).min(2).optional(),
+      ingredients: listeFacultative(z.array(ingredient).min(1)),
+      etapes: listeFacultative(z.array(etape(contexte)).min(1)),
+      parties: listeFacultative(z.array(partie(contexte)).min(2)),
 
       miseAJour: z.coerce.date(),
       /** Exclue du site publié tant que true. */
