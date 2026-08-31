@@ -45,6 +45,8 @@ parties:
         image: ./step-01.jpg
         imageAlt: "Trois bols vus de haut, un de maïzena, un d'œufs battus, un de corn flakes émiettés, posés au dessus d'une planche en bois avec des morceaux de poulet crus coupés en pièces égales."
       - texte: "Enrober chaque pièce de poulet de maïzena jusqu'à ce qu'elle soit blanche, la tremper ensuite dans l'œuf battu pour bien la couvrir, puis l'écraser dans les corn flakes pour faire adhérer la panure."
+        image: ./step-02.jpg
+        imageAlt: "Suite de trois photos montrant les trois bains d'une pièce de poulet dans une main, d'abord enrobée de maïzena blanche, puis trempée dans l'œuf battu, et enfin recouverte de corn flakes émiettés."
       - texte: "Renouveler l'opération pour toutes les pièces. Quand les corn flakes du bol deviennent trop compacts, retirer l'excédent et ajouter un nouveau tiers de corn flakes."
       - texte: "Répartir les pièces de poulet sur le panier de l'airfryer (au besoin sur les deux bacs), sans les superposer."
       - texte: "Asperger les pièces d'un filet d'huile."
