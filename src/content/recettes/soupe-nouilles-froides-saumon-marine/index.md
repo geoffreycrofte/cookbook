@@ -18,7 +18,7 @@ secouerAMiCuisson: false
 categorie: "plat"
 difficulte: "facile"
 saison: ["ete"]
-regime: ["sans-gluten"]
+regime: ["sans-gluten", "pescatarien"]
 tags: ["saumon", "asiatique", "japonais"]
 flemme: false
 

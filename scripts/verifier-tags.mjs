@@ -23,6 +23,7 @@ const dossierRecettes = path.join(racine, 'src/content/recettes');
 const REGIMES = [
   'vegetarien',
   'vegan',
+  'pescatarien',
   'sans-gluten',
   'sans-lactose',
   'sans-porc',

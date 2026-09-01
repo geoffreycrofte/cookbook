@@ -84,11 +84,14 @@ export function libelleCategorie(categorie: string): string {
 
 const LIBELLES_REGIME: Record<string, string> = {
   vegetarien: 'Végétarien',
-  vegan: 'Vegan',
+  vegan: 'Végan',
+  pescatarien: 'Poisson, sans viande',
   'sans-gluten': 'Sans gluten',
   'sans-lactose': 'Sans lactose',
   'sans-porc': 'Sans porc',
   'sans-fruits-a-coque': 'Sans fruits à coque',
+  // Facette calculée (voir construireIndex) : pas une valeur de `regime`.
+  'sans-viande': 'Sans viande',
 };
 
 export function libelleRegime(regime: string): string {

@@ -56,6 +56,7 @@ const SAISONS = ['printemps', 'ete', 'automne', 'hiver'] as const;
 const REGIMES = [
   'vegetarien',
   'vegan',
+  'pescatarien',
   'sans-gluten',
   'sans-lactose',
   'sans-porc',

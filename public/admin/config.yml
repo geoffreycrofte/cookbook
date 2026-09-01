@@ -139,7 +139,8 @@ collections:
         hint: Liste fermée. Pour en ajouter une valeur, il faut modifier src/content.config.ts.
         options:
           - { label: Végétarien, value: vegetarien }
-          - { label: Vegan, value: vegan }
+          - { label: Végan, value: vegan }
+          - { label: "Poisson, sans viande", value: pescatarien }
           - { label: Sans gluten, value: sans-gluten }
           - { label: Sans lactose, value: sans-lactose }
           - { label: Sans porc, value: sans-porc }

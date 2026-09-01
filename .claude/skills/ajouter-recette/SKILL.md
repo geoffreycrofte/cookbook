@@ -41,14 +41,19 @@ inventer une donnée manquante en silence : lister à la fin les trous à comble
 - `categorie` : `entree` | `plat` | `dessert` | `snack` | `accompagnement`.
 - `difficulte` : `facile` | `moyen` | `technique`.
 - `saison` : sous-ensemble de `printemps` `ete` `automne` `hiver` (sans accent).
-- `regime` : liste fermée (`vegetarien` `vegan` `sans-gluten` `sans-lactose`
-  `sans-porc` `sans-fruits-a-coque`). Ne le poser que si la recette **entière**
-  le respecte, ingrédients de remplacement compris (voir §5).
+- `regime` : liste fermée (`vegetarien` `vegan` `pescatarien` `sans-gluten`
+  `sans-lactose` `sans-porc` `sans-fruits-a-coque`). Ne le poser que si la
+  recette **entière** le respecte, ingrédients de remplacement compris (voir §5).
+  Sens : `vegan` = aucun produit animal ; `vegetarien` = ni viande ni poisson,
+  **œufs et laitages autorisés** ; `pescatarien` = pas de viande, poisson
+  autorisé. L'accueil dérive un bouton « Sans viande » de
+  `vegan ∪ vegetarien ∪ pescatarien` : ne pas chercher à le poser à la main.
 - `tags` : libres, ramenés en minuscules. **Jamais de régime dans les tags**
-  (ni `vegetarien`, ni `sans gluten`… : c'est le champ `regime`). Seule
-  exception : les options de régime, tag d'une liste fermée
-  `option-vegetarien` `option-vegan` `option-sans-gluten` `option-sans-lactose`
-  `option-sans-porc` `option-sans-fruits-a-coque` (voir §5).
+  (ni `vegetarien`, ni `sans gluten`… : c'est le champ `regime`). `poisson`
+  reste une étiquette normale, sans rapport avec `pescatarien`. Seule
+  exception régime : les options, tag d'une liste fermée
+  `option-vegetarien` `option-vegan` `option-pescatarien` `option-sans-gluten`
+  `option-sans-lactose` `option-sans-porc` `option-sans-fruits-a-coque` (voir §5).
   `npm run verifier:tags` signale toute dérive et les quasi-doublons ; il
   n'échoue jamais, c'est un garde-fou à lire.
 - `flemme: true` seulement sur demande explicite.
@@ -114,9 +119,12 @@ un substitut valable ici.
 - `sans-lactose` : beurre → matière grasse végétale ou beurre sans lactose ;
   crème → crème végétale ; fromage blanc / skyr → alternative végétale ou sans
   lactose. Le substitut cité en `precision` doit lui aussi être sans lactose.
-- `vegetarien` / `vegan` : un substitut proposé en `precision` ne doit pas
-  réintroduire de viande, de poisson, ni (pour `vegan`) d'œuf ou de produit
-  laitier.
+- `vegetarien` : aucune chair animale (viande **et** poisson). Œufs et
+  laitages autorisés. Un substitut en `precision` ne réintroduit ni viande ni
+  poisson.
+- `vegan` : en plus, ni œuf ni produit laitier ni miel.
+- `pescatarien` : pas de viande ni volaille ; poisson et fruits de mer
+  autorisés. Un substitut ne réintroduit pas de viande.
 - Répercuter systématiquement dans le texte des étapes et la section
   « Variantes ».
 

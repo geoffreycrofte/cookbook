@@ -23,10 +23,20 @@ export interface EntreeIndex {
   categorie: string;
   tags: string[];
   regime: string[];
+  /**
+   * Facette calculée : vrai si la recette est sans viande, quelle qu'en soit
+   * la raison (`vegan`, `vegetarien` ou `pescatarien`). Sert le bouton
+   * parapluie « Sans viande » de l'accueil ; ce n'est pas une valeur de
+   * `regime`.
+   */
+  sansViande: boolean;
   airfryer: boolean;
   flemme: boolean;
   duree: number;
 }
+
+/** Régimes qui impliquent l'absence de viande. */
+export const REGIMES_SANS_VIANDE = ['vegan', 'vegetarien', 'pescatarien'];
 
 /**
  * Retire les accents et passe en minuscules, pour qu'une recherche de
@@ -43,6 +53,7 @@ export function normaliser(texte: string): string {
 export function construireIndex(recettes: CollectionEntry<'recettes'>[]): EntreeIndex[] {
   return recettes.map((recette) => {
     const d = recette.data;
+    const sansViande = d.regime.some((r) => REGIMES_SANS_VIANDE.includes(r));
 
     return {
       slug: recette.id,
@@ -52,10 +63,14 @@ export function construireIndex(recettes: CollectionEntry<'recettes'>[]): Entree
       // Les ingrédients de toutes les sections sont agrégés : chercher un
       // ingrédient qui n'existe que dans la sauce doit remonter le plat entier.
       motsIngredients: d.sections.flatMap((s) => s.ingredients.map((i) => normaliser(i.nom))),
-      motsTags: [...d.tags, ...d.regime, d.categorie].map(normaliser),
+      // « sans viande » rejoint les mots cherchables quand la recette qualifie.
+      motsTags: [...d.tags, ...d.regime, d.categorie, ...(sansViande ? ['sans viande'] : [])].map(
+        normaliser
+      ),
       categorie: d.categorie,
       tags: d.tags,
       regime: d.regime,
+      sansViande,
       airfryer: d.airfryer,
       flemme: d.flemme,
       duree: dureeTotale(d),

@@ -45,7 +45,7 @@ One recipe is a folder `src/content/recettes/<slug>/` holding `index.md` and its
 - `airfryer: true` requires `temperature`.
 - A recipe uses either `ingredients` + `etapes`, or `parties` (min 2), never both.
 - `imageAlt` is mandatory everywhere an image appears (accessibility). An illustrated step must set its own `imageAlt`.
-- `regime` is a closed enum; `tags` are lowercased; `brouillon: true` keeps the recipe out of the build.
+- `regime` is a closed enum (`vegetarien` = ovo-lacto, `vegan`, `pescatarien` = fish but no meat, plus the `sans-*` free-from). The home page derives a synthetic "Sans viande" facet from `vegan ∪ vegetarien ∪ pescatarien` (see `REGIMES_SANS_VIANDE` in `recherche.ts`); it is not a stored value. `tags` are lowercased; diet words never go in `tags` (`scripts/verifier-tags.mjs` warns); `brouillon: true` keeps the recipe out of the build.
 - `facultatif()` tolerates `null` (the CMS writes `null` for empty fields).
 - Frontmatter strings pass through `typographieFr()` at load via `texteFr()`.
 

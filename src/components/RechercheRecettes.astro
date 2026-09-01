@@ -11,6 +11,26 @@ interface Props {
 
 const { index, categories, tags, regimes } = Astro.props;
 
+/**
+ * Le groupe « Régimes » n'est pas la liste brute des valeurs présentes :
+ * `pescatarien` n'a pas de bouton et « Sans viande » (valeur synthétique
+ * `sans-viande`) chapeaute vegan + végétarien + pescatarien. Ordre fixe,
+ * chaque bouton affiché seulement s'il concerne au moins une recette.
+ */
+const ORDRE_REGIMES = [
+  'sans-viande',
+  'vegetarien',
+  'vegan',
+  'sans-gluten',
+  'sans-lactose',
+  'sans-porc',
+  'sans-fruits-a-coque',
+];
+const regimesDisponibles = new Set(regimes);
+const optionsRegime = ORDRE_REGIMES.filter((valeur) =>
+  valeur === 'sans-viande' ? index.some((e) => e.sansViande) : regimesDisponibles.has(valeur)
+).map((valeur) => ({ valeur, libelle: libelleRegime(valeur) }));
+
 const groupes = [
   {
     id: 'categorie',
@@ -25,7 +45,7 @@ const groupes = [
   {
     id: 'regime',
     legende: 'Régimes',
-    options: regimes.map((r) => ({ valeur: r, libelle: libelleRegime(r) })),
+    options: optionsRegime,
   },
   {
     id: 'cuisson',
@@ -159,7 +179,11 @@ const groupes = [
 
     if (categories.length > 0 && !categories.includes(entree.categorie)) return false;
     if (etiquettes.length > 0 && !etiquettes.some((t) => entree.tags.includes(t))) return false;
-    if (regimes.length > 0 && !regimes.some((r) => entree.regime.includes(r))) return false;
+    if (
+      regimes.length > 0 &&
+      !regimes.some((r) => (r === 'sans-viande' ? entree.sansViande : entree.regime.includes(r)))
+    )
+      return false;
     if (cuissons.includes('airfryer') && !entree.airfryer) return false;
 
     return true;
