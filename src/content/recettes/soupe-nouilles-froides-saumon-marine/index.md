@@ -57,7 +57,7 @@ parties:
         image: ./step-01.jpg
         imageAlt: "Préparation d'un saumon mariné, ail pâte miso ajoutés à une sauce soja avec des oignons nouveaux, puis un filet de saumon enrobé de cette marinade dans un bol, et enfin deux filets marinés placés dans le panier du airfryer."
       - texte: "Masser les pavés de saumon avec la marinade et laisser mariner au moins 30 minutes."
-      - texte: "Retirer le plus gros de la marinade, puis cuire le saumon à 200 °C (mode airfry sur le Ninja) 8 à 10 minutes selon que vous le vouliez rosé ou bien cuit."
+      - texte: "Retirer le plus gros de la marinade, puis cuire le saumon à 200 °C (mode airfry sur le Ninja) 8 à 10 minutes selon la cuisson voulue, rosé ou bien cuit."
         temperature: 200
         duree: 10
   - nom: "La soupe"
@@ -91,7 +91,7 @@ parties:
         ajustable: false
         optionnel: true
     etapes:
-      - texte: "Mettre tous les ingrédients listés de la soupe dans le blender et mixer jusqu'à obtenir une soupe crémeuse et rose si vous avez mis la pâte de curry rouge."
+      - texte: "Mettre tous les ingrédients listés de la soupe dans le blender et mixer jusqu'à obtenir une soupe crémeuse, rose si elle contient la pâte de curry rouge."
         image: ./step-02.jpg
         imageAlt: "Un paquet de tofu soyeux, un pot de pâte de curry rouge vide et une boîte de lait d'avoine bio sans sucre suivit des morceaux de tofu dans le bol d'un mini blender posé sur un plan de travail"
       - texte: "Si la soupe est trop dense, la délayer petit à petit avec de l'eau ou du lait végétal jusqu'à la consistance voulue."

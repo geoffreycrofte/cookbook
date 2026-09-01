@@ -7,9 +7,10 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build && npm run elaguer && npm run verifier",
+    "build": "astro check && astro build && npm run elaguer && npm run verifier && npm run verifier:tags",
     "preview": "astro preview",
     "verifier": "node scripts/verifier-rendu.mjs",
+    "verifier:tags": "node scripts/verifier-tags.mjs",
     "contrastes": "node scripts/verifier-contrastes.mjs",
     "icones": "node scripts/generer-icones.mjs",
     "elaguer": "node scripts/elaguer-originaux.mjs",

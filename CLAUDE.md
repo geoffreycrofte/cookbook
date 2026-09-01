@@ -12,9 +12,10 @@ Workflow, styling, copywriting and tone rules live in [`.claude/CLAUDE.md`](.cla
 
 ```bash
 npm run dev          # astro dev on http://localhost:4321
-npm run build        # astro check && astro build && npm run elaguer && npm run verifier
+npm run build        # astro check && astro build && npm run elaguer && npm run verifier && npm run verifier:tags
 npm run preview      # serve dist/ as in production
 npm run verifier     # assert dist/ actually contains the recipes
+npm run verifier:tags # tag hygiene (diets, near-duplicates); warns only, never fails
 npm run contrastes   # check palette contrasts against WCAG AA
 npm run icones       # regenerate PWA icons
 npm run cms:verifier # validate public/admin/config.yml against the Sveltia schema (needs network)

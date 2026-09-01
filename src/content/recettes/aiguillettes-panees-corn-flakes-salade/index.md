@@ -87,7 +87,7 @@ Une panure croustillante aux corn flakes pour des aiguillettes de poulet cuites 
 
 Bien choisir des corn flakes nature, sans sucre ajouté et sans gluten : une version sucrée donnerait un goût vraiment étrange à la panure.
 
-Notez que toutes les marques de corn flakes ne sont pas sans gluten.
+Toutes les marques de corn flakes ne sont pas sans gluten.
 
 Garder un tiers des corn flakes en réserve évite que le contenu du bol ne devienne trop compact à force des passages répétés dans les bains. Pour une grande quantité de poulet, mieux vaut réserver une partie des céréales et en rajouter au fur et à mesure.
 

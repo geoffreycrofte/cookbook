@@ -44,7 +44,13 @@ inventer une donnée manquante en silence : lister à la fin les trous à comble
 - `regime` : liste fermée (`vegetarien` `vegan` `sans-gluten` `sans-lactose`
   `sans-porc` `sans-fruits-a-coque`). Ne le poser que si la recette **entière**
   le respecte, ingrédients de remplacement compris (voir §5).
-- `tags` : libres, ramenés en minuscules.
+- `tags` : libres, ramenés en minuscules. **Jamais de régime dans les tags**
+  (ni `vegetarien`, ni `sans gluten`… : c'est le champ `regime`). Seule
+  exception : les options de régime, tag d'une liste fermée
+  `option-vegetarien` `option-vegan` `option-sans-gluten` `option-sans-lactose`
+  `option-sans-porc` `option-sans-fruits-a-coque` (voir §5).
+  `npm run verifier:tags` signale toute dérive et les quasi-doublons ; il
+  n'échoue jamais, c'est un garde-fou à lire.
 - `flemme: true` seulement sur demande explicite.
 - `brouillon: true` garde la recette hors build.
 - `miseAJour` : date du jour au format `AAAA-MM-JJ`.
@@ -76,24 +82,59 @@ singulier — l'accord pluriel est automatique), `nom`, `precision`, `ajustable`
   1. **équivalence de quantité** : « environ 36 g », « environ 3 cuillères à soupe » ;
   2. **remplacement** : « remplaçable par… » — toujours cette formule ;
   3. **notes libres** : « écrasées », « pour la déco », « pour délayer ».
+- Un remplacement porte **sa quantité** dès qu'elle diffère :
+  « remplaçable par 250 g de protéines de soja texturées ».
+- **Option de régime** portée par le remplacement : suffixe
+  « pour une version <régime> », avec le nom exact d'un régime
+  (`vegan`, `végétarien`, `sans gluten`, `sans lactose`…) :
+  « remplaçable par 250 g de protéines de soja texturées pour une version vegan ».
+  Cette mention n'ajoute **pas** le régime au champ `regime` de la recette
+  (le plat reste décrit tel qu'écrit).
 - « ou » ne sert **jamais** à introduire un remplacement. Uniquement pour
   lister plusieurs choix également valables (« vermicelles de riz fins ou
   nouilles plates »).
 - Une équivalence dans une autre unité du **même** ingrédient s'écrit aussi
   « environ… » (« environ 3 cuillères à soupe »), pas « soit » ni « ou ».
 
-## 5. Cohérence « sans gluten »
+## 5. Cohérence des régimes
 
-Si la recette est marquée `sans-gluten`, aligner tout le contenu :
-- sauce soja → « sauce soja sans gluten » (sans parenthèses) ;
-- sauce d'huître, sauce hoisin, pâte de curry, gochujang, miso… → préciser
-  « sans gluten » dans le `nom` ou proposer le substitut en `precision`
-  (« remplaçable par de la sauce soja sans gluten ») ;
-- pâtes : soba de blé → nouilles de riz ou soba 100 % sarrasin ;
-- répercuter dans le texte des étapes et la section « Variantes ».
+Tout régime déclaré dans `regime` doit être tenu par **l'ensemble** des
+ingrédients, y compris ceux proposés en remplacement dans `precision` ou dans
+« Variantes ». Un ingrédient de substitution qui casserait le régime n'est pas
+un substitut valable ici.
+
+- `sans-gluten` :
+  - sauce soja → « sauce soja sans gluten » (sans parenthèses) ;
+  - sauce d'huître, sauce hoisin, pâte de curry, gochujang, miso… → préciser
+    « sans gluten » dans le `nom`, ou proposer le substitut en `precision`
+    (« remplaçable par de la sauce soja sans gluten ») ;
+  - pâtes : soba de blé → nouilles de riz ou soba 100 % sarrasin ;
+  - céréales de panure (corn flakes…) : « sans gluten », toutes les marques ne
+    le sont pas.
+- `sans-lactose` : beurre → matière grasse végétale ou beurre sans lactose ;
+  crème → crème végétale ; fromage blanc / skyr → alternative végétale ou sans
+  lactose. Le substitut cité en `precision` doit lui aussi être sans lactose.
+- `vegetarien` / `vegan` : un substitut proposé en `precision` ne doit pas
+  réintroduire de viande, de poisson, ni (pour `vegan`) d'œuf ou de produit
+  laitier.
+- Répercuter systématiquement dans le texte des étapes et la section
+  « Variantes ».
+
+**Option de régime** (le plat n'est pas de ce régime, mais peut l'être) :
+
+- signal au niveau recette : le tag `option-<régime>` de la liste fermée (§2).
+  Rien dans `regime`.
+- « comment » au niveau ingrédient : chaque ingrédient qui bloque le régime visé
+  porte « remplaçable par … pour une version <régime> » dans sa `precision`
+  (§4). Sans ces mentions, l'option n'est pas réelle : ne pas poser le tag.
+- `verifier:tags` prévient si le tag est là sans aucune mention
+  « pour une version … » dans les ingrédients.
 
 ## 6. Copie française
 
+- **Étapes rédigées à l'infinitif impersonnel** : « couper », « mélanger »,
+  « cuire ». Jamais la 2e personne (« mettez », « vous pouvez », « selon que
+  vous vouliez »). Les notes et le corps markdown suivent le même ton neutre.
 - Espace **insécable** avant `:` `;` `?` `!` (et non une espace simple).
 - « je », jamais « nous ».
 - Pas de tiret cadratin `—` ni de `--` `–` comme séparateur de phrase.

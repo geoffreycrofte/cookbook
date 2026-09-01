@@ -12,6 +12,7 @@ npm run dev         # http://localhost:4321
 npm run build       # types, construction, puis vérification du rendu
 npm run preview     # sert dist/ comme en production
 npm run verifier    # vérifie que dist/ contient bien les recettes
+npm run verifier:tags # hygiène des tags (régimes, quasi-doublons) ; n'échoue jamais
 npm run contrastes  # vérifie les contrastes de la palette (WCAG AA)
 npm run icones      # régénère les icônes de la PWA
 ```
@@ -47,7 +48,7 @@ Points à retenir :
 - `airfryer: true` marque une cuisson à l'airfryer : macaron sur la carte, mention sur la fiche, et comptage sur l'accueil. Une telle recette doit obligatoirement indiquer sa `temperature`, sans quoi le build échoue.
 - `temperature` est en degrés Celsius et reste facultative pour les cuissons qui n'en ont pas. Tous les temps sont en minutes.
 - `regime` n'accepte qu'une liste fermée de valeurs (`vegetarien`, `vegan`, `sans-gluten`, `sans-lactose`, `sans-porc`, `sans-fruits-a-coque`). Une valeur inconnue fait échouer le build en listant les valeurs acceptées. La liste s'étend dans `src/content.config.ts`.
-- `tags` est libre, mais ramené en minuscules pour éviter que la casse ne dédouble les filtres.
+- `tags` est libre, mais ramené en minuscules pour éviter que la casse ne dédouble les filtres. Un régime ne va **jamais** dans `tags` : il a son champ `regime`. Seule exception, les options de régime (« ce plat peut être rendu végétarien ») : un tag d'une liste fermée, `option-vegetarien`, `option-vegan`, `option-sans-gluten`, `option-sans-lactose`, `option-sans-porc`, `option-sans-fruits-a-coque`. `npm run verifier:tags` signale les dérives et les quasi-doublons, sans jamais bloquer le build.
 - `flemme: true` fait entrer la recette dans le tirage « J'ai la flemme ».
 
 ### Décrire un ingrédient
@@ -64,6 +65,8 @@ Le champ `precision` est la ligne discrète sous le nom. Quand il porte plusieur
 3. notes libres : « écrasées », « pour la déco », « pour délayer ».
 
 « ou » sert uniquement à lister plusieurs choix également valables pour un même ingrédient (« vermicelles de riz fins ou nouilles plates »).
+
+Un remplacement porte sa quantité dès qu'elle change (« remplaçable par 250 g de protéines de soja texturées »). Pour signaler qu'un remplacement rend la recette compatible avec un régime, on ajoute le suffixe « pour une version <régime> » (« remplaçable par 250 g de protéines de soja texturées pour une version vegan »). Cette mention reste du texte : elle n'ajoute pas le régime au champ `regime`. Au niveau de la recette, l'option se déclare par le tag `option-<régime>` correspondant, et chaque ingrédient qui bloque ce régime doit porter sa mention « pour une version… », sinon l'option n'est pas réelle.
 
 ### Illustrer une étape
 
