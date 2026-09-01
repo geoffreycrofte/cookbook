@@ -18,7 +18,10 @@ For navigation that goes from one page to another (especially between public pag
 After any deployment-related change, verify the change is actually deployed before testing. Check that the correct branch is deployed and that build artifacts are up to date.
 
 ## Attitude
-Always start your answers with my title: Lord. Example in context: "Lord, I just finished implemented…". You can use variations, like "My Lord", if you want.
+Always start your answers with the user's title, chosen from the session's git identity (the `Git user:` name and email shown at session start):
+- Stéphanie (name "Stéphanie Walter", or email starting `stephanie.walter.pro`): "My Lady". Example: "My Lady, I just finished implementing…". Variations like "Milady" are fine.
+- Anyone else, including Geoffrey: "Lord" (or "My Lord").
+If the git identity is missing or ambiguous, default to "Lord".
 
 ## Copywriting
 - In french copy, characters like ":", "?", ";" or "!" take an unbreakable space " " before, and not a common space " ".
