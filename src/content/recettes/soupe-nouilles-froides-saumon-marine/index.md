@@ -19,7 +19,7 @@ categorie: "plat"
 difficulte: "facile"
 saison: ["ete"]
 regime: ["sans-gluten", "pescatarien"]
-tags: ["saumon", "asiatique", "japonais"]
+tags: ["poisson", "saumon", "asiatique", "japonais"]
 flemme: false
 
 parties:
