@@ -15,6 +15,7 @@ npm run verifier    # vérifie que dist/ contient bien les recettes
 npm run verifier:tags # hygiène des tags (régimes, quasi-doublons) ; n'échoue jamais
 npm run contrastes  # vérifie les contrastes de la palette (WCAG AA)
 npm run icones      # régénère les icônes de la PWA
+npm run comprimer-images # compresse les photos de recette trop lourdes
 ```
 
 Le service worker ne s'enregistre qu'en production : en développement il servirait des pages périmées. Pour l'éprouver, utilisez `npm run build` puis `npm run preview`.
@@ -81,6 +82,18 @@ etapes:
 ```
 
 Le fichier vit dans le dossier de la recette, à côté de `plat-fini.jpg`, et `image` y renvoie en chemin relatif. `imageAlt` devient obligatoire dès qu'une photo est là : sans lui, le build échoue. La photo est optimisée et redimensionnée automatiquement, et elle rejoint le balisage schema.org de l'étape.
+
+### Poids des photos
+
+Les photos de recette dans `src/content/recettes/` ne doivent jamais peser plus de 800 Ko : au-delà, `npm run comprimer-images` les redimensionne (2400 px de large maximum) et les recompresse en place, sans jamais alourdir un fichier déjà léger.
+
+Un hook Git s'en charge automatiquement à chaque commit qui touche une photo : il compresse les fichiers indexés et remet la version compressée à l'index, pour qu'on ne committe jamais un original brut. À activer une fois par clone :
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Sans cette configuration, le hook n'est pas actif et rien n'empêche un commit d'embarquer une photo trop lourde : penser à lancer `npm run comprimer-images` à la main avant de committer si le hook n'est pas installé.
 
 ### Une recette en plusieurs préparations
 

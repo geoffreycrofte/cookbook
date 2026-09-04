@@ -34,6 +34,11 @@ inventer une donnée manquante en silence : lister à la fin les trous à comble
 - `imageAlt` : **obligatoire**, description réelle de la photo. Idem pour
   chaque étape illustrée. Si la photo n'est pas encore fournie, mettre un
   `imageAlt` provisoire `"À compléter"` et le signaler à la fin.
+- Toute photo ajoutée au dossier de la recette doit peser 800 Ko maximum.
+  Après avoir copié des photos, lancer `npm run comprimer-images` pour les
+  recompresser en place avant de committer (le hook Git le fait aussi
+  automatiquement au commit si `core.hooksPath` pointe vers `.githooks`, voir
+  le README).
 - `credit` : facultatif, auteur de la photo.
 - `preparation`, `cuisson`, `repos` : entiers, en minutes. `repos` = marinade,
   réfrigération, pousse.

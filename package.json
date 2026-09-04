@@ -13,6 +13,7 @@
     "verifier:tags": "node scripts/verifier-tags.mjs",
     "contrastes": "node scripts/verifier-contrastes.mjs",
     "icones": "node scripts/generer-icones.mjs",
+    "comprimer-images": "node scripts/comprimer-images.mjs",
     "elaguer": "node scripts/elaguer-originaux.mjs",
     "cms:maj": "node scripts/maj-cms.mjs",
     "astro": "astro",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "ajv": "^8.20.0",
+    "sharp": "^0.35.3",
     "typescript": "^5.9.2",
     "yaml": "^2.9.0"
   },

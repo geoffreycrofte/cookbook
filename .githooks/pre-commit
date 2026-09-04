@@ -1,0 +1,16 @@
+#!/bin/sh
+# Compresse les photos de recette indexées avant qu'elles ne partent dans un
+# commit, pour ne jamais versionner une image brute de plusieurs Mo.
+# Installation (une fois) : git config core.hooksPath .githooks
+
+fichiers=$(git diff --cached --name-only --diff-filter=ACM -- src/content/recettes | grep -Ei '\.(jpe?g|png)$')
+
+if [ -z "$fichiers" ]; then
+  exit 0
+fi
+
+node scripts/comprimer-images.mjs $fichiers
+
+# Les fichiers peuvent avoir été réécrits en place : on les remet à l'index
+# pour que le commit parte avec la version compressée, jamais l'originale.
+echo "$fichiers" | xargs git add
