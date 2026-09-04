@@ -238,7 +238,7 @@ collections:
             name: nom
             widget: string
             required: false
-            hint: Obligatoire pour une partie écrite. Facultatif pour une recette incluse (défaut : son titre).
+            hint: "Obligatoire pour une partie écrite. Facultatif pour une recette incluse (défaut : son titre)."
           - label: Recette incluse
             name: inclut
             widget: relation
@@ -256,7 +256,7 @@ collections:
             widget: number
             value_type: int
             required: false
-            hint: Défaut : les portions du plat. À renseigner si la recette incluse est écrite pour un autre nombre.
+            hint: "Défaut : les portions du plat. À renseigner si la recette incluse est écrite pour un autre nombre."
           - label: Note d’enchaînement
             name: note
             widget: string
