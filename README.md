@@ -43,6 +43,7 @@ Les champs sont validés au build : s'il en manque un ou si une valeur est incoh
 
 Points à retenir :
 
+- `titre` ne commence jamais par un article défini (« Le », « La », « Les ») : aller directement au nom du plat. Ex : « Poulet pané au cornflakes », pas « Le poulet pané au cornflakes ».
 - `image` pointe vers un fichier du dossier de la recette, en chemin relatif (`./plat-fini.jpg`).
 - `imageAlt` est obligatoire, c'est une exigence d'accessibilité.
 - `airfryer: true` marque une cuisson à l'airfryer : macaron sur la carte, mention sur la fiche, et comptage sur l'accueil. Une telle recette doit obligatoirement indiquer sa `temperature`, sans quoi le build échoue.
@@ -118,7 +119,8 @@ Règles :
 - une partie est **soit** écrite (`nom` + `ingredients` + `etapes`), **soit** une inclusion (`inclut`), jamais les deux ni aucune ;
 - une recette destinée à être incluse reste **simple** (`ingredients` + `etapes`, pas de `parties`) : une partie incluse n'a pas de `nom`, son titre est celui de la recette incluse ;
 - pas d'inclusion d'inclusion : une recette incluse ne peut pas elle-même contenir de partie `inclut` (le build échoue) ;
-- la fiche du plat affiche « Ce plat assemble : … » et, sur chaque partie incluse, un lien « Voir la recette complète » vers la fiche autonome.
+- la fiche du plat affiche « Ce plat assemble : … » et, sur chaque partie incluse, un lien « Voir la recette complète » vers la fiche autonome ;
+- à l'inverse, la fiche autonome affiche un bloc « Utilisée dans » listant les plats qui l'incluent, sous forme de cartes photo comme sur l'accueil.
 
 - `brouillon: true` garde la recette hors du site publié.
 

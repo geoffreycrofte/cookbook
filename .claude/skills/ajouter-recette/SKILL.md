@@ -25,7 +25,9 @@ inventer une donnée manquante en silence : lister à la fin les trous à comble
 
 ## 2. Frontmatter (voir `src/content.config.ts`, il fait foi)
 
-- `titre` : phrase complète, typographie française.
+- `titre` : phrase complète, typographie française. Ne jamais commencer par un
+  article défini (« Le », « La », « Les ») : aller directement au nom du plat.
+  Ex : « Poulet pané au cornflakes », pas « Le poulet pané au cornflakes ».
 - `description` : 1 phrase, 200 caractères max. Dit ce qu'est le plat et son
   intérêt (saison, matériel clé, mode de cuisson).
 - `image` : chemin relatif vers une photo du dossier (`./plat-fini.jpg`).
