@@ -230,9 +230,33 @@ collections:
         hint: >-
           Pour un plat qui demande plusieurs préparations distinctes : le plat,
           une sauce, un pain. Deux parties au minimum. Dans ce cas, laissez vides
-          les champs « Ingrédients » et « Étapes » ci-dessus.
+          les champs « Ingrédients » et « Étapes » ci-dessus. Chaque partie est
+          soit écrite ici (nom + ingrédients + étapes), soit une recette
+          autonome réutilisée (champ « Recette incluse »), jamais les deux.
         fields:
-          - { label: Nom de la partie, name: nom, widget: string }
+          - label: Nom de la partie
+            name: nom
+            widget: string
+            required: false
+            hint: Obligatoire pour une partie écrite. Facultatif pour une recette incluse (défaut : son titre).
+          - label: Recette incluse
+            name: inclut
+            widget: relation
+            required: false
+            collection: recettes
+            search_fields: [titre]
+            value_field: '{{slug}}'
+            display_fields: [titre]
+            hint: >-
+              Réutilise une recette autonome (une sauce, une soupe, une viande)
+              comme partie. Ses ingrédients et ses étapes sont repris et mis à
+              l’échelle. Laisser vide pour écrire la partie à la main.
+          - label: Portions visées (recette incluse)
+            name: portions
+            widget: number
+            value_type: int
+            required: false
+            hint: Défaut : les portions du plat. À renseigner si la recette incluse est écrite pour un autre nombre.
           - label: Note d’enchaînement
             name: note
             widget: string
@@ -241,6 +265,7 @@ collections:
           - label: Ingrédients
             name: ingredients
             widget: list
+            required: false
             label_singular: Ingrédient
             summary: '{{fields.quantite}} {{fields.unite}} {{fields.nom}}'
             fields:
@@ -253,6 +278,7 @@ collections:
           - label: Étapes
             name: etapes
             widget: list
+            required: false
             label_singular: Étape
             summary: '{{fields.texte}}'
             fields:

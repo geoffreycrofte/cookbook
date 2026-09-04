@@ -1,4 +1,4 @@
-import { defineCollection, type SchemaContext } from 'astro:content';
+import { defineCollection, reference, type SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
 // Astro 7 déprécie le ré-export `z` depuis 'astro:content'.
 import { z } from 'astro/zod';
@@ -106,22 +106,49 @@ const etape = ({ image }: SchemaContext) =>
     });
 
 /**
- * Une partie : un bloc de préparation nommé, avec ses propres ingrédients et
- * ses propres étapes. Un curry se déclare ainsi en trois parties : le plat, la
- * sauce et les nans.
+ * Une partie : un bloc de préparation d'un plat composé.
  *
- * Ces parties vivent dans la recette et ne renvoient pas vers d'autres fiches.
- * C'est un choix assumé : la séparation à l'écran sans la mécanique de
- * références, dont la réutilisation entre plats resterait de toute façon rare.
+ * Deux formes, jamais les deux à la fois :
+ *  - écrite : `nom` + `ingredients` + `etapes`, propre au plat ;
+ *  - incluse : `inclut` pointe vers une recette autonome (une sauce, une
+ *    soupe, une viande qui existent aussi comme fiche à part entière). Ses
+ *    ingrédients et ses étapes sont tirés au build et mis à l'échelle des
+ *    portions du plat. Une recette incluse ne peut pas elle-même avoir de
+ *    parties : pas d'inclusion d'inclusion.
  */
 const partie = (contexte: SchemaContext) =>
-  z.object({
-    nom: texteFr(),
-    /** Ligne d'avertissement affichée sous le nom : « à préparer la veille ». */
-    note: facultatif(texteFr()),
-    ingredients: z.array(ingredient).min(1),
-    etapes: z.array(etape(contexte)).min(1),
-  });
+  z
+    .object({
+      /** Obligatoire pour une partie écrite ; facultatif pour une inclusion (défaut : le titre de la recette incluse). */
+      nom: facultatif(texteFr()),
+      /** Ligne d'avertissement affichée sous le nom : « à préparer la veille ». */
+      note: facultatif(texteFr()),
+      ingredients: listeFacultative(z.array(ingredient).min(1)),
+      etapes: listeFacultative(z.array(etape(contexte)).min(1)),
+      /** Slug d'une autre recette autonome à inclure comme partie. */
+      inclut: reference('recettes').optional(),
+      /** Portions visées pour la recette incluse. Défaut : les portions du plat. */
+      portions: facultatif(z.number().int().positive()),
+    })
+    .refine(
+      (p) =>
+        (p.inclut !== undefined) !==
+        (p.ingredients !== undefined && p.etapes !== undefined),
+      {
+        message:
+          'Une partie est soit écrite (« ingredients » + « etapes »), soit une inclusion (« inclut »), jamais les deux ni aucune.',
+        path: ['inclut'],
+      }
+    )
+    .refine((p) => p.inclut !== undefined || p.nom !== undefined, {
+      message: 'Une partie écrite doit avoir un « nom ».',
+      path: ['nom'],
+    })
+    .refine((p) => p.inclut === undefined || p.nom === undefined, {
+      message:
+        "Une partie incluse n'a pas de « nom » : elle prend le titre de la recette incluse.",
+      path: ['nom'],
+    });
 
 const recettes = defineCollection({
   loader: glob({
@@ -214,16 +241,30 @@ const recettes = defineCollection({
        */
       .transform((r) => ({
         ...r,
-        sections:
-          r.parties ??
-          [
+        sections: (
+          r.parties ?? [
             {
               nom: undefined as string | undefined,
               note: undefined as string | undefined,
-              ingredients: r.ingredients ?? [],
-              etapes: r.etapes ?? [],
+              ingredients: r.ingredients,
+              etapes: r.etapes,
+              inclut: undefined,
+              portions: undefined as number | undefined,
             },
-          ],
+          ]
+        ).map((p) => ({
+          nom: p.nom,
+          note: p.note,
+          ingredients: p.ingredients ?? [],
+          etapes: p.etapes ?? [],
+          /**
+           * Référence non résolue. Le rendu, la recherche et le balisage
+           * passent par `resoudreSections()` (src/lib/inclusions.ts), qui
+           * remplace ces marqueurs par le contenu tiré et mis à l'échelle.
+           */
+          inclut: p.inclut,
+          portions: p.portions,
+        })),
       })),
 });
 

@@ -44,6 +44,7 @@ One recipe is a folder `src/content/recettes/<slug>/` holding `index.md` and its
 
 - `airfryer: true` requires `temperature`.
 - A recipe uses either `ingredients` + `etapes`, or `parties` (min 2), never both.
+- A `parties` entry is either written (`nom` + `ingredients` + `etapes`) or an inclusion (`inclut:` — a `reference('recettes')` — plus optional `portions` for scaling, optional `nom` override). No nested inclusion: an included recipe must not itself have `inclut` parties. References can't be followed in the sync `.transform()`, so `resoudreSections()` (`src/lib/inclusions.ts`) resolves and portion-scales them at build; the page, search index (`construireIndex` takes a `slug → resolved sections` map), and `jsonLdRecette` (takes `sections`) all consume the resolved form.
 - `imageAlt` is mandatory everywhere an image appears (accessibility). An illustrated step must set its own `imageAlt`.
 - `regime` is a closed enum (`vegetarien` = ovo-lacto, `vegan`, `pescatarien` = fish but no meat, plus the `sans-*` free-from). The home page derives a synthetic "Sans viande" facet from `vegan ∪ vegetarien ∪ pescatarien` (see `REGIMES_SANS_VIANDE` in `recherche.ts`); it is not a stored value. `tags` are lowercased; diet words never go in `tags` (`scripts/verifier-tags.mjs` warns); `brouillon: true` keeps the recipe out of the build.
 - `facultatif()` tolerates `null` (the CMS writes `null` for empty fields).

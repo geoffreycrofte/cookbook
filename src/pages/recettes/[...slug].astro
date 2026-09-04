@@ -5,24 +5,43 @@ import { jsonLdRecette, jsonLdFilAriane } from '../../lib/seo';
 import Base from '../../layouts/Base.astro';
 import AtelierRecette from '../../components/AtelierRecette.astro';
 import SectionPreparation from '../../components/SectionPreparation.astro';
+import CarteRecette from '../../components/CarteRecette.astro';
 import { formaterDuree, dureeTotale, libelleCategorie } from '../../lib/format';
+import { resoudreSections, recettesQuiIncluent } from '../../lib/inclusions';
 import { AUTEURS } from '../../lib/site';
 
 export async function getStaticPaths() {
   const recettes = await getCollection('recettes', ({ data }) => !data.brouillon);
   return recettes.map((recette) => ({
     params: { slug: recette.id },
-    props: { recette },
+    props: { recette, toutesRecettes: recettes },
   }));
 }
 
 interface Props {
   recette: CollectionEntry<'recettes'>;
+  toutesRecettes: CollectionEntry<'recettes'>[];
 }
 
-const { recette } = Astro.props;
+const { recette, toutesRecettes } = Astro.props;
 const d = recette.data;
 const { Content } = await render(recette);
+
+// Les parties incluses (une sauce, une soupe autonome…) sont tirées et mises à
+// l'échelle ici. Le reste de la page ne voit que des sections résolues.
+const sections = await resoudreSections(recette);
+const recettesAssemblees = [
+  ...new Map(
+    sections
+      .map((s) => s.source)
+      .filter((s): s is { slug: string; titre: string } => s !== undefined)
+      .map((s) => [s.slug, s])
+  ).values(),
+];
+
+// Recherche inverse : dans quels plats cette recette est-elle utilisée comme
+// partie ? Affiché en bas de fiche pour une recette autonome incluse ailleurs.
+const utiliseeDans = recettesQuiIncluent(recette.id, toutesRecettes);
 
 const total = dureeTotale(d);
 const dateMaj = d.miseAJour.toLocaleDateString('fr-FR', {
@@ -53,7 +72,7 @@ const imagePartage = await getImage({
  * srcset : Astro reconnaît la transformation et ne réencode rien.
  */
 const imagesEtapes = new Map<object, string>();
-for (const section of d.sections) {
+for (const section of sections) {
   for (const etape of section.etapes) {
     if (!etape.image) continue;
     const illustration = await getImage({ src: etape.image, width: 720 });
@@ -64,6 +83,7 @@ for (const section of d.sections) {
 const url = new URL(Astro.url.pathname, Astro.site).href;
 const donneesRecette = jsonLdRecette({
   recette,
+  sections,
   url,
   image: new URL(imagePartage.src, Astro.site).href,
   auteurs: AUTEURS,
@@ -126,6 +146,21 @@ const cadrans: Cadran[] = [
         <p class="ouverture__chapeau">{d.description}</p>
 
         {
+          recettesAssemblees.length > 0 && (
+            <p class="assemblage">
+              Ce plat assemble{' '}
+              {recettesAssemblees.map((r, i) => (
+                <>
+                  {i > 0 && ', '}
+                  <a href={`/recettes/${r.slug}/`}>{r.titre}</a>
+                </>
+              ))}
+              .
+            </p>
+          )
+        }
+
+        {
           d.flemme && (
             <p class="fanion">
               <span aria-hidden="true">◆</span> Recette de la flemme
@@ -170,8 +205,8 @@ const cadrans: Cadran[] = [
 
     <div class="cadre preparations">
       {
-        d.sections.map((section, rang) => (
-          <div class:list={['preparation', d.sections.length > 1 && 'preparation--nommee']}>
+        sections.map((section, rang) => (
+          <div class:list={['preparation', sections.length > 1 && 'preparation--nommee']}>
             {section.nom && (
               <header class="preparation__entete">
                 <h2 class="preparation__titre" id={`partie-${rang}`}>
@@ -180,6 +215,29 @@ const cadrans: Cadran[] = [
                   </span>
                   {section.nom}
                 </h2>
+                {section.source && (
+                  <p class="preparation__source">
+                    <a href={`/recettes/${section.source.slug}/`}>
+                      <span>Voir la recette complète</span>
+                      <svg
+                        class="preparation__source-icone"
+                        viewBox="0 0 16 16"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path
+                          d="M6 3.5h6.5V10M12.5 3.5 4 12"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                      <span class="sr-uniquement"> : {section.source.titre}</span>
+                    </a>
+                  </p>
+                )}
                 {section.note && <p class="preparation__note">{section.note}</p>}
               </header>
             )}
@@ -188,7 +246,7 @@ const cadrans: Cadran[] = [
               ingredients={section.ingredients}
               etapes={section.etapes}
               rang={rang}
-              total={d.sections.length}
+              total={sections.length}
               idIngredients={`ingredients-${rang}`}
               idEtapes={`etapes-${rang}`}
               portions={d.portions}
@@ -205,6 +263,21 @@ const cadrans: Cadran[] = [
         <Content />
       </div>
     </section>
+
+    {
+      utiliseeDans.length > 0 && (
+        <section class="cadre utilisee-dans" aria-labelledby="titre-utilisee-dans">
+          <h2 class="rubrique" id="titre-utilisee-dans">Utilisée dans</h2>
+          <ul class="utilisee-dans__grille">
+            {utiliseeDans.map((r, i) => (
+              <li>
+                <CarteRecette recette={r} rang={i} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
 
     <footer class="cadre colophon">
       <h2 class="sr-uniquement">Informations sur la recette</h2>
@@ -438,6 +511,39 @@ const cadrans: Cadran[] = [
     font-variation-settings: 'wght' 600;
   }
 
+  /* Lien vers la fiche autonome quand la partie est une recette incluse. */
+  .preparation__source {
+    margin: 0.625rem 0 0;
+    font-size: 0.9375rem;
+  }
+
+  .preparation__source a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    color: var(--braise-texte);
+    text-underline-offset: 0.2em;
+  }
+
+  .preparation__source-icone {
+    flex: 0 0 auto;
+    inline-size: 0.85em;
+    block-size: 0.85em;
+  }
+
+  /* Rappel des recettes montées dans un plat composé, sous le chapeau. */
+  .assemblage {
+    max-inline-size: 42ch;
+    margin-block: 1rem 0;
+    color: var(--encre-doux);
+    font-size: 0.9375rem;
+  }
+
+  .assemblage a {
+    color: var(--braise-texte);
+    text-underline-offset: 0.2em;
+  }
+
   /* — Notes — */
   .notes {
     margin-block-start: clamp(3.5rem, 8vw, 5.5rem);
@@ -457,6 +563,29 @@ const cadrans: Cadran[] = [
 
   .prose :global(p) {
     margin-block: 0 1.125rem;
+  }
+
+  /* — Utilisée dans : recettes qui incluent celle-ci comme partie — */
+  .utilisee-dans {
+    margin-block-start: clamp(3rem, 7vw, 4.5rem);
+  }
+
+  /* Même grille de cartes que l'accueil. */
+  .utilisee-dans__grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
+    gap: 2rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .utilisee-dans__grille > li {
+    display: flex;
+  }
+
+  .utilisee-dans__grille > li > :global(*) {
+    inline-size: 100%;
   }
 
   /* — Colophon — */

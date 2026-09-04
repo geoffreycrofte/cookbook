@@ -7,6 +7,7 @@ import RechercheRecettes from '../components/RechercheRecettes.astro';
 import LienFlemme from '../components/LienFlemme.astro';
 import { dureeTotale } from '../lib/format';
 import { construireIndex, recenser, recenserCategories } from '../lib/recherche';
+import { resoudreSections } from '../lib/inclusions';
 
 const recettes = (await getCollection('recettes', ({ data }) => !data.brouillon)).sort(
   (a, b) => b.data.miseAJour.getTime() - a.data.miseAJour.getTime()
@@ -18,7 +19,14 @@ const plusRapide = recettes.length
   ? Math.min(...recettes.map((r) => dureeTotale(r.data)))
   : 0;
 
-const index = construireIndex(recettes);
+// Parties incluses résolues, pour que la recherche par ingrédient couvre aussi
+// ce qui vit dans une recette montée en partie.
+const sectionsParSlug = new Map(
+  await Promise.all(
+    recettes.map(async (r) => [r.id, await resoudreSections(r)] as const)
+  )
+);
+const index = construireIndex(recettes, sectionsParSlug);
 const categories = recenserCategories(recettes);
 const tags = recenser(recettes, 'tags');
 const regimes = recenser(recettes, 'regime');

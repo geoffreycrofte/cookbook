@@ -1,5 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { dureeTotale } from './format';
+import type { SectionResolue } from './inclusions';
 
 /**
  * Index de recherche, construit au build et sérialisé dans la page d'accueil.
@@ -50,9 +51,18 @@ export function normaliser(texte: string): string {
     .trim();
 }
 
-export function construireIndex(recettes: CollectionEntry<'recettes'>[]): EntreeIndex[] {
+export function construireIndex(
+  recettes: CollectionEntry<'recettes'>[],
+  /**
+   * Sections résolues par slug (parties incluses tirées). Sans cette carte, une
+   * recherche par ingrédient raterait ce qui n'existe que dans une partie
+   * incluse. La page d'accueil la construit, le reste peut s'en passer.
+   */
+  sectionsParSlug?: Map<string, SectionResolue[]>
+): EntreeIndex[] {
   return recettes.map((recette) => {
     const d = recette.data;
+    const sections = sectionsParSlug?.get(recette.id) ?? d.sections;
     const sansViande = d.regime.some((r) => REGIMES_SANS_VIANDE.includes(r));
 
     return {
@@ -62,7 +72,7 @@ export function construireIndex(recettes: CollectionEntry<'recettes'>[]): Entree
       motsTitre: normaliser(`${d.titre} ${d.description}`),
       // Les ingrédients de toutes les sections sont agrégés : chercher un
       // ingrédient qui n'existe que dans la sauce doit remonter le plat entier.
-      motsIngredients: d.sections.flatMap((s) => s.ingredients.map((i) => normaliser(i.nom))),
+      motsIngredients: sections.flatMap((s) => s.ingredients.map((i) => normaliser(i.nom))),
       // « sans viande » rejoint les mots cherchables quand la recette qualifie.
       motsTags: [...d.tags, ...d.regime, d.categorie, ...(sansViande ? ['sans viande'] : [])].map(
         normaliser

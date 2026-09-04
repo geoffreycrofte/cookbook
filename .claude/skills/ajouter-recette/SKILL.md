@@ -68,6 +68,36 @@ inventer une donnée manquante en silence : lister à la fin les trous à comble
   en premier », « pendant la cuisson… »).
 - **Jamais** `ingredients`/`etapes` **et** `parties` ensemble.
 
+### Réutiliser une recette comme partie
+
+Une préparation qui tient toute seule (un saumon, une soupe, une sauce)
+s'écrit comme recette autonome, puis se réutilise dans un plat composé :
+
+```yaml
+parties:
+  - inclut: saumon-au-miso   # slug d'une autre recette
+    portions: 4              # facultatif (défaut : portions du plat)
+  - nom: "Le montage"        # partie écrite, non réutilisée
+    ingredients: [...]
+    etapes: [...]
+```
+
+- Une partie est **soit** écrite (`nom` + `ingredients` + `etapes`), **soit**
+  une inclusion (`inclut`), jamais les deux ni aucune.
+- **Une recette destinée à être incluse reste simple** : `ingredients` +
+  `etapes` au premier niveau, jamais de `parties`. Une partie incluse n'a pas
+  de `nom` : le titre affiché est celui de la recette incluse.
+- **Pas d'inclusion d'inclusion** : la recette incluse ne doit pas elle-même
+  contenir de partie `inclut`.
+- Quantités mises à l'échelle au build : `portions visées / portions de la
+  recette incluse`, sans toucher aux ingrédients `ajustable: false`. Donner aux
+  recettes destinées à l'inclusion des `portions` qui divisent proprement
+  (2 ou 4).
+- Ne pas dupliquer une préparation entre deux recettes : si elle sert deux
+  fois, elle devient une recette autonome incluse des deux côtés.
+- `regime` et `tags` du plat composé restent saisis à la main, cohérents avec
+  ce que les recettes incluses apportent (viande, gluten, lactose…).
+
 ## 4. Ingrédients — règles strictes
 
 Champs : `quantite` (nombre, facultatif), `unite` (string, facultatif, au

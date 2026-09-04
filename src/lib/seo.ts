@@ -1,5 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { dureeTotale, formaterIngredient, libelleCategorie } from './format';
+import type { SectionResolue } from './inclusions';
 
 /**
  * Données structurées schema.org.
@@ -31,6 +32,11 @@ const REGIMES_SCHEMA: Record<string, string> = {
 
 interface Options {
   recette: CollectionEntry<'recettes'>;
+  /**
+   * Sections déjà résolues (parties incluses tirées et mises à l'échelle).
+   * Passées par la page, qui seule peut suivre les références au build.
+   */
+  sections: SectionResolue[];
   /** URL absolue de la page. */
   url: string;
   /** URL absolue de l'image principale. */
@@ -47,6 +53,7 @@ interface Options {
 
 export function jsonLdRecette({
   recette,
+  sections,
   url,
   image,
   auteurs,
@@ -54,7 +61,7 @@ export function jsonLdRecette({
 }: Options): Record<string, unknown> {
   const d = recette.data;
   const total = dureeTotale(d);
-  const plusieursParties = d.sections.length > 1;
+  const plusieursParties = sections.length > 1;
 
   const enEtape = (etape: { texte: string }, i: number) => {
     const bloc: Record<string, unknown> = {
@@ -72,12 +79,12 @@ export function jsonLdRecette({
    * comprend. Une recette simple garde une liste plate de HowToStep.
    */
   const instructions = plusieursParties
-    ? d.sections.map((section) => ({
+    ? sections.map((section) => ({
         '@type': 'HowToSection',
         name: section.nom,
         itemListElement: section.etapes.map(enEtape),
       }))
-    : d.sections[0]!.etapes.map(enEtape);
+    : sections[0]!.etapes.map(enEtape);
 
   const regimes = d.regime.map((r) => REGIMES_SCHEMA[r]).filter((r): r is string => Boolean(r));
 
@@ -99,7 +106,7 @@ export function jsonLdRecette({
     recipeCategory: libelleCategorie(d.categorie),
     // Les ingrédients de toutes les parties, sur une seule liste comme l'attend
     // schema.org, qui ne prévoit pas de sous-préparations côté ingrédients.
-    recipeIngredient: d.sections.flatMap((s) => s.ingredients.map(formaterIngredient)),
+    recipeIngredient: sections.flatMap((s) => s.ingredients.map(formaterIngredient)),
     recipeInstructions: instructions,
   };
 

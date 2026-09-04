@@ -97,6 +97,29 @@ parties:
 ```
 
 Une recette utilise soit `ingredients` et `etapes`, soit `parties`, jamais les deux. Le build refuse les deux autres cas avec un message explicite. Le champ `note` est facultatif et sert aux indications d'enchaînement.
+
+### Réutiliser une recette comme partie
+
+Une préparation qui a un sens toute seule — un saumon, une soupe, une sauce — s'écrit comme recette autonome, avec sa propre URL, puis se réutilise dans un plat composé sans la recopier :
+
+```yaml
+parties:
+  - inclut: saumon-au-miso        # le slug d'une autre recette
+    portions: 4                   # facultatif, sinon les portions du plat
+  - nom: "Le montage"             # partie écrite à la main, non réutilisée
+    ingredients: [...]
+    etapes: [...]
+```
+
+Au build, les ingrédients et les étapes de la recette incluse sont tirés et mis à l'échelle (`portions visées / portions de la recette incluse`, sans toucher aux ingrédients `ajustable: false`). Écrire les recettes destinées à être incluses en portions 2 ou 4, pour que la mise à l'échelle tombe juste.
+
+Règles :
+
+- une partie est **soit** écrite (`nom` + `ingredients` + `etapes`), **soit** une inclusion (`inclut`), jamais les deux ni aucune ;
+- une recette destinée à être incluse reste **simple** (`ingredients` + `etapes`, pas de `parties`) : une partie incluse n'a pas de `nom`, son titre est celui de la recette incluse ;
+- pas d'inclusion d'inclusion : une recette incluse ne peut pas elle-même contenir de partie `inclut` (le build échoue) ;
+- la fiche du plat affiche « Ce plat assemble : … » et, sur chaque partie incluse, un lien « Voir la recette complète » vers la fiche autonome.
+
 - `brouillon: true` garde la recette hors du site publié.
 
 ## Ajouter du matériel de cuisine
