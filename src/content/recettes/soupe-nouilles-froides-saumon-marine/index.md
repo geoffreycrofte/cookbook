@@ -30,27 +30,14 @@ parties:
     portions: 2
   - nom: "Le montage"
     ingredients:
-      - quantite: 0.5
-        unite: "pièce"
-        nom: "concombre"
-        precision: "coupé en lamelles"
-      - quantite: 1
-        unite: "poignée"
-        nom: "edamames"
-        precision: "par personne"
-      - quantite: 1
-        unite: "cuillère à soupe"
-        nom: "beni shoga"
-        precision: "par personne"
       - nom: "furikake"
         precision: "sans gluten de préférence, pour décorer"
         ajustable: false
         optionnel: true
     etapes:
-      - texte: "Répartir les lamelles de concombre, les edamames et le beni shoga sur les bols de soupe de nouilles."
+      - texte: "Poser les pavés de saumon tièdes ou froids sur les bols de soupe de nouilles garnie, décorer de furikake et servir aussitôt."
         image: ./step-03.jpg
         imageAlt: "Un bol de nouilles dans une sauce crémeuse, garni d'edamames, de concombre en lamelles, de morceaux de saumon, de gingembre rose, de nori émietté et de sésame, avec des baguettes en bois posées sur le bord."
-      - texte: "Poser les pavés de saumon tièdes ou froids par dessus, décorer de furikake et servir aussitôt."
 
 miseAJour: 2026-09-04
 ---
