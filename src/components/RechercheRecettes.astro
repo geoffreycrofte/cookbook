@@ -16,6 +16,11 @@ const { index, categories, tags, regimes } = Astro.props;
  * `pescatarien` n'a pas de bouton et « Sans viande » (valeur synthétique
  * `sans-viande`) chapeaute vegan + végétarien + pescatarien. Ordre fixe,
  * chaque bouton affiché seulement s'il concerne au moins une recette.
+ *
+ * `regime` dans l'index porte déjà le « végétarien » implicite d'un plat
+ * vegan (voir `avecRegimesImplicites` dans `recherche.ts`) : s'appuyer sur
+ * l'index plutôt que sur la liste brute suffit à faire apparaître le bouton
+ * « Végétarien » même sur un corpus qui n'a que des recettes vegan.
  */
 const ORDRE_REGIMES = [
   'sans-viande',
@@ -28,7 +33,11 @@ const ORDRE_REGIMES = [
 ];
 const regimesDisponibles = new Set(regimes);
 const optionsRegime = ORDRE_REGIMES.filter((valeur) =>
-  valeur === 'sans-viande' ? index.some((e) => e.sansViande) : regimesDisponibles.has(valeur)
+  valeur === 'sans-viande'
+    ? index.some((e) => e.sansViande)
+    : valeur === 'vegetarien'
+      ? index.some((e) => e.regime.includes('vegetarien'))
+      : regimesDisponibles.has(valeur)
 ).map((valeur) => ({ valeur, libelle: libelleRegime(valeur) }));
 
 const groupes = [

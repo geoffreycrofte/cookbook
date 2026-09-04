@@ -40,6 +40,17 @@ export interface EntreeIndex {
 export const REGIMES_SANS_VIANDE = ['vegan', 'vegetarien', 'pescatarien'];
 
 /**
+ * Un plat vegan est par définition aussi végétarien (aucune chair animale,
+ * a fortiori pas de viande ni de poisson). `regime: ["vegan"]` seul doit donc
+ * aussi remonter dans le filtre « Végétarien » sans avoir à saisir les deux.
+ */
+function avecRegimesImplicites(regime: string[]): string[] {
+  return regime.includes('vegan') && !regime.includes('vegetarien')
+    ? [...regime, 'vegetarien']
+    : regime;
+}
+
+/**
  * Retire les accents et passe en minuscules, pour qu'une recherche de
  * « creme » trouve « crème » et inversement.
  */
@@ -63,7 +74,8 @@ export function construireIndex(
   return recettes.map((recette) => {
     const d = recette.data;
     const sections = sectionsParSlug?.get(recette.id) ?? d.sections;
-    const sansViande = d.regime.some((r) => REGIMES_SANS_VIANDE.includes(r));
+    const regime = avecRegimesImplicites(d.regime);
+    const sansViande = regime.some((r) => REGIMES_SANS_VIANDE.includes(r));
 
     return {
       slug: recette.id,
@@ -74,12 +86,12 @@ export function construireIndex(
       // ingrédient qui n'existe que dans la sauce doit remonter le plat entier.
       motsIngredients: sections.flatMap((s) => s.ingredients.map((i) => normaliser(i.nom))),
       // « sans viande » rejoint les mots cherchables quand la recette qualifie.
-      motsTags: [...d.tags, ...d.regime, d.categorie, ...(sansViande ? ['sans viande'] : [])].map(
+      motsTags: [...d.tags, ...regime, d.categorie, ...(sansViande ? ['sans viande'] : [])].map(
         normaliser
       ),
       categorie: d.categorie,
       tags: d.tags,
-      regime: d.regime,
+      regime,
       sansViande,
       airfryer: d.airfryer,
       flemme: d.flemme,
