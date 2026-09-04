@@ -14,7 +14,7 @@ import { dureeTotale, formaterDuree, libelleCategorie } from '../lib/format';
 
 const ORDRE = ['entree', 'plat', 'accompagnement', 'dessert', 'snack'] as const;
 
-const recettes = await getCollection('recettes', ({ data }) => !data.brouillon);
+const recettes = await getCollection('recettes', ({ data }) => !data.brouillon && !data.interne);
 
 const groupes = ORDRE.map((categorie) => ({
   categorie,

@@ -14,7 +14,9 @@ import { dureeTotale, formaterDuree, libelleCategorie } from '../lib/format';
 export const GET: APIRoute = async ({ site }) => {
   if (!site) throw new Error('`site` doit être défini dans astro.config.mjs.');
 
-  const recettes = (await getCollection('recettes', ({ data }) => !data.brouillon)).sort((a, b) =>
+  const recettes = (
+    await getCollection('recettes', ({ data }) => !data.brouillon && !data.interne)
+  ).sort((a, b) =>
     a.data.titre.localeCompare(b.data.titre, 'fr')
   );
 

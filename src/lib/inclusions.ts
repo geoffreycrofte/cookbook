@@ -19,7 +19,7 @@ export interface SectionResolue {
   ingredients: Ingredient[];
   etapes: Section['etapes'];
   /** Présent si la section est tirée d'une autre recette. */
-  source?: { slug: string; titre: string };
+  source?: { slug: string; titre: string; interne: boolean };
 }
 
 /** Multiplie les quantités ajustables par le facteur de portions. */
@@ -76,7 +76,7 @@ export async function resoudreSections(
 
     const cible = section.portions ?? recette.data.portions;
     const facteur = cible / incluse.data.portions;
-    const source = { slug: incluse.id, titre: incluse.data.titre };
+    const source = { slug: incluse.id, titre: incluse.data.titre, interne: incluse.data.interne };
     const blocs = incluse.data.sections;
 
     blocs.forEach((base, i) => {

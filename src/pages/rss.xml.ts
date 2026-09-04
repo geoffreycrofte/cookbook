@@ -14,7 +14,9 @@ const echapper = (texte: string) =>
 export const GET: APIRoute = async ({ site }) => {
   if (!site) throw new Error('`site` doit être défini dans astro.config.mjs.');
 
-  const recettes = (await getCollection('recettes', ({ data }) => !data.brouillon)).sort(
+  const recettes = (
+    await getCollection('recettes', ({ data }) => !data.brouillon && !data.interne)
+  ).sort(
     (a, b) => b.data.miseAJour.getTime() - a.data.miseAJour.getTime()
   );
 

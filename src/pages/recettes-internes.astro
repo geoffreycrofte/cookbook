@@ -1,0 +1,93 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+/**
+ * Page privée, non indexée : liste les recettes-composants (`interne: true`),
+ * absentes de l'accueil, du sitemap, du flux RSS et de llms.txt. Sert juste à
+ * les retrouver soi-même ; son URL n'est reprise nulle part sur le site public.
+ */
+
+const recettes = (await getCollection('recettes', ({ data }) => !data.brouillon && data.interne)).sort(
+  (a, b) => a.data.titre.localeCompare(b.data.titre, 'fr')
+);
+---
+
+<Base
+  titre="Recettes internes"
+  description="Liste privée des recettes-composants, réutilisées ailleurs mais absentes du site public."
+  noIndex
+>
+  <section class="cadre interne">
+    <p class="interne__surtitre">Page privée</p>
+    <h1 class="interne__titre">Recettes internes</h1>
+    <p class="interne__chapeau">
+      Les recettes-composants ({recettes.length}), réutilisées via « inclut » dans d'autres plats
+      mais absentes de l'accueil, de la recherche, du sitemap et du flux RSS.
+    </p>
+
+    {
+      recettes.length === 0 ? (
+        <p>Aucune recette interne pour le moment.</p>
+      ) : (
+        <ul class="interne__liste">
+          {recettes.map((recette) => (
+            <li>
+              <a href={`/recettes/${recette.id}/`}>{recette.data.titre}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</Base>
+
+<style>
+  .interne {
+    padding-block: clamp(3rem, 8vw, 5rem) 4rem;
+    max-inline-size: 52rem;
+  }
+
+  .interne__surtitre {
+    margin: 0 0 1.25rem;
+    font-size: 0.75rem;
+    font-variation-settings: 'wght' 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--braise-texte);
+  }
+
+  .interne__titre {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 90, 'wght' 600;
+    letter-spacing: -0.03em;
+  }
+
+  .interne__chapeau {
+    max-inline-size: var(--colonne-texte);
+    margin-block: 1.5rem 0;
+    color: var(--encre-doux);
+    font-size: 1.1875rem;
+  }
+
+  .interne__liste {
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .interne__liste li {
+    padding-block: 0.5rem;
+  }
+
+  .interne__liste li + li {
+    border-block-start: 1px solid var(--regle);
+  }
+
+  /* Cible tactile d'au moins 24 px (RAWeb 13.11, WCAG 2.5.8). */
+  .interne__liste a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 1.75rem;
+  }
+</style>

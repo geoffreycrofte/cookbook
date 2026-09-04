@@ -58,6 +58,25 @@ composé sans la réécrire.
   `sections[].inclut`, `recettesQuiIncluent()` dans `inclusions.ts`). Rien ne
   s'affiche si la recette n'est incluse nulle part.
 
+## Recette-composant cachée (`interne: true`)
+
+Une recette destinée uniquement à être `inclut`e (une farce, une sauce…),
+sans intérêt à être faite seule, peut être marquée `interne: true` :
+
+- sa page se construit normalement (ingrédients, étapes, photos, JSON-LD) et
+  reste reprise par `inclut` et par la recherche inverse `recettesQuiIncluent()` ;
+- elle disparaît de l'accueil, de la recherche, du sitemap, du flux RSS, de
+  `llms.txt` et de `/plan-du-site/` ;
+- sa page passe en `<meta name="robots" content="noindex, nofollow">` ;
+- le lien « Voir la recette complète » disparaît des plats qui l'incluent
+  (le titre de la partie reste affiché, en texte simple, sans lien) ; pareil
+  pour son entrée dans « Ce plat assemble » ;
+- `src/pages/recettes-internes.astro` la liste avec un lien direct, pour
+  vérifier son rendu sans passer par l'accueil. Page elle-même en `noindex`
+  et exclue de `robots.txt`.
+
+Exemple : `farce-de-poulet-a-tout-faire`, réutilisée dans deux plats.
+
 ## Impact CMS (`public/admin/config.yml`)
 
 - `parties` : `nom`, `ingredients`, `etapes` passent `required: false`.

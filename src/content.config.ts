@@ -208,6 +208,15 @@ const recettes = defineCollection({
       miseAJour: z.coerce.date(),
       /** Exclue du site publié tant que true. */
       brouillon: z.boolean().default(false),
+      /**
+       * Recette-composant : elle existe pour être réutilisée via `inclut`
+       * (une farce, une sauce…), mais n'a pas d'intérêt à être faite seule.
+       * Sa page reste générée (l'inclusion et un lien direct continuent de
+       * marcher) mais elle disparaît de l'accueil, de la recherche, du
+       * sitemap, du flux RSS et de llms.txt, et sa page passe en noindex.
+       * Listée pour mémoire sur /recettes-internes/, elle aussi en noindex.
+       */
+      interne: z.boolean().default(false),
     })
       // Une recette annoncée à l'airfryer sans température est une recette
       // inutilisable : autant le voir au build plutôt qu'en cuisine.

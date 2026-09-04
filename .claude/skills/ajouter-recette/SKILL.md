@@ -65,6 +65,11 @@ inventer une donnée manquante en silence : lister à la fin les trous à comble
   n'échoue jamais, c'est un garde-fou à lire.
 - `flemme: true` seulement sur demande explicite.
 - `brouillon: true` garde la recette hors build.
+- `interne: true` sur une recette-composant (une farce, une sauce… destinée
+  uniquement à être `inclut`e ailleurs, pas à être faite seule) : sa page
+  reste générée mais disparaît de l'accueil, de la recherche, du sitemap, du
+  flux RSS et de llms.txt, passe en `noindex`, et le lien « Voir la recette
+  complète » disparaît des plats qui l'incluent. Voir le détail dans le README.
 - `miseAJour` : date du jour au format `AAAA-MM-JJ`.
 
 ## 3. Structure : simple ou en parties

@@ -9,7 +9,9 @@ import { dureeTotale } from '../lib/format';
 import { construireIndex, recenser, recenserCategories } from '../lib/recherche';
 import { resoudreSections } from '../lib/inclusions';
 
-const recettes = (await getCollection('recettes', ({ data }) => !data.brouillon)).sort(
+const recettes = (
+  await getCollection('recettes', ({ data }) => !data.brouillon && !data.interne)
+).sort(
   (a, b) => b.data.miseAJour.getTime() - a.data.miseAJour.getTime()
 );
 

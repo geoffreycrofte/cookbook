@@ -34,7 +34,7 @@ const recettesAssemblees = [
   ...new Map(
     sections
       .map((s) => s.source)
-      .filter((s): s is { slug: string; titre: string } => s !== undefined)
+      .filter((s): s is { slug: string; titre: string; interne: boolean } => s !== undefined)
       .map((s) => [s.slug, s])
   ).values(),
 ];
@@ -119,6 +119,7 @@ const cadrans: Cadran[] = [
   description={d.description}
   imagePartage={imagePartage.src}
   imagePartageAlt={d.imageAlt}
+  noIndex={d.interne}
 >
   <Fragment slot="tete">
     <script
@@ -152,7 +153,7 @@ const cadrans: Cadran[] = [
               {recettesAssemblees.map((r, i) => (
                 <>
                   {i > 0 && ', '}
-                  <a href={`/recettes/${r.slug}/`}>{r.titre}</a>
+                  {r.interne ? r.titre : <a href={`/recettes/${r.slug}/`}>{r.titre}</a>}
                 </>
               ))}
               .
@@ -215,7 +216,7 @@ const cadrans: Cadran[] = [
                   </span>
                   {section.nom}
                 </h2>
-                {section.source && (
+                {section.source && !section.source.interne && (
                   <p class="preparation__source">
                     <a href={`/recettes/${section.source.slug}/`}>
                       <span>Voir la recette complète</span>

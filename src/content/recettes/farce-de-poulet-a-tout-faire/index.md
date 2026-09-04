@@ -15,6 +15,7 @@ difficulte: "facile"
 regime: ["sans-gluten"]
 tags: ["poulet", "asiatique", "farce"]
 flemme: false
+interne: true
 
 ingredients:
   - quantite: 60

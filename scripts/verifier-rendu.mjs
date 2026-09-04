@@ -39,6 +39,9 @@ async function recettesAttendues() {
 
     const source = await readFile(fichier, 'utf-8');
     const brouillon = /^brouillon:\s*true\s*$/m.test(source);
+    // Composant réutilisé via `inclut` : sa page existe, mais volontairement
+    // absente de l'accueil (voir « interne » dans content.config.ts).
+    const interne = /^interne:\s*true\s*$/m.test(source);
     const titre = source.match(/^titre:\s*"?(.+?)"?\s*$/m)?.[1];
 
     if (!titre) {
@@ -46,7 +49,7 @@ async function recettesAttendues() {
       continue;
     }
 
-    if (!brouillon) attendues.push({ slug: dossier.name, titre });
+    if (!brouillon) attendues.push({ slug: dossier.name, titre, interne });
   }
 
   return attendues;
@@ -99,7 +102,7 @@ constate(
   'La page d’accueil affiche l’état vide alors que des recettes existent.',
 );
 
-for (const { slug, titre } of attendues) {
+for (const { slug, titre, interne } of attendues) {
   const page = path.join(dist, 'recettes', slug, 'index.html');
 
   if (!existsSync(page)) {
@@ -113,6 +116,15 @@ for (const { slug, titre } of attendues) {
     contenu.includes('Ingrédients') && contenu.includes('Préparation'),
     `La page de « ${slug} » n’affiche pas ses ingrédients ou ses étapes.`,
   );
+
+  if (interne) {
+    constate(
+      !accueil.includes(`/recettes/${slug}/`),
+      `« ${slug} » est interne mais apparaît quand même sur la page d’accueil.`,
+    );
+    continue;
+  }
+
   constate(
     accueil.includes(`/recettes/${slug}/`),
     `La page d’accueil ne renvoie pas vers « ${slug} ».`,

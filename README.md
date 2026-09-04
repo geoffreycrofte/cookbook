@@ -136,6 +136,17 @@ Règles :
 - à l'inverse, la fiche autonome affiche un bloc « Utilisée dans » listant les plats qui l'incluent, sous forme de cartes photo comme sur l'accueil.
 
 - `brouillon: true` garde la recette hors du site publié.
+- `interne: true` marque une recette-composant : elle sert seulement à être
+  réutilisée via `inclut` (une farce, une sauce…), pas à être faite seule. Sa
+  page continue d'exister et de se construire normalement (ingrédients,
+  étapes, photos, balisage schema.org), mais elle disparaît de l'accueil, de
+  la recherche, du sitemap, du flux RSS et de llms.txt ; sa page passe en
+  `noindex` ; et le lien « Voir la recette complète » ne s'affiche plus sur
+  les plats qui l'incluent (son titre y reste en texte simple, sans lien).
+  Pour vérifier son rendu (mise en page, photos, texte) sans passer par
+  l'accueil : **`/recettes-internes/`** liste toutes les recettes internes
+  avec un lien direct vers chacune. Cette page est elle-même privée : non
+  indexée, exclue de `robots.txt`, jamais reprise ailleurs sur le site.
 
 ## Ajouter du matériel de cuisine
 

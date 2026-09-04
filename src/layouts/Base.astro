@@ -24,6 +24,8 @@ interface Props {
   imagePartage?: string;
   /** Texte alternatif de cette image, exigé par les bonnes pratiques Open Graph. */
   imagePartageAlt?: string;
+  /** true sur une page qui ne doit apparaître dans aucun moteur de recherche. */
+  noIndex?: boolean;
 }
 
 const {
@@ -32,6 +34,7 @@ const {
   accueil = false,
   imagePartage,
   imagePartageAlt,
+  noIndex = false,
 } = Astro.props;
 const titreComplet = accueil ? 'Recettes du Lux' : `${titre} — Recettes du Lux`;
 const urlCanonique = new URL(Astro.url.pathname, Astro.site);
@@ -46,6 +49,7 @@ const annee = new Date().getFullYear();
     <title>{titreComplet}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={urlCanonique} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:title" content={titreComplet} />
     <meta property="og:description" content={description} />

@@ -316,6 +316,16 @@ collections:
         default: false
         hint: Coché, la recette reste hors du site publié.
 
+      - label: Recette interne
+        name: interne
+        widget: boolean
+        default: false
+        hint: >-
+          Coché, la recette garde sa page (utilisable via « Recette incluse »)
+          mais disparaît de l’accueil, de la recherche, du sitemap et du flux
+          RSS. À réserver aux composants (une farce, une sauce…) qui n’ont pas
+          d’intérêt à être faits seuls. Liste : /recettes-internes/.
+
       - label: Nos notes
         name: body
         widget: markdown
