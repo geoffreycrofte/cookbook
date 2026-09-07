@@ -41,11 +41,13 @@ ingredients:
     precision: "hachés finement"
 
 etapes:
-  - texte: "Hacher finement les cornichons aigre-doux."
   - texte: "Mélanger le skyr, le ketchup, le paprika fumé, l'ail en poudre et la mayonnaise au citron dans un bol jusqu'à obtenir une texture homogène."
+    image: ./step-01.jpg
+    imageAlt: "Trois étapes du mélange dans un bol : le paprika fumé et l'ail en poudre au fond, le skyr ajouté par-dessus, puis le ketchup versé sur le skyr."
+  - texte: "Hacher finement les cornichons aigre-doux."
+  - texte: "Ajouter les cornichons hachés et mélanger de nouveau."
     image: ./plat-fini.jpg
     imageAlt: "Une sauce burger crémeuse et orangée, parsemée de morceaux de cornichons, dans un bol."
-  - texte: "Ajouter les cornichons hachés et mélanger de nouveau."
 
 miseAJour: 2026-09-07
 ---
