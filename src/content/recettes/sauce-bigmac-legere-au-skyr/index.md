@@ -45,6 +45,8 @@ etapes:
     image: ./step-01.jpg
     imageAlt: "Trois étapes du mélange dans un bol : le paprika fumé et l'ail en poudre au fond, le skyr ajouté par-dessus, puis le ketchup versé sur le skyr."
   - texte: "Hacher finement les cornichons aigre-doux."
+    image: ./step-02.jpg
+    imageAlt: "Trois cornichons aigre-doux entiers sur une planche en bois, puis les mêmes cornichons hachés finement à côté d'un couteau."
   - texte: "Ajouter les cornichons hachés et mélanger de nouveau."
     image: ./plat-fini.jpg
     imageAlt: "Une sauce burger crémeuse et orangée, parsemée de morceaux de cornichons, dans un bol."
