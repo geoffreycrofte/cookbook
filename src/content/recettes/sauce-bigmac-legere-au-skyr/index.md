@@ -83,7 +83,7 @@ brouillon: false
 interne: false
 ---
 
-Une sauce burger légère qui rappelle celles de l'iconique sauce Bigmac.
+Une sauce burger légère qui rappelle celles de l'iconique sauce Bigmac, a servir avec un burger, dans des wraps, ou comme sauce pour tremper des petits légumes. 
 
 ## Astuces
 
