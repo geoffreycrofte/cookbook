@@ -29,12 +29,6 @@ ingredients:
     precision: ''
     ajustable: true
     optionnel: false
-  - quantite: 50
-    unite: g
-    nom: ketchup
-    precision: ''
-    ajustable: true
-    optionnel: false
   - quantite: 2
     unite: cuillère à soupe
     nom: paprika fumé
@@ -47,18 +41,24 @@ ingredients:
     precision: environ 29 g
     ajustable: true
     optionnel: false
-  - quantite: 1
-    unite: cuillère à soupe
-    nom: mayonnaise au citron
-    precision: environ 15 g
+  - quantite: 50
+    unite: g
+    nom: ketchup
+    precision: ''
     ajustable: true
-    optionnel: true
+    optionnel: false
   - quantite: 100
     unite: g
     nom: cornichons aigre-doux
     precision: hachés finement
     ajustable: true
     optionnel: false
+  - quantite: 1
+    unite: cuillère à soupe
+    nom: mayonnaise au citron
+    precision: environ 15 g
+    ajustable: true
+    optionnel: true
 etapes:
   - texte: Mélanger le skyr, le ketchup, le paprika fumé, l'ail en poudre et la mayonnaise au citron (optinelle) dans un bol jusqu'à obtenir une texture homogène un peu orange.
     temperature: null
