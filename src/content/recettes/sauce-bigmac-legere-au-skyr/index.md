@@ -2,7 +2,7 @@
 titre: "Sauce bigmac légère au skyr"
 description: "Une sauce burger façon Bigmac allégée, à base de skyr, ketchup et cornichons, prête en quelques minutes."
 image: "./plat-fini.jpg"
-imageAlt: "Une sauce burger crémeuse et orangée, parsemée de morceaux de cornichons, mélangée au fouet dans un bol blanc à liseré rouge."
+imageAlt: "Une sauce burger crémeuse et orangée, parsemée de morceaux de cornichons, dans un bol."
 credit: "Stef"
 
 preparation: 10
@@ -44,7 +44,7 @@ etapes:
   - texte: "Hacher finement les cornichons aigre-doux."
   - texte: "Mélanger le skyr, le ketchup, le paprika fumé, l'ail en poudre et la mayonnaise au citron dans un bol jusqu'à obtenir une texture homogène."
     image: ./plat-fini.jpg
-    imageAlt: "Une sauce burger crémeuse et orangée, parsemée de morceaux de cornichons, mélangée au fouet dans un bol blanc à liseré rouge."
+    imageAlt: "Une sauce burger crémeuse et orangée, parsemée de morceaux de cornichons, dans un bol."
   - texte: "Ajouter les cornichons hachés et mélanger de nouveau."
 
 miseAJour: 2026-09-07
