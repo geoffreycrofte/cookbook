@@ -1,6 +1,6 @@
 ---
 titre: Sauce Bigmac légère au skyr
-description: LA fameuse sauce Bigmac du macdo mais version allégée, à base de skyr, ketchup et cornichons. Parfaite sur un burger, des wraps ou juste pour faire trempette
+description: Une version allégée de la fameuse sauce Bigmac du Macdo, à base de skyr, ketchup et cornichons. Parfaite sur un burger, des wraps ou juste pour faire trempette
 image: ./plat-fini.jpg
 imageAlt: Une sauce burger crémeuse et orangée, parsemée de morceaux de cornichons, dans un bol.
 credit: Stef
