@@ -32,7 +32,7 @@ ingredients:
     optionnel: false
   - quantite: 90
     unite: g
-    nom: Skyr ou fromage grecque 0 %
+    nom: skyr ou fromage grecque 0 %
     precision: environ 3 cuillères à soupe
     ajustable: true
     optionnel: false
@@ -72,7 +72,7 @@ etapes:
     duree: null
     image: ''
     imageAlt: ''
-  - texte: Mélanger le Skyr, la sauce hoisin, la poudre de cacahuète, l'ail, l'huile de sésame et le vinaigre de riz.
+  - texte: Mélanger le skyr, la sauce hoisin, la poudre de cacahuète, l'ail, l'huile de sésame et le vinaigre de riz.
     temperature: null
     duree: null
     image: ''
