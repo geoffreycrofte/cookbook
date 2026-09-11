@@ -81,12 +81,12 @@ parties:
       - texte: "Découper l'ail et l'oignon en petites lamelles, et le poulet en petits cubes."
         image: ./step-01.1.jpg
         imageAlt: "Ail et oignon émincés sur une planche à côté du poulet coupé en dés."
+      - texte: "Faire revenir l'ail et l'oignon dans un peu d'huile jusqu'à ce qu'ils soient dorés, puis ajouter le poulet et laisser dorer."
+      - texte: "Ajouter les légumes choisis (champignons, petits pois, chou ou carottes râpées) et laisser cuire 5 minutes."
+        duree: 5
       - texte: "Déglacer au vin blanc, si utilisé, et laisser cuire encore 5 minutes."
         duree: 5
-      - texte: "Faire revenir l'ail et l'oignon dans un peu d'huile jusqu'à ce qu'ils soient dorés, puis ajouter le poulet et laisser dorer."
-      - texte: "Ajouter les légumes choisis (champignons, petits pois, chou ou carottes râpées). Ajouet laisser cuire 5 minutes."
-        duree: 5
-      - texte: "Mixer le tofu soyeux avec le bouillon de poulet. Verser sur la preparation et laisser revenir 5 minutes. Avec de la crème fraîche à la place, l'ajouter directement et laisser cuire 5 minutes."
+      - texte: "Mixer le tofu soyeux avec le bouillon de poulet. Verser sur la préparation et laisser mijoter 5 minutes. Avec de la crème fraîche à la place, l'ajouter directement et laisser cuire 5 minutes."
         duree: 5
         image: ./step-01.2.jpg
         imageAlt: "Le tofu soyeux dans le blender, en morceaux avant mixage puis réduit en texture crémeuse et lisse."
@@ -110,11 +110,12 @@ parties:
 miseAJour: 2026-09-11
 ---
 
+Un gratin réconfortant qui recycle les légumes qui traînent au frigo : une fricassée de poulet, versée sur des röstis et gratinée au gruyère.
 
 ## Astuces
 
-La texture de la sauce doit rester sirupeuse sans être liquide. Si elle est trop liquide, une cuillère à café de maïzena l'épaissit en quelques minutes.
+La texture de la fricassée doit rester sirupeuse sans être liquide. Si elle est trop liquide, une cuillère à café de maïzena l'épaissit en quelques minutes.
 
 ## Variantes
 
-Le poulet se remplace par des protéines de soja texturées réhydratées pour une version sans viande. Le tofu soyeuxpeut aussi être remplacé par de la crème fraîche pour une texture plus classique.
+Le poulet se remplace par des protéines de soja texturées réhydratées pour une version sans viande. Le tofu soyeux peut aussi être remplacé par de la crème fraîche pour une texture plus classique.
